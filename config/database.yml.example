@@ -1,0 +1,15 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: luxhaven-dev
+  pool: 5
+  username: saiko-chriskun
+  password:
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: luxhaven-test
+  pool: 5
+  username: saiko-chriskun
+  password:
