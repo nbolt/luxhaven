@@ -1,5 +1,5 @@
 !!!
-%html
+%html{'ng:app' => 'luxhaven'}
   %head
     %title= content_for?(:title) ? yield(:title) : 'LuxHaven'
     = stylesheet_link_tag :application, media: 'all'

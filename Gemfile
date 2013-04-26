@@ -28,3 +28,4 @@ gem 'jbuilder', '~> 1.0.1' # Build JSON APIs with ease. Read more: https://githu
 gem 'bcrypt-ruby', '~> 3.0.0'
 gem 'sorcery', git: 'https://github.com/NoamB/sorcery.git'
 gem 'postmark-rails'
+gem 'foreigner'
