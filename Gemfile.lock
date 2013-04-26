@@ -8,6 +8,16 @@ GIT
       oauth2 (~> 0.8.0)
 
 GIT
+  remote: https://github.com/getsentry/raven-ruby.git
+  revision: 3f5d4063dcceca2696f7cdc12feb2399f0363b8b
+  specs:
+    sentry-raven (0.4.6)
+      faraday (>= 0.7.6)
+      hashie
+      multi_json (~> 1.0)
+      uuidtools
+
+GIT
   remote: https://github.com/vojto/ruby-stylus
   revision: 7c67425f35e79a218f94d419b931af49dc715790
   specs:
@@ -69,6 +79,7 @@ GEM
       activesupport (>= 3.1, < 4.1)
       haml (>= 3.1, < 4.1)
       railties (>= 3.1, < 4.1)
+    hashie (2.0.4)
     hike (1.2.2)
     httpauth (0.2.0)
     i18n (0.6.4)
@@ -160,6 +171,7 @@ GEM
     uglifier (2.0.1)
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
+    uuidtools (2.1.4)
 
 PLATFORMS
   ruby
@@ -176,6 +188,7 @@ DEPENDENCIES
   postmark-rails
   pry-rails
   rails (= 4.0.0.beta1)
+  sentry-raven!
   sorcery!
   stylus!
   therubyracer
