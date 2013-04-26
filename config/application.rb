@@ -20,6 +20,5 @@ module Luxhaven
     # config.i18n.default_locale = :de
     config.action_mailer.delivery_method   = :postmark
     config.action_mailer.postmark_settings = { api_key: '36ce3dca-315b-4369-8bfe-17b66285b0bc' }
-    Stylus.setup(assets)
   end
 end
