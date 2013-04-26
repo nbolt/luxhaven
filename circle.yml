@@ -1,5 +1,5 @@
 deployment:
-staging:
-  branch: master
-  heroku:
-    appname: luxhaven
+  staging:
+    branch: development
+    heroku:
+      appname: luxhaven-dev

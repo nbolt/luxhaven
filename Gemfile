@@ -21,6 +21,12 @@ group :development do
   gem 'pry-rails'
 end
 
+group :test do
+  gem 'rr'
+end
+
+gem 'rspec-rails', group: [:development, :test]
+
 gem 'pg'
 gem 'jquery-rails'
 gem 'turbolinks'
