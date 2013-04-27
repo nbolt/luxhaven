@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe User do
-  subject { user }
+  subject    { user }
   let(:user) { User.new }
 
   it 'should save info successfully' do

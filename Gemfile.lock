@@ -107,6 +107,7 @@ GEM
     minitest (4.7.3)
     multi_json (1.7.2)
     multipart-post (1.2.0)
+    newrelic_rpm (3.6.1.87)
     oauth (0.4.7)
     oauth2 (0.8.1)
       faraday (~> 0.8)
@@ -206,6 +207,7 @@ DEPENDENCIES
   haml-rails (~> 0.4)
   jbuilder (~> 1.0.1)
   jquery-rails
+  newrelic_rpm
   pg
   postmark-rails
   pry-rails
