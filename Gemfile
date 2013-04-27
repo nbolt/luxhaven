@@ -7,12 +7,12 @@ gem 'rails', '4.0.0.beta1'
 
 # Gems used only for assets and not required in production environments by default.
 group :assets do
+  gem 'stylus', git: 'https://github.com/vojto/ruby-stylus'
   gem 'haml-rails',   '~> 0.4'
   gem 'coffee-rails', '~> 4.0.0.beta1'
   gem 'therubyracer', platforms: :ruby
   gem 'uglifier', '>= 1.0.3'
   gem 'angularjs-rails'
-  gem 'stylus', git: 'https://github.com/vojto/ruby-stylus'
 end
 
 group :development do
