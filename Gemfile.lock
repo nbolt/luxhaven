@@ -17,6 +17,14 @@ GIT
       multi_json (~> 1.0)
       uuidtools
 
+GIT
+  remote: https://github.com/vojto/ruby-stylus
+  revision: 7c67425f35e79a218f94d419b931af49dc715790
+  specs:
+    stylus (0.7.1)
+      execjs
+      stylus-source
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -164,6 +172,7 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (~> 2.8)
+    stylus-source (0.31.0)
     therubyracer (0.11.4)
       libv8 (~> 3.11.8.12)
       ref
@@ -203,6 +212,7 @@ DEPENDENCIES
   rspec-rails
   sentry-raven!
   sorcery!
+  stylus!
   therubyracer
   turbolinks
   uglifier (>= 1.0.3)

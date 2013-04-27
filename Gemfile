@@ -23,6 +23,7 @@ group :test do
 end
 
 gem 'rspec-rails', group: [:development, :test]
+gem 'stylus',      group: [:development, :test], git: 'https://github.com/vojto/ruby-stylus'
 
 gem 'sorcery',      git: 'https://github.com/NoamB/sorcery.git'
 gem 'sentry-raven', git: 'https://github.com/getsentry/raven-ruby.git'
