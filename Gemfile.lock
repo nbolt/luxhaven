@@ -194,6 +194,7 @@ DEPENDENCIES
   bcrypt-ruby (~> 3.0.0)
   coffee-rails (~> 4.0.0.beta1)
   foreigner
+  haml
   haml-rails (~> 0.4)
   jbuilder (~> 1.0.1)
   jquery-rails
