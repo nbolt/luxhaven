@@ -21,6 +21,7 @@ end
 
 group :test do
   gem 'rr'
+  gem 'shoulda-matchers'
 end
 
 gem 'rspec-rails', group: [:development, :test]

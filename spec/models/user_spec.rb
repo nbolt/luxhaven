@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe User do
+  subject { user }
   let(:user) { User.new }
 
   it 'should save info successfully' do
@@ -12,4 +13,6 @@ describe User do
 
     user.save.should be_true
   end
+
+  it { should have_many(:listings) }
 end
