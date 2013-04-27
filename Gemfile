@@ -7,7 +7,6 @@ gem 'rails', '4.0.0.beta1'
 
 # Gems used only for assets and not required in production environments by default.
 group :assets do
-  gem 'stylus', git: 'https://github.com/vojto/ruby-stylus'
   gem 'haml-rails',   '~> 0.4'
   gem 'coffee-rails', '~> 4.0.0.beta1'
   gem 'therubyracer', platforms: :ruby
@@ -25,6 +24,7 @@ end
 
 gem 'rspec-rails', group: [:development, :test]
 
+gem 'stylus',       git: 'https://github.com/vojto/ruby-stylus'
 gem 'sorcery',      git: 'https://github.com/NoamB/sorcery.git'
 gem 'sentry-raven', git: 'https://github.com/getsentry/raven-ruby.git'
 
