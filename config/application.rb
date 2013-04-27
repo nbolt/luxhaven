@@ -2,7 +2,6 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 
-# Assets should be precompiled for production (so we don't need the gems loaded then)
 Bundler.require(*Rails.groups(assets: %w(development test)))
 
 module Luxhaven
@@ -20,5 +19,10 @@ module Luxhaven
     # config.i18n.default_locale = :de
     config.action_mailer.delivery_method   = :postmark
     config.action_mailer.postmark_settings = { api_key: '36ce3dca-315b-4369-8bfe-17b66285b0bc' }
+
+    begin
+      Stylus.setup Sprockets, config.assets
+    rescue
+    end
   end
 end
