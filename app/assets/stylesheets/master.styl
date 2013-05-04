@@ -1,2 +1,37 @@
+@import url('http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps|Roboto+Slab')
+
+html
+  height: 100%
+
 body
   margin 0
+  height: 100%
+  font-family: 'Roboto Slab', serif
+  color: #333
+
+#hiring
+  padding: 10px 150px
+  background: url(/assets/furley_bg.png) repeat
+  height: 100%
+  h1
+    text-align: center
+    font: 2.75em 'Oleo Script Swash Caps', cursive
+  h2
+    text-align: center
+  .ps
+    p
+      position:relative
+      &:before
+        content: ''
+        position: absolute
+        left: -18px
+        top: 7px
+        width: 9px
+        height: 9px
+        background-color: #668284
+        border-radius: 20px
+  .div
+    width: 750px
+    height: 3px
+    background-color: #f47835
+    margin: 0 auto 50px

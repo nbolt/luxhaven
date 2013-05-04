@@ -6,8 +6,4 @@
     = javascript_include_tag :application, 'data-turbolinks-track' => true
     = csrf_meta_tags
     = yield :head
-  %body
-    #container.container
-      %header
-      #main= yield
-      %footer
+  %body= yield
