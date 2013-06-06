@@ -55,9 +55,6 @@ GEM
     angularjs-rails (1.0.7)
     arel (4.0.0)
     atomic (1.1.9)
-    balanced (0.7.1)
-      faraday (>= 0.8.6)
-      faraday_middleware (~> 0.9.0)
     bcrypt-ruby (3.0.1)
     builder (3.1.4)
     coderay (1.0.9)
@@ -74,8 +71,6 @@ GEM
       multi_json (~> 1.0)
     faraday (0.8.7)
       multipart-post (~> 1.1)
-    faraday_middleware (0.9.0)
-      faraday (>= 0.7.4, < 0.9)
     foreigner (1.4.1)
       activerecord (>= 3.0.0)
     hashie (2.0.5)
@@ -139,6 +134,8 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rake (10.0.4)
     ref (1.0.5)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     roots-rails (1.0.1)
     rr (1.1.0)
     rspec-core (2.13.1)
@@ -167,6 +164,12 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (~> 2.8)
+    stripe (1.8.3)
+      multi_json (>= 1.0.4, < 2)
+      rest-client (~> 1.4)
+    stripe-rails (0.2.5)
+      rails (>= 3)
+      stripe
     stylus-source (0.31.0)
     temple (0.6.5)
     therubyracer (0.11.4)
@@ -192,7 +195,6 @@ PLATFORMS
 
 DEPENDENCIES
   angularjs-rails
-  balanced
   bcrypt-ruby
   coffee-rails
   foreigner
@@ -209,6 +211,8 @@ DEPENDENCIES
   shoulda-matchers
   slim
   sorcery!
+  stripe
+  stripe-rails
   stylus!
   therubyracer
   turbolinks
