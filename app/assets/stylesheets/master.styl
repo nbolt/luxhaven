@@ -1,37 +1,118 @@
 @import url('http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps|Roboto+Slab')
 
+dark  = hsl(0, 0%, 19%)
+grey  = hsl(0, 0%, 37%)
+green = hsl(159, 73%, 41%)
+
+a
+  text-decoration: none
+
+button
+  background: none
+  border: none
+  &.green
+    color: white
+    background-color: green
+    padding: 6px 14px
+    border-radius: 3px
+    font: .9em proxima-nova
+    hover-lighten(3)
+    &:hover
+      cursor: pointer
+
 html
   height: 100%
 
 body
   margin 0
   height: 100%
-  font-family: 'Roboto Slab', serif
-  color: #333
 
-#hiring
-  padding: 10px 150px
-  background: url(/assets/furley_bg.png) repeat
-  height: 100%
-  h1
-    text-align: center
-    font: 2.75em 'Oleo Script Swash Caps', cursive
-  h2
-    text-align: center
-  .ps
-    p
-      position:relative
-      &:before
-        content: ''
-        position: absolute
-        left: -18px
-        top: 7px
-        width: 9px
-        height: 9px
-        background-color: #668284
-        border-radius: 20px
-  .div
-    width: 750px
-    height: 3px
-    background-color: #f47835
-    margin: 0 auto 50px
+header
+  overflow: auto
+  height: 80px
+  background-color: white
+  box-shadow: 0 -1px 8px black
+  opacity: .95
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  z-index: 1
+  .pad
+    margin: 25px 0 0 160px
+    nav
+      display: inline-block
+      &#luxhaven
+        overflow: auto
+        .name
+          margin: 5px 0 0 40px
+          font: 1.1em proxima-nova
+          font-weight: 800
+          color: dark
+          text-transform: uppercase
+        .logo
+          float: left
+      &.right, &.left
+        margin-left: 50px
+        a
+          font: .9em proxima-nova
+          color: grey
+          &:hover
+            cursor: pointer
+      &.left
+        margin-left: 35px
+        a
+          margin-left: 25px
+          font-weight: bold
+          text-transform: uppercase
+          &:hover
+            color: green
+      &.right
+        margin-left: 160px
+        a
+          margin-left: 15px
+          font-weight: 400
+          &:hover
+            border-bottom: thin solid green
+        button
+          margin-left: 20px
+
+#home
+  background: url(/assets/home.jpg) no-repeat
+  background-size: cover
+  height: 800px
+  margin-top: -80px
+  z-index: 0
+  position: relative
+  .overlay-container
+    position: absolute
+    bottom: 80px
+    width: 965px
+    left: 50%
+    .overlay
+      position: relative
+      left: -50%
+      color: white
+      font-family: proxima-nova
+      .title
+        width: 450px
+        font: 2.5em adelle
+        font-weight: bold
+      .house-info
+        float: right
+        text-align: right
+        border-right: 4px solid white
+        padding-right: 15px
+        line-height: 23px
+        .name
+          font-weight: 600
+        .location
+          color: hsl(360, 0.5%, 85%)
+          font-weight: 300
+          font-size: .9em
+          text-transform: uppercase
+      button
+        margin-top: 25px
+        font-size: 1em
+        text-transform: uppercase
+        padding: 10px 18px

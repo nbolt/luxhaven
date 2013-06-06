@@ -1,5 +1,9 @@
+ListingsCtrl = ($scope, $http) ->
+
+
 ListingCtrl = ($scope, $http) ->
 
 
 angular.module('luxhaven', [])
-  .controller('listings', ListingCtrl)
+  .controller('listing',  ListingCtrl)
+  .controller('listings', ListingsCtrl)
