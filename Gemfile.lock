@@ -110,6 +110,9 @@ GEM
     postmark-rails (0.5.0)
       actionmailer
       postmark (~> 1.0)
+    preact (0.6.5)
+      multi_json (~> 1.0)
+      rest-client
     pry (0.9.12.2)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -202,6 +205,7 @@ DEPENDENCIES
   jquery-rails
   pg
   postmark-rails
+  preact
   pry-rails
   rails (= 4.0.0.rc1)
   roots-rails
