@@ -22,9 +22,9 @@ end
 
 gem 'rspec-rails', group: [:development, :test]
 
-gem 'stylus',       git: 'https://github.com/vojto/ruby-stylus'
-gem 'sorcery',      git: 'https://github.com/NoamB/sorcery.git'
-gem 'sentry-raven', git: 'https://github.com/getsentry/raven-ruby.git'
+gem 'stylus',        git: 'https://github.com/vojto/ruby-stylus'
+gem 'sorcery',       git: 'https://github.com/NoamB/sorcery.git'
+gem 'sentry-raven',  git: 'https://github.com/getsentry/raven-ruby.git'
 
 gem 'jbuilder'
 gem 'bcrypt-ruby'
@@ -38,3 +38,4 @@ gem 'stripe-rails'
 gem 'roots-rails'
 gem 'slim'
 gem 'preact'
+gem 'decent_exposure'

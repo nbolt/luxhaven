@@ -18,10 +18,41 @@ html ng:app='luxhaven'
     javascript:
       try{Typekit.load();}catch(e){}
 
-  body
+  body ng:controller='app'
+    #sign-in.modal
+      .luxhaven
+          a
+            .logo
+              img src='/images/logo-small.png' width='25'
+            .name LuxHaven
+      = form_for :user, url: '/signin', html: { remote: true, autocomplete: 'off' } do |f|
+        .input= f.text_field :email, placeholder: 'Email'
+        .input= f.password_field :password, placeholder: 'Password'
+        .auth-error
+        button.green Sign In
+        .message
+          a ng:click='toSignup()'
+            | Don't have an account with us? Sign up here!
+    #sign-up.modal
+      .luxhaven
+          a
+            .logo
+              img src='/images/logo-small.png' width='25'
+            .name LuxHaven
+      = form_for :user, url: '/signup', html: { remote: true, autocomplete: 'off' } do |f|
+        .input= f.text_field :firstname, placeholder: 'First Name'
+        .input= f.text_field :lastname, placeholder: 'Last Name'
+        .input= f.text_field :email, placeholder: 'Email'
+        .input= f.password_field :password, placeholder: 'Password'
+        .input= f.password_field :password_confirmation, placeholder: 'Again'
+        .auth-error
+        button.green Sign Up
+        .message
+          a ng:click='toSignin()'
+            | Already have an account with us? Sign in here!
     header
       .pad
-        nav#luxhaven
+        nav.luxhaven
           a
             .logo
               img src='/images/logo-small.png' width='25'
@@ -34,6 +65,10 @@ html ng:app='luxhaven'
           a About
           a FAQs
           a Contact
-          button.green Sign In
+          ng:switch on='signedIn'
+            button.green ng:click='signInModal()' ng:switch-when='false'
+              | Sign In
+            button.green ng:click='signOut()' ng:switch-when='true'
+              | Sign Out
     .body= yield
     footer

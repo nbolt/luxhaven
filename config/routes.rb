@@ -1,8 +1,9 @@
 Luxhaven::Application.routes.draw do
 
-  post '/signup' => 'auth#signup'
-  post '/login'  => 'auth#login'
-  post '/logout' => 'auth#logout'
+  post '/signup'  => 'auth#signup'
+  post '/signin'  => 'auth#signin'
+  post '/signout' => 'auth#signout'
+  post '/auth'    => 'auth#auth'
 
   get '/hiring' => 'home#hiring'
 

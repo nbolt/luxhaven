@@ -1,0 +1,9 @@
+$('.auth-error').text("<%= @err.html_safe %>")
+
+if ($('.auth-error').css('visibility') == 'hidden') {
+  $('.auth-error').hide().css('visibility', 'visible').fadeIn()
+} else {
+  $('.auth-error').fadeOut(400, function(){
+    $('.auth-error').hide().css('visibility', 'visible').fadeIn()
+  })
+}

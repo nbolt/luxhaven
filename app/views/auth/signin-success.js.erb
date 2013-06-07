@@ -1,0 +1,7 @@
+$('.auth-error').text('')
+$('#sign-in').bPopup().close()
+
+var scope = $('body').scope()
+scope.$apply(function(){
+  scope.signedIn = true
+})

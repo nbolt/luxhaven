@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   has_many :listings
 
   def name
-    self.first_name + ' ' + self.last_name
+    self.firstname + ' ' + self.lastname
   end
 
   def to_preact
@@ -21,4 +21,5 @@ class User < ActiveRecord::Base
       }
     }
   end
+
 end

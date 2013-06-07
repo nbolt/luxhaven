@@ -1,8 +1,17 @@
 @import url('http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps|Roboto+Slab')
 
-dark  = hsl(0, 0%, 19%)
-grey  = hsl(0, 0%, 37%)
+red   = hsl(360, 90%, 45%)
 green = hsl(159, 73%, 41%)
+
+placeholder-color(color)
+  ::-webkit-input-placeholder
+    color: color
+  :-moz-placeholder
+    color: color
+  ::-moz-placeholder
+    color: color
+  :-ms-input-placeholder
+    color: color
 
 a
   text-decoration: none
@@ -17,8 +26,6 @@ button
     border-radius: 3px
     font: .9em proxima-nova
     hover-lighten: 3
-    &:hover
-      cursor: pointer
 
 html
   height: 100%
@@ -26,6 +33,67 @@ html
 body
   margin 0
   height: 100%
+
+.modal
+  display: none
+  border: thin solid hsl(0, 0%, 75%)
+  width: 405px
+  background-color: white
+  .luxhaven
+    margin: 40px auto
+  .message
+    text-align: center
+    margin-top: 12px
+    font: .9em proxima-nova
+    a
+      color: hsl(0, 0%, 65%)
+      &:hover
+        color: green
+        cursor: pointer
+  .auth-error
+    visibility: hidden
+    text-align: center
+    color: red
+    font: 1em proxima-nova
+    margin-top: 16px
+    height: 19px
+  form
+    button
+      width: 100%
+      border-radius: 0
+      margin-top: 15px
+      padding: 10px
+      font-size: 1em
+    .input
+      width: 310px
+      margin: 10px auto
+      placeholder-color: hsl(0, 0%, 79%)
+      input
+        box-shadow: none
+        border: thin solid hsl(0, 0%, 85%)
+        color: hsl(0, 0%, 55%)
+        font: .9em proxima-nova
+        width: 100%
+        box-sizing: border-box
+        border-radius: 3px
+        padding: 8px 12px
+        font-weight: 600
+  &#sign-in
+    height: 325px
+  &#sign-up
+    height: 460px
+
+.luxhaven
+  overflow: auto
+  width: 140px
+  .name
+    margin: 5px 0 0 40px
+    font: 1.1em proxima-nova
+    font-weight: 800
+    color: hsl(0, 0%, 19%)
+    text-transform: uppercase
+  .logo
+    float: left
 
 header
   overflow: auto
@@ -42,23 +110,11 @@ header
     margin: 25px 0 0 160px
     nav
       display: inline-block
-      &#luxhaven
-        overflow: auto
-        .name
-          margin: 5px 0 0 40px
-          font: 1.1em proxima-nova
-          font-weight: 800
-          color: dark
-          text-transform: uppercase
-        .logo
-          float: left
       &.right, &.left
         margin-left: 50px
         a
           font: .9em proxima-nova
-          color: grey
-          &:hover
-            cursor: pointer
+          color: hsl(0, 0%, 37%)
       &.left
         margin-left: 35px
         a
