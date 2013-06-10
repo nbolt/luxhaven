@@ -7,12 +7,16 @@ describe Booking do
   before(:each) do
     booking.check_in  = Date.today
     booking.check_out = Date.today + 28.days
+
     listing = Listing.new
     booking.listing = listing
     booking.listing.price_per_night = 100
+
     booking.price_period = 'night'
+
     user = User.new
     booking.user = user
+    
     user = User.new
     booking.listing.user = user
   end
