@@ -1,0 +1,2 @@
+class BookingError < Exception
+end
