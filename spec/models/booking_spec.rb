@@ -14,11 +14,8 @@ describe Booking do
 
     booking.price_period = 'night'
 
-    user = User.new
-    booking.user = user
-    
-    user = User.new
-    booking.listing.user = user
+    booking.user = User.new
+    booking.listing.user = User.new
   end
 
   describe 'price total' do
