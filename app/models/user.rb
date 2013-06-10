@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   validates :password_confirmation,   presence: true
 
   has_many :listings
+  has_many :bookings
 
   def name
     self.firstname + ' ' + self.lastname
