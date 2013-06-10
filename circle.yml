@@ -7,3 +7,8 @@ deployment:
     branch: master
     heroku:
       appname: luxhaven
+
+test:
+  post:
+    environment:
+      STRIPE_API_KEY: 'sk_test_CD1Nt7HWaB65fDfUOzud5JqH'
