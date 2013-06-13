@@ -54,6 +54,7 @@ body
   width: 405px
   background-color: white
   .luxhaven
+    overflow: auto
     margin: 40px auto
   .message
     text-align: center
@@ -98,7 +99,6 @@ body
     height: 460px
 
 .luxhaven
-  overflow: auto
   width: 140px
   .name
     margin: 5px 0 0 40px
@@ -110,7 +110,7 @@ body
     float: left
 
 header
-  overflow: auto
+  overflow: hidden
   height: 80px
   background-color: white
   box-shadow: 0 -1px 8px black
@@ -121,8 +121,8 @@ header
   right: 0
   z-index: 1
   .pad
-    margin: 25px
-    text-align: center
+    margin: 25px auto
+    width: 980px
     nav
       display: inline-block
       &.right, &.left

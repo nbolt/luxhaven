@@ -72,10 +72,10 @@ ListingsCtrl = ($scope, $http) ->
 ListingCtrl = ($scope, $http) ->
 
 
-angular.module('luxhaven', ['ui.select2', 'ui.date'])
+app = angular.module('luxhaven', ['ui.select2', 'ui.date'])
   .controller('app',      AppCtrl)
-  .controller('listing',  ListingCtrl)
   .controller('listings', ListingsCtrl)
+  .controller('listing',  ListingCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
   .directive('slider', -> (scope, element, attrs) ->
@@ -140,3 +140,5 @@ angular.module('luxhaven', ['ui.select2', 'ui.date'])
         maxPrice = newPrice
 
   )
+
+angular.element(document).on 'ready page:load', -> angular.bootstrap(document, ['luxhaven'])
