@@ -1,5 +1,9 @@
+ATTRS = {
+  property_type: ['house', 'apartment']
+}
+
 AppCtrl = ($scope, $http, $compile) ->
-  window.s = $scope
+
   $scope.signinContent = angular.element('#sign-in').html()
   $scope.signupContent = angular.element('#sign-up').html()
 
@@ -39,14 +43,100 @@ AppCtrl = ($scope, $http, $compile) ->
 
 
 ListingsCtrl = ($scope, $http) ->
+  $scope.minPrice = null
+  $scope.maxPrice = null
 
+  urlAttrs = ->
+    str = '?'
+    str += "minPrice=#{$scope.minPrice}&" if $scope.minPrice
+    str += "maxPrice=#{$scope.maxPrice}&" if $scope.maxPrice
+    for attrType, attrs of ATTRS
+      activeAttrs = _.compact _(attrs).map((attr) -> $scope[attr] && attr || false)
+      if activeAttrs.length > 0
+        str += "#{attrType}="
+        for attr in attrs
+          str += "#{attr}," if $scope[attr]
+        str += '&'
+    str
+
+  fetch_listings = ->
+    $http.get("/city/#{$scope.region.name.replace(' ', '_')}#{urlAttrs()}").success (rsp) -> $scope.listings = rsp
+
+  $scope.$watch 'region', -> fetch_listings() if $scope.region
+
+  _(['apartment', 'house', 'minPrice', 'maxPrice']).each (attr) ->
+    $scope.$watch attr, (o, n) ->
+      unless o == n
+        fetch_listings()
 
 ListingCtrl = ($scope, $http) ->
 
 
-angular.module('luxhaven', [])
+angular.module('luxhaven', ['ui.select2', 'ui.date'])
   .controller('app',      AppCtrl)
   .controller('listing',  ListingCtrl)
   .controller('listings', ListingsCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
+  .directive('slider', -> (scope, element, attrs) ->
+    minPrice = scope.minPrice
+    maxPrice = scope.maxPrice
+
+    price = (n) ->
+        if      n >= 0   && n < 25  then 0
+        else if n >= 25  && n < 50  then 150
+        else if n >= 50  && n < 75  then 300
+        else if n >= 75  && n < 100 then 500
+        else if n >= 100 && n < 125 then 800
+        else if n >= 125 && n < 150 then 1200
+        else if n >= 150 && n < 175 then 1600
+        else if n >= 175 && n < 200 then 2000
+        else if n >= 200 && n < 225 then 3500
+        else if n >= 225            then 5000
+
+    knobOne = element.find('.knob.one')
+    knobTwo = element.find('.knob.two')
+
+    element.find('.knob').each (_, element) ->
+      element.addEventListener 'mousedown', (e) ->
+        angular.element('html').addClass('dragging')
+        e.preventDefault()
+
+    element.find('.one').each (_, element) ->
+      element.addEventListener 'mousedown', ->
+        scope.knobOne = true
+    element.find('.two').each (_, element) ->
+      element.addEventListener 'mousedown', ->
+        scope.knobTwo = true
+
+    addEventListener 'mouseup', ->
+      scope.$apply ->
+        scope.minPrice = minPrice
+        scope.maxPrice = maxPrice
+        scope.knobOne = false
+        scope.knobTwo = false
+      angular.element('html').removeClass('dragging')
+
+    addEventListener 'mousemove', (e) ->
+      if scope.knobOne
+        if e.x >= 158 && e.x <= knobTwo.offset().left - 7
+          knobOne.css 'left', e.x - 158 + 'px'
+        else if e.x < 158
+          knobOne.css 'left', 0
+        else if e.x > knobTwo.offset().left - 7
+          knobOne.css 'left', knobTwo.offset().left - 165
+        newPrice = price(parseInt knobOne.css('left'))
+        element.find('.knob-one').text('$' + newPrice)
+        minPrice = newPrice
+      else if scope.knobTwo
+        if e.x <= 394 && e.x >= knobOne.offset().left + 20
+          knobTwo.css 'right', 394 - e.x + 'px'
+        else if e.x > 394
+          knobTwo.css 'right', 0
+        else if e.x < knobOne.offset().left + 20
+          knobTwo.css 'right', 374 - knobOne.offset().left
+        newPrice = price(260 - parseInt(knobTwo.css('right')))
+        element.find('.knob-two').text('$' + newPrice)
+        maxPrice = newPrice
+
+  )

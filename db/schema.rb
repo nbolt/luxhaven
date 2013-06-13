@@ -11,10 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130608022231) do
+ActiveRecord::Schema.define(version: 20130613015446) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "addresses", force: true do |t|
+    t.string   "street1"
+    t.string   "street2"
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
+    t.string   "neighborhood"
+    t.string   "county"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "listing_id"
+    t.integer  "region_id"
+  end
 
   create_table "bookings", force: true do |t|
     t.integer  "listing_id"
@@ -31,6 +45,12 @@ ActiveRecord::Schema.define(version: 20130608022231) do
     t.string   "stripe_refund_id"
   end
 
+  create_table "images", force: true do |t|
+    t.string   "image"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "listings", force: true do |t|
     t.integer  "user_id"
     t.datetime "created_at"
@@ -38,6 +58,8 @@ ActiveRecord::Schema.define(version: 20130608022231) do
     t.integer  "price_per_night"
     t.integer  "price_per_week"
     t.integer  "price_per_month"
+    t.string   "property_type"
+    t.string   "title"
   end
 
   create_table "regions", force: true do |t|

@@ -1,7 +1,12 @@
 @import url('http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps|Roboto+Slab')
 
-red   = hsl(360, 90%, 45%)
-green = hsl(159, 73%, 41%)
+
+grey         = hsl(0, 0%, 70%)
+light-grey   = hsl(0, 0%, 85%)
+dark-grey    = hsl(0, 0%, 40)
+darker-grey  = hsl(0, 0%, 30%)
+red          = hsl(360, 90%, 45%)
+green        = hsl(159, 73%, 41%)
 
 placeholder-color(color)
   ::-webkit-input-placeholder
@@ -12,6 +17,15 @@ placeholder-color(color)
     color: color
   :-ms-input-placeholder
     color: color
+
+dragging()
+  *
+    cursor: -webkit-grabbing !important
+    cursor: -moz-grabbing !important
+
+.dragging
+  dragging()
+
 
 a
   text-decoration: none
@@ -100,7 +114,7 @@ header
   height: 80px
   background-color: white
   box-shadow: 0 -1px 8px black
-  opacity: .95
+  opacity: .975
   position: absolute
   top: 0
   left: 0
@@ -134,23 +148,26 @@ header
         button
           margin-left: 20px
 
-#home
-  background: url(/images/home.jpg) no-repeat
-  background-size: cover
-  height: 800px
-  margin-top: -80px
-  z-index: 0
-  position: relative
+.head-image
   .overlay-container
     position: absolute
-    bottom: 80px
-    width: 965px
     left: 50%
     .overlay
       position: relative
       left: -50%
       color: white
       font-family: proxima-nova
+
+#home
+  background: url(/images/home.jpg) no-repeat
+  background-size: cover
+  height: 800px
+  z-index: 0
+  position: relative
+  .overlay-container
+    width: 965px
+    bottom: 80px
+    .overlay
       .title
         width: 450px
         font: 2.5em adelle
@@ -174,3 +191,151 @@ header
         font-size: 1em
         text-transform: uppercase
         padding: 10px 18px
+
+#city
+  background-size: cover
+  height: 375px
+  z-index: 0
+  position: relative
+  .overlay-container
+    top: 200px
+    .overlay
+      .title
+        text-align: center
+        font-size: 2em
+        padding: 16px 28px
+        background: hsla(0, 0%, 0%, 80%)
+
+#results
+  width: 976px
+  margin: auto
+  .left
+    width: 250px
+    float: left
+    padding-right: 30px
+    border-right: thin solid grey
+    #filters
+      > .title
+        text-transform: uppercase
+        font: .95em proxima-nova
+        font-weight: bold
+        color: darker-grey
+        padding: 21px 0
+        margin-bottom: 21px
+        border-bottom: thin solid grey
+      .filter-category
+        margin-bottom: 100px
+        .title
+          width: 100%
+          text-transform: uppercase
+          font: .85em proxima-nova
+          font-weight: bold
+          color: darker-grey
+          padding-bottom: 5px
+          border-bottom: thin solid light-grey
+        .filter
+          margin-top: 8px
+          & ~ .filter
+            margin-top: 0
+          label
+            font: .8em proxima-nova
+            font-weight: bold
+            color: dark-grey
+            display: inline-block
+            padding: 8px
+      > input, select
+        width: 100%
+      > input
+        margin-bottom: 10px
+        border-radius: 3px
+        border: thin solid light-grey
+        box-sizing: border-box
+        font: .9em proxima-nova
+        font-weight: bold
+        padding: 8px 12px
+        color: darker-grey
+      .select2-container
+        margin-bottom: 10px
+        a
+          background: none
+          border: thin solid light-grey
+          padding: 4px 12px 3px
+          border-radius: 3px
+          span
+            color: darker-grey
+            font: .9em proxima-nova
+            font-weight: bold
+            margin-top: 3px
+          div
+            border: none
+            background: none
+            top: 3px
+            right: 2px
+        &.select2-dropdown-open
+          a
+            border-radius: 3px 3px 0 0
+  .right
+    overflow: auto
+    .top
+      margin: 0 29px
+      padding: 19px 0 20px
+      border-bottom: thin solid grey
+      font-family: proxima-nova
+      font-weight: bold
+      color: darker-grey
+      .title
+        font-size: 1.1em
+      .sort
+        float: right
+    .listing
+      height: 100px
+      background-color: grey
+      margin: 30px
+
+.select2-drop
+  border: thin solid light-grey !important
+  border-top: none !important
+  .select2-result-label
+    font: .95em proxima-nova
+
+.slider
+  position: relative
+  overflow: auto
+  width: 100%
+  margin-top: 10px
+  margin-bottom: 50px
+  margin-left: 0px
+  padding-bottom: 4px
+  .title
+    float: left
+    font: .9em proxima-nova
+    font-weight: bold
+    color: hsl(0, 0%, 55%)
+  > .selection
+    font: .85em proxima-nova
+    font-weight: bold
+    float: right
+    color: darker-grey
+    .knob-one, .knob-two
+      display: inline-block
+  .bar
+    margin-top: 28px
+    background-color: hsl(0, 0%, 92%)
+    height: 5px
+    border-radius: 5px
+    border: thin solid grey
+  .knob
+    width: 12px
+    height: 12px
+    border-radius: 10px
+    border: thin solid darker-grey
+    position: absolute
+    top: 24px
+    simple-gradient(hsl(159, 50%, 50%), 15%)
+    &.one
+      left: 0px
+    &.two
+      right: 0px
+    &:hover
+      cursor: -webkit-grab
+      cursor: -moz-grab
