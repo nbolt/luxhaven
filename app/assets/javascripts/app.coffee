@@ -1,6 +1,8 @@
-ATTRS = {
+MULTIPLE_VALUE_ATTRS = {
   property_type: ['house', 'apartment']
 }
+
+SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'check_in', 'check_out']
 
 AppCtrl = ($scope, $http, $compile) ->
 
@@ -48,9 +50,10 @@ ListingsCtrl = ($scope, $http) ->
 
   urlAttrs = ->
     str = '?'
-    str += "minPrice=#{$scope.minPrice}&" if $scope.minPrice
-    str += "maxPrice=#{$scope.maxPrice}&" if $scope.maxPrice
-    for attrType, attrs of ATTRS
+    for attr in SINGLE_VALUE_ATTRS
+      str += "#{attr}=#{$scope[attr]}&" if $scope[attr]
+
+    for attrType, attrs of MULTIPLE_VALUE_ATTRS
       activeAttrs = _.compact _(attrs).map((attr) -> $scope[attr] && attr || false)
       if activeAttrs.length > 0
         str += "#{attrType}="
@@ -62,12 +65,21 @@ ListingsCtrl = ($scope, $http) ->
   fetch_listings = ->
     $http.get("/city/#{$scope.region.name.replace(' ', '_')}#{urlAttrs()}").success (rsp) -> $scope.listings = rsp
 
-  $scope.$watch 'region', -> fetch_listings() if $scope.region
+  watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (o, n) ->
+    unless o == n
+      if      attr == 'check_in'  && $scope.check_out
+        check_in  = Date.parse $scope.check_in
+        check_out = Date.parse $scope.check_out
+        $scope.check_out = new Date(check_in) if check_in >= check_out
+      else if attr == 'check_out' && $scope.check_in
+        check_in  = Date.parse $scope.check_in
+        check_out = Date.parse $scope.check_out
+        $scope.check_in = new Date(check_out - 86400) if check_out <= check_in
+      fetch_listings()
 
-  _(['apartment', 'house', 'minPrice', 'maxPrice']).each (attr) ->
-    $scope.$watch attr, (o, n) ->
-      unless o == n
-        fetch_listings()
+  $scope.$watch 'region', -> fetch_listings() if $scope.region
+  watch SINGLE_VALUE_ATTRS
+  _(MULTIPLE_VALUE_ATTRS).each (attrs) -> watch attrs
 
 ListingCtrl = ($scope, $http) ->
 
@@ -135,7 +147,7 @@ app = angular.module('luxhaven', ['ui.select2', 'ui.date'])
           knobTwo.css 'right', 0
         else if e.x < knobOne.offset().left + 20
           knobTwo.css 'right', 374 - knobOne.offset().left
-        newPrice = price(260 - parseInt(knobTwo.css('right')))
+        newPrice = price(250 - parseInt(knobTwo.css('right')))
         element.find('.knob-two').text('$' + newPrice)
         maxPrice = newPrice
 
