@@ -1,8 +1,10 @@
 class ListingsController < ApplicationController
 
   expose(:region) { Region.where(name: params[:city].gsub('_', ' ')).first }
+  expose(:listing) { Listing.find params[:id] }
   
   def search
+    expires_in 1.hour, public: true
     respond_to do |format|
       format.html
       format.json do
@@ -14,6 +16,9 @@ class ListingsController < ApplicationController
         render json: listings
       end
     end
+  end
+
+  def show
   end
 
 end

@@ -2,6 +2,12 @@ class Booking < ActiveRecord::Base
   belongs_to :user
   belongs_to :listing
 
+  validate :conflicts
+
+  def conflicts
+    errors.add :booking, 'Conflicts with another booking' if listing.conflicts? check_in, check_out
+  end
+
   def price_total
     nights = (check_out - check_in).to_i
     case price_period

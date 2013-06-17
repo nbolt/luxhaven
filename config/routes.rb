@@ -9,6 +9,8 @@ Luxhaven::Application.routes.draw do
 
   get '/city/:city' => 'listings#search'
 
+  get '/listing/:id(/:title)' => 'listings#show'
+
   get '/hiring' => 'home#hiring'
 
   root to: 'home#index'

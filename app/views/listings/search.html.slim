@@ -41,8 +41,9 @@
       .title
         | {{ listings.length }} places in Los Angeles
     #listings
-      .listing ng:repeat='listing in listings'
-        .title
+      a ng:href="/listing/{{listing.id}}/{{listing.title.replace(' ', '_')}}" ng:repeat='listing in listings'
+        .listing
+          .title
           | {{ listing.title }}
 
 javascript:
