@@ -1,4 +1,11 @@
 class Listing < ActiveRecord::Base
+  extend FriendlyId
+  friendly_id :slug_candidates, use: :scoped, scope: :region_id
+
+  before_save do
+    self.region_id = address.region.id
+  end
+
   belongs_to :user
   belongs_to :region
   has_many :bookings
@@ -18,5 +25,12 @@ class Listing < ActiveRecord::Base
     check_out = Date.parse check_out if check_out.is_a? String
 
     listings.select { |listing| !listing.conflicts?(check_in, check_out) }
+  end
+
+  def slug_candidates
+    [
+      :title,
+      [:title, :id]
+    ]
   end
 end

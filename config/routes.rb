@@ -7,9 +7,8 @@ Luxhaven::Application.routes.draw do
   post '/signout' => 'auth#signout'
   post '/auth'    => 'auth#auth'
 
-  get '/city/:city' => 'listings#search'
-
-  get '/listing/:id(/:title)' => 'listings#show'
+  get '/:city' => 'listings#search'
+  get '/:city/:listing' => 'listings#show'
 
   get '/hiring' => 'home#hiring'
 

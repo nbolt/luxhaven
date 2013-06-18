@@ -1,7 +1,10 @@
 class ListingsController < ApplicationController
 
-  expose(:region) { Region.where(name: params[:city].gsub('_', ' ')).first }
-  expose(:listing) { Listing.find params[:id] }
+  expose(:region) { Region.friendly.find params[:city] }
+  expose(:listing) do
+    region = Region.friendly.find params[:city]
+    Listing.where(region_id: region.id).friendly.find params[:listing]
+  end
   
   def search
     expires_in 1.hour, public: true

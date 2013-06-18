@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130614035355) do
+ActiveRecord::Schema.define(version: 20130618192453) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,14 +61,22 @@ ActiveRecord::Schema.define(version: 20130614035355) do
     t.integer  "price_per_month"
     t.string   "property_type"
     t.string   "title"
+    t.string   "slug"
+    t.integer  "region_id"
   end
+
+  add_index "listings", ["region_id"], name: "index_listings_on_region_id", using: :btree
+  add_index "listings", ["slug"], name: "index_listings_on_slug", unique: true, using: :btree
 
   create_table "regions", force: true do |t|
     t.string   "name"
     t.integer  "listing_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "slug"
   end
+
+  add_index "regions", ["slug"], name: "index_regions_on_slug", unique: true, using: :btree
 
   create_table "reservations", force: true do |t|
     t.date     "check_in"

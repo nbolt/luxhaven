@@ -63,7 +63,7 @@ ListingsCtrl = ($scope, $http) ->
     str
 
   fetch_listings = ->
-    $http.get("/city/#{$scope.region.name.replace(' ', '_')}#{urlAttrs()}").success (rsp) -> $scope.listings = rsp
+    $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) -> $scope.listings = rsp
 
   watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (o, n) ->
     unless o == n
