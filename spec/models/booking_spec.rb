@@ -8,7 +8,13 @@ describe Booking do
     booking.check_in  = Date.today
     booking.check_out = Date.today + 28.days
 
+    region  = Region.create
+    address = Address.new
+    address.region = region
+    address.save
+
     listing = Listing.new
+    listing.address = address
     booking.listing = listing
     booking.listing.price_per_night = 100
 
@@ -16,6 +22,13 @@ describe Booking do
 
     booking.user = User.new
     booking.listing.user = User.new
+  end
+
+  it 'saves correctly' do
+    booking.listing.save!
+    booking.save!
+
+    booking.listing.region_id.should_not eq(nil)
   end
 
   describe 'price total' do
