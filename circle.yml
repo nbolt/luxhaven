@@ -3,10 +3,6 @@ deployment:
     branch: develop
     heroku:
       appname: luxhaven-dev
-  staging:
-    branch: develop
-    heroku:
-      appname: luxhaven-staging
   production:
     branch: master
     heroku:

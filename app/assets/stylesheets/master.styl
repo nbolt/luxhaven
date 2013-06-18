@@ -3,7 +3,7 @@
 
 grey         = hsl(0, 0%, 70%)
 light-grey   = hsl(0, 0%, 85%)
-dark-grey    = hsl(0, 0%, 40)
+dark-grey    = hsl(0, 0%, 40%)
 darker-grey  = hsl(0, 0%, 30%)
 red          = hsl(360, 90%, 45%)
 green        = hsl(159, 73%, 41%)
@@ -40,6 +40,14 @@ button
     border-radius: 3px
     font: .9em proxima-nova
     hover-lighten: 3
+
+input
+  border-radius: 3px
+  border: thin solid light-grey
+  box-sizing: border-box
+  font: .9em proxima-nova
+  font-weight: 600
+  padding: 8px 12px
 
 html
   height: 100%
@@ -84,15 +92,8 @@ body
       margin: 10px auto
       placeholder-color: hsl(0, 0%, 79%)
       input
-        box-shadow: none
-        border: thin solid hsl(0, 0%, 85%)
         color: hsl(0, 0%, 55%)
-        font: .9em proxima-nova
         width: 100%
-        box-sizing: border-box
-        border-radius: 3px
-        padding: 8px 12px
-        font-weight: 600
   &#sign-in
     height: 325px
   &#sign-up
@@ -203,9 +204,6 @@ header
         padding: 16px 28px
         background: hsla(0, 0%, 0%, 80%)
 
-#listing
-  height: 500px
-
 #results
   width: 976px
   margin: auto
@@ -247,12 +245,6 @@ header
         width: 100%
       > input
         margin-bottom: 10px
-        border-radius: 3px
-        border: thin solid light-grey
-        box-sizing: border-box
-        font: .9em proxima-nova
-        font-weight: bold
-        padding: 8px 12px
         color: darker-grey
       .select2-container
         margin-bottom: 10px
@@ -286,6 +278,7 @@ header
       .title
         font-size: 1.1em
       .sort
+        display: none
         float: right
     .listing
       height: 100px
@@ -339,3 +332,65 @@ header
     &:hover
       cursor: -webkit-grab
       cursor: -moz-grab
+
+.images
+  position: relative
+  overflow: auto
+  ul
+    padding: 0
+    margin: 0
+    li
+      list-style: none
+      float: left
+      background-size: cover !important
+      height: 500px
+      width: 100%
+  .dots
+    text-align: center
+    position: absolute
+    left: 0
+    right: 0
+    bottom: 0
+    li
+      display: inline-block
+      width: 10px
+      height: 10px
+      margin: 0 4px      
+      text-indent: -999em
+      border: 2px solid #fff
+      border-radius: 6px
+      cursor: pointer
+      opacity: .4
+      transition: background .5s, opacity .5s
+      &.active
+        background: #fff
+        opacity: 1
+    
+.content
+  width: 976px
+  margin: auto
+  position: relative
+  #book
+    border-radius: 3px
+    position: absolute
+    right: 0
+    top: -54px
+    background-color: hsl(360, 2.5%, 92%)
+    width: 250px
+    .input
+      margin: auto
+      width: 90%
+      margin-bottom: 10px
+      input
+        width: 100%
+        color: darker-grey
+    .button
+      margin: 15px auto
+      button
+        width: 100%
+        border-radius: 0
+    .title
+      text-shadow 1px 1px 4px white
+      padding: 10px 15px
+      font: .9em proxima-nova
+      color: darker-grey

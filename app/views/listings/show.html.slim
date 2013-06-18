@@ -1,8 +1,12 @@
-#listing.head-image style="background: url(#{listing.images.first.image}) no-repeat center"
-  .overlay-container
-    .overlay
-      .title= listing.title
+.images unslider=''
+  ul
+    - listing.images.each do |image|
+      li style="background: url(#{image.image}) no-repeat center"
 
-#book
-  .title Select your check in and check out dates to get started.
-  
+.content
+  #book
+    .title Select your check in and check out dates to get started.
+    .input= text_field_tag :check_in,   nil, placeholder: 'Check In',   :'ui:date' => '', :'ng:model' => 'check_in'
+    .input= text_field_tag :check_out,  nil, placeholder: 'Check Out',  :'ui:date' => '', :'ng:model' => 'check_out'
+    .button
+      button.green Book
