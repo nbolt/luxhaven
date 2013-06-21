@@ -1,2 +1,2 @@
-web:    bundle exec puma -p $PORT
-worker: clockwork ./app/clock.rb
+web:   bundle exec puma -p $PORT
+clock: clockwork ./app/clock.rb

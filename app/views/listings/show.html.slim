@@ -3,10 +3,10 @@
     - listing.images.each do |image|
       li style="background: url(#{image.image}) no-repeat center"
 
-.content
+.content ng:controller='listing'
   #book
     .title Select your check in and check out dates to get started.
-    .input= text_field_tag :check_in,   nil, placeholder: 'Check In',   :'ui:date' => '', :'ng:model' => 'check_in'
-    .input= text_field_tag :check_out,  nil, placeholder: 'Check Out',  :'ui:date' => '', :'ng:model' => 'check_out'
+    .input= text_field_tag :check_in,   nil, placeholder: 'Check In',   :'ui:date' => '{beforeShowDay:checkInDate}', :'ng:model' => 'check_in'
+    .input= text_field_tag :check_out,  nil, placeholder: 'Check Out',  :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'check_out'
     .button
       button.green Book

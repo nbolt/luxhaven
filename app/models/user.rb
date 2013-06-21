@@ -5,8 +5,8 @@ class User < ActiveRecord::Base
   validates :email,                   presence: true, uniqueness: true
   validates :password_confirmation,   presence: true
 
-  has_many :listings
-  has_many :bookings
+  has_many :listings, dependent: :destroy
+  has_many :bookings, dependent: :destroy
 
   def name
     self.firstname + ' ' + self.lastname
@@ -21,6 +21,14 @@ class User < ActiveRecord::Base
         :created_at => self.created_at.to_i
       }
     }
+  end
+
+  def is_host?
+    !listings.empty?
+  end
+
+  def self.hosts
+    User.select{|u|!u.listings.empty?}
   end
 
 end

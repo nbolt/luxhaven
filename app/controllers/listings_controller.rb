@@ -16,12 +16,18 @@ class ListingsController < ApplicationController
         listings = listings.where('price_per_night >= ?', params[:minPrice].to_i * 100) if params[:minPrice]
         listings = listings.where('price_per_night <= ?', params[:maxPrice].to_i * 100) if params[:maxPrice]
         listings = Listing.available params[:check_in], params[:check_out], listings    if params[:check_in] && params[:check_out]
-        render json: listings
+        render json: listings.to_json(include: :bookings)
       end
     end
   end
 
   def show
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: listing.to_json(include: :bookings)
+      end
+    end
   end
 
 end

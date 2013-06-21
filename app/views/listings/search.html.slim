@@ -9,8 +9,8 @@
       .title Explore Results
       = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.id]}),
         { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region.id' }
-      = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '', :'ng:model' => 'check_in'
-      = text_field_tag :check_out, nil, placeholder: 'Check Out', :'ui:date' => '', :'ng:model' => 'check_out'
+      = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '{beforeShowDay:checkInDate}',  :'ng:model' => 'check_in'
+      = text_field_tag :check_out, nil, placeholder: 'Check Out', :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'check_out'
       #price.slider slider=''
         .title Price per night
         .selection

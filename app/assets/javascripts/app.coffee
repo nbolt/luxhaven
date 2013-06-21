@@ -44,9 +44,27 @@ AppCtrl = ($scope, $http, $compile) ->
     opacity: 0.65
 
 
-ListingsCtrl = ($scope, $http) ->
+ListingsCtrl = ($scope, $http, $cookies) ->
   $scope.minPrice = null
   $scope.maxPrice = null
+
+  $scope.checkInDate = (date) ->
+    if $scope.check_out
+      if $scope.check_out <= date || moment() > moment(date)
+        [false, '']
+      else
+        [true, '']
+    else
+      [true, '']
+
+  $scope.checkOutDate = (date) ->
+    if $scope.check_in
+      if $scope.check_in >= date || moment() > moment(date).subtract 'days', 1
+        [false, '']
+      else
+        [true, '']
+    else
+      [true, '']
 
   urlAttrs = ->
     str = '?'
@@ -65,26 +83,67 @@ ListingsCtrl = ($scope, $http) ->
   fetch_listings = ->
     $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) -> $scope.listings = rsp
 
-  watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (o, n) ->
+  watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (n, o) ->
     unless o == n
-      if      attr == 'check_in'  && $scope.check_out
-        check_in  = Date.parse $scope.check_in
-        check_out = Date.parse $scope.check_out
-        $scope.check_out = new Date(check_in) if check_in >= check_out
-      else if attr == 'check_out' && $scope.check_in
-        check_in  = Date.parse $scope.check_in
-        check_out = Date.parse $scope.check_out
-        $scope.check_in = new Date(check_out - 86400) if check_out <= check_in
+      timestamp = moment(n).format('X')
+      if attr == 'check_in'
+        $cookies.check_in = timestamp
+      else if attr == 'check_out'
+        $cookies.check_out = timestamp
       fetch_listings()
 
   $scope.$watch 'region', -> fetch_listings() if $scope.region
   watch SINGLE_VALUE_ATTRS
   _(MULTIPLE_VALUE_ATTRS).each (attrs) -> watch attrs
+  $scope.check_in  = new Date(parseInt($cookies.check_in) * 1000)
+  $scope.check_out = new Date(parseInt($cookies.check_out) * 1000)
 
-ListingCtrl = ($scope, $http) ->
+ListingCtrl = ($scope, $http, $cookies) ->
+  $scope.check_in  = new Date(parseInt($cookies.check_in) * 1000)
+  $scope.check_out = new Date(parseInt($cookies.check_out) * 1000)
 
+  $http.get('').success (listing) ->
+    listing.bookings = _(listing.bookings).reject (booking) ->
+      booking.check_in  = moment booking.check_in
+      booking.check_out = moment booking.check_out
+      booking.check_out < moment Date.today
+    $scope.listing = listing
 
-app = angular.module('luxhaven', ['ui.select2', 'ui.date'])
+  $scope.checkInDate = (date) ->
+    if $scope.listing
+      valid = ->
+        (_($scope.listing.bookings).every (booking) ->
+          booking.check_out <= moment(date) ||
+          booking.check_in  >  moment(date).add 'days', 1
+        ) && moment()       <  moment(date)
+
+      valid() && [true, ''] || [false, '']
+    else
+      [false, '']
+
+  $scope.checkOutDate = (date) ->
+    if $scope.listing
+      valid = ->
+        (_($scope.listing.bookings).every (booking) ->
+          booking.check_out < moment(date) ||
+          booking.check_in  > moment(date)
+        ) && moment()       < moment(date).subtract 'days', 1
+
+      valid() && [true, ''] || [false, '']
+    else
+      [false, '']
+
+  $scope.$watch 'check_in', (n, o) ->
+    unless o == n
+      timestamp = moment(n).format('X')
+      $cookies.check_in = timestamp
+
+  $scope.$watch 'check_out', (n, o) ->
+    unless o == n
+      timestamp = moment(n).format('X')
+      $cookies.check_out = timestamp
+
+app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date'])
   .controller('app',      AppCtrl)
   .controller('listings', ListingsCtrl)
   .controller('listing',  ListingCtrl)

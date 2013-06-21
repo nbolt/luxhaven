@@ -2,15 +2,15 @@ class Listing < ActiveRecord::Base
   extend FriendlyId
   friendly_id :slug_candidates, use: :scoped, scope: :region_id
 
-  before_save do
+  before_create do
     self.region_id = address.region.id
   end
 
   belongs_to :user
   belongs_to :region
-  has_many :bookings
-  has_many :images
-  has_one :address
+  has_many :bookings, dependent: :destroy
+  has_many :images, dependent: :destroy
+  has_one :address, dependent: :destroy
 
   def conflicts? check_in, check_out
     !!bookings.where('payment_status != null').find do |booking|
