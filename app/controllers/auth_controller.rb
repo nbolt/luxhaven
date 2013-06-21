@@ -23,11 +23,11 @@ class AuthController < ApplicationController
 
   def signout
     logout
-    render nothing: true
+    render json: { token: form_authenticity_token }
   end
 
   def auth
-    render json: { success: logged_in? }
+    render json: { success: logged_in?, user: current_user && current_user.to_json }
   end
 
   private

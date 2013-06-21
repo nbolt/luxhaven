@@ -9,4 +9,33 @@
     .input= text_field_tag :check_in,   nil, placeholder: 'Check In',   :'ui:date' => '{beforeShowDay:checkInDate}', :'ng:model' => 'check_in'
     .input= text_field_tag :check_out,  nil, placeholder: 'Check Out',  :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'check_out'
     .button
-      button.green Book
+      button.green ng:click='book()'
+        | Book
+
+#book-modal
+  .payment
+    form
+      label
+        span Card Number
+        input data-stripe='number' size='20'
+      label
+        span CVC
+        input data-stripe='cvc' size='4'
+      label
+        span Expiration
+        input data-stripe='exp-month' size='2'
+        span
+          | /
+        input data-stripe='exp-year' size='2'
+      button.green Submit
+
+javascript:
+  var loadCity = setInterval(function(){
+    if ( $('#book').scope() ) {
+      var scope = $('#book').scope()
+      scope.$apply(function(){
+        scope.region = #{region.to_json.html_safe}
+      })
+      clearInterval(loadCity)
+    }
+  })

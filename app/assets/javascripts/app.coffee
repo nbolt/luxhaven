@@ -4,6 +4,7 @@ MULTIPLE_VALUE_ATTRS = {
 
 SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'check_in', 'check_out']
 
+
 AppCtrl = ($scope, $http, $compile) ->
 
   $scope.signinContent = angular.element('#sign-in').html()
@@ -12,11 +13,22 @@ AppCtrl = ($scope, $http, $compile) ->
   $http.post('/auth').success (rsp) ->
     if rsp.success
       $scope.signedIn = true
+      $scope.user = JSON.parse rsp.user
     else
       $scope.signedIn = false
 
-  $scope.signInModal = ->
-    angular.element('#sign-in').bPopup bPopOpts
+  $scope.signInModal = (callback) ->
+    angular.element('#sign-in').bPopup {
+      onOpen:  ->
+        angular.element('body').css('overflow', 'hidden')
+      onClose: ->
+        angular.element('body').css('overflow', 'auto')
+        angular.element('#sign-in').html $compile($scope.signinContent)($scope)
+        angular.element('#sign-up').html $compile($scope.signupContent)($scope)
+        callback() if callback
+      modalColor: 'white'
+      opacity: 0.65
+    }
 
   $scope.toSignup = ->
     angular.element('#sign-in').attr('id', 'signup')
@@ -31,17 +43,11 @@ AppCtrl = ($scope, $http, $compile) ->
     angular.element('#sign-in').html $compile($scope.signinContent)($scope)
 
   $scope.signOut = ->
-    $http.post('/signout').success -> $scope.signedIn = false
-
-  bPopOpts =
-    onOpen:  ->
-      angular.element('body').css('overflow', 'hidden')
-    onClose: ->
-      angular.element('body').css('overflow', 'auto')
-      angular.element('#sign-in').html $compile($scope.signinContent)($scope)
-      angular.element('#sign-up').html $compile($scope.signupContent)($scope)
-    modalColor: 'white'
-    opacity: 0.65
+    $http.post('/signout').success (rsp) ->
+      $scope.signedIn = false
+      $scope.user = null
+      $http.defaults.headers.common['X-CSRF-Token'] = rsp.token
+      angular.element('meta[name=csrf-token]').attr 'content', rsp.token
 
 
 ListingsCtrl = ($scope, $http, $cookies) ->
@@ -98,6 +104,7 @@ ListingsCtrl = ($scope, $http, $cookies) ->
   $scope.check_in  = new Date(parseInt($cookies.check_in) * 1000)
   $scope.check_out = new Date(parseInt($cookies.check_out) * 1000)
 
+
 ListingCtrl = ($scope, $http, $cookies) ->
   $scope.check_in  = new Date(parseInt($cookies.check_in) * 1000)
   $scope.check_out = new Date(parseInt($cookies.check_out) * 1000)
@@ -109,13 +116,39 @@ ListingCtrl = ($scope, $http, $cookies) ->
       booking.check_out < moment Date.today
     $scope.listing = listing
 
+  angular.element('#book-modal .payment form').submit ->
+    disable = -> angular.element(@).find('button').prop('disabled', true)
+    enable  = -> angular.element(@).find('button').prop('disabled', false)
+
+    disable()
+    Stripe.createToken @, (_, rsp) ->
+      if rsp.error
+        console.log rsp.error.message
+        enable()
+      else
+        $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
+          check_in: $scope.check_in
+          check_out: $scope.check_out
+          card: rsp.id
+        }).success (rsp) ->
+          console.log rsp
+          angular.element('#book-modal').bPopup().close()
+    false
+
+  $scope.book = ->
+    if $scope.signedIn
+      angular.element('#book-modal').bPopup bPopOpts
+    else
+      $scope.signInModal -> angular.element('#book-modal').bPopup bPopOpts
+
   $scope.checkInDate = (date) ->
     if $scope.listing
       valid = ->
         (_($scope.listing.bookings).every (booking) ->
-          booking.check_out <= moment(date) ||
-          booking.check_in  >  moment(date).add 'days', 1
-        ) && moment()       <  moment(date)
+          booking.check_out   <= moment(date) ||
+          booking.check_in    >  moment(date).add 'days', 1
+        ) && moment()         <  moment(date) &&
+             $scope.check_out > date
 
       valid() && [true, ''] || [false, '']
     else
@@ -125,9 +158,10 @@ ListingCtrl = ($scope, $http, $cookies) ->
     if $scope.listing
       valid = ->
         (_($scope.listing.bookings).every (booking) ->
-          booking.check_out < moment(date) ||
-          booking.check_in  > moment(date)
-        ) && moment()       < moment(date).subtract 'days', 1
+          booking.check_out  < moment(date) ||
+          booking.check_in   > moment(date)
+        ) && moment()        < moment(date).subtract('days', 1) &&
+             $scope.check_in < date
 
       valid() && [true, ''] || [false, '']
     else
@@ -142,6 +176,15 @@ ListingCtrl = ($scope, $http, $cookies) ->
     unless o == n
       timestamp = moment(n).format('X')
       $cookies.check_out = timestamp
+
+  bPopOpts =
+    onOpen:  ->
+      angular.element('body').css('overflow', 'hidden')
+    onClose: ->
+      angular.element('body').css('overflow', 'auto')
+    modalColor: 'white'
+    opacity: 0.65
+
 
 app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date'])
   .controller('app',      AppCtrl)

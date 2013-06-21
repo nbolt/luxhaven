@@ -8,7 +8,8 @@ Luxhaven::Application.routes.draw do
   post '/auth'    => 'auth#auth'
 
   get '/:city' => 'listings#search'
-  get '/:city/:listing' => 'listings#show'
+  get '/:city/:listing_title' => 'listings#show'
+  match '/:city/:listing_title/:action' => 'listings', via: [:get, :post]
 
   get '/hiring' => 'home#hiring'
 

@@ -26,8 +26,8 @@ class Booking < ActiveRecord::Base
       rsp = Stripe::Charge.create(
         amount: price_total,
         currency: 'usd',
-        card: user.stripe_card,
-        description: id
+        description: id,
+        :"#{card_type}" => card
       )
       update_attributes payment_status: 'charged', stripe_charge_id: rsp.id
       return rsp

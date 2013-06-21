@@ -13,7 +13,7 @@ class Listing < ActiveRecord::Base
   has_one :address, dependent: :destroy
 
   def conflicts? check_in, check_out
-    !!bookings.where('payment_status != null').find do |booking|
+    !!bookings.where('payment_status is not null').find do |booking|
       check_in  <  booking.check_out && check_in  >= booking.check_in ||
       check_out <= booking.check_out && check_out >  booking.check_in ||
       check_in  <= booking.check_in  && check_out >= booking.check_out
