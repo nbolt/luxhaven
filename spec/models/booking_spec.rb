@@ -53,24 +53,17 @@ describe Booking do
 
   describe 'booking process' do
     it 'books successfully' do
-      booking.user.stripe_card = {
+      card = {
         number: '4242424242424242',
         exp_month: 12,
         exp_year: 20
       }
+      customer = Stripe::Customer.create(card: card)
+      booking.customer_id = customer.id
       rsp = booking.book!
       rsp.should be_instance_of(Stripe::Charge)
       booking.payment_status.should eq('charged')
       booking.stripe_charge_id.should eq(rsp.id)
-    end
-
-    it 'responds with a stripe error instance correctly' do
-      booking.user.stripe_card = {
-        number: '4242424242424242',
-        exp_month: 12,
-        exp_year: 12
-      }
-      booking.book!.should be_instance_of(Stripe::CardError)
     end
 
     it 'responds with a booking error instance correctly' do

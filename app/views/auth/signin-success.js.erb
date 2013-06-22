@@ -4,5 +4,5 @@ $('#sign-in').bPopup().close()
 var scope = $('body').scope()
 scope.$apply(function(){
   scope.signedIn = true
-  scope.user = <%= current_user.to_json.html_safe %>
+  scope.user = <%= current_user.to_json(include: :cards).html_safe %>
 })

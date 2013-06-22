@@ -27,7 +27,7 @@ class AuthController < ApplicationController
   end
 
   def auth
-    render json: { success: logged_in?, user: current_user && current_user.to_json }
+    render json: { success: logged_in?, user: current_user && current_user.to_json(include: :cards) }
   end
 
   private

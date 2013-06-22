@@ -6,28 +6,34 @@
 .content ng:controller='listing'
   #book
     .title Select your check in and check out dates to get started.
-    .input= text_field_tag :check_in,   nil, placeholder: 'Check In',   :'ui:date' => '{beforeShowDay:checkInDate}', :'ng:model' => 'check_in'
-    .input= text_field_tag :check_out,  nil, placeholder: 'Check Out',  :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'check_out'
+    .input= text_field_tag :check_in,   nil, placeholder: 'Check In',   :'ui:date' => '{beforeShowDay:checkInDate}', :'ng:model' => 'dates.check_in'
+    .input= text_field_tag :check_out,  nil, placeholder: 'Check Out',  :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'dates.check_out'
     .button
-      button.green ng:click='book()'
+      button.green ng:click='bookModal()'
         | Book
 
-#book-modal
-  .payment
-    form
-      label
-        span Card Number
-        input data-stripe='number' size='20'
-      label
-        span CVC
-        input data-stripe='cvc' size='4'
-      label
-        span Expiration
-        input data-stripe='exp-month' size='2'
-        span
-          | /
-        input data-stripe='exp-year' size='2'
-      button.green Submit
+  #book-modal
+    div ng:repeat='card in user.cards'
+      input type='radio' name='card' value='{{ card.stripe_id }}' ng:model='$parent.card'
+      | {{ card.last4 }}
+    input type='radio' name='card' value='new_card' ng:model='card'
+    | New Card
+    .payment ng:show='new_card()'
+      form
+        label
+          span Card Number
+          input data-stripe='number' size='20'
+        label
+          span CVC
+          input data-stripe='cvc' size='4'
+        label
+          span Expiration
+          input data-stripe='exp-month' size='2'
+          span
+            | /
+          input data-stripe='exp-year' size='2'
+    button.green ng:click='book()'
+      | Submit
 
 javascript:
   var loadCity = setInterval(function(){

@@ -27,7 +27,7 @@ class Booking < ActiveRecord::Base
         amount: price_total,
         currency: 'usd',
         description: id,
-        :"#{card_type}" => card
+        customer: customer_id
       )
       update_attributes payment_status: 'charged', stripe_charge_id: rsp.id
       return rsp
@@ -36,7 +36,6 @@ class Booking < ActiveRecord::Base
     rescue Stripe::InvalidRequestError => err
       return err
     rescue Stripe::StripeError => err
-      # email error to us
       return err
     rescue BookingError => err
       return err

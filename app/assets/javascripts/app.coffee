@@ -2,11 +2,10 @@ MULTIPLE_VALUE_ATTRS = {
   property_type: ['house', 'apartment']
 }
 
-SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'check_in', 'check_out']
+SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice']
 
 
 AppCtrl = ($scope, $http, $compile) ->
-
   $scope.signinContent = angular.element('#sign-in').html()
   $scope.signupContent = angular.element('#sign-up').html()
 
@@ -50,13 +49,14 @@ AppCtrl = ($scope, $http, $compile) ->
       angular.element('meta[name=csrf-token]').attr 'content', rsp.token
 
 
-ListingsCtrl = ($scope, $http, $cookies) ->
+ListingsCtrl = ($scope, $http, $cookieStore) ->
   $scope.minPrice = null
   $scope.maxPrice = null
+  $scope.dates    = {}
 
   $scope.checkInDate = (date) ->
-    if $scope.check_out
-      if $scope.check_out <= date || moment() > moment(date)
+    if $scope.dates.check_out
+      if $scope.dates.check_out <= date || moment() > moment(date)
         [false, '']
       else
         [true, '']
@@ -64,8 +64,8 @@ ListingsCtrl = ($scope, $http, $cookies) ->
       [true, '']
 
   $scope.checkOutDate = (date) ->
-    if $scope.check_in
-      if $scope.check_in >= date || moment() > moment(date).subtract 'days', 1
+    if $scope.dates.check_in
+      if $scope.dates.check_in >= date || moment() > moment(date).subtract 'days', 1
         [false, '']
       else
         [true, '']
@@ -89,25 +89,32 @@ ListingsCtrl = ($scope, $http, $cookies) ->
   fetch_listings = ->
     $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) -> $scope.listings = rsp
 
-  watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (n, o) ->
+  watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (n, o) -> fetch_listings() unless o == n
+
+  $scope.$watch 'dates', ((n, o) ->
     unless o == n
-      timestamp = moment(n).format('X')
-      if attr == 'check_in'
-        $cookies.check_in = timestamp
-      else if attr == 'check_out'
-        $cookies.check_out = timestamp
-      fetch_listings()
+      check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
+      check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
+      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: '/' }
+    ), true
 
   $scope.$watch 'region', -> fetch_listings() if $scope.region
   watch SINGLE_VALUE_ATTRS
   _(MULTIPLE_VALUE_ATTRS).each (attrs) -> watch attrs
-  $scope.check_in  = new Date(parseInt($cookies.check_in) * 1000)
-  $scope.check_out = new Date(parseInt($cookies.check_out) * 1000)
+
+  dates = $cookieStore.get 'dates'
+  if dates
+    $scope.dates.check_in  = new Date(parseInt(dates.check_in) * 1000)  if dates.check_in
+    $scope.dates.check_out = new Date(parseInt(dates.check_out) * 1000) if dates.check_out
 
 
-ListingCtrl = ($scope, $http, $cookies) ->
-  $scope.check_in  = new Date(parseInt($cookies.check_in) * 1000)
-  $scope.check_out = new Date(parseInt($cookies.check_out) * 1000)
+ListingCtrl = ($scope, $http, $cookieStore) ->
+  $scope.region    = null
+  $scope.dates     = {}
+  dates = $cookieStore.get 'dates'
+  if dates
+    $scope.dates.check_in  = new Date(parseInt(dates.check_in) * 1000)  if dates.check_in
+    $scope.dates.check_out = new Date(parseInt(dates.check_out) * 1000) if dates.check_out
 
   $http.get('').success (listing) ->
     listing.bookings = _(listing.bookings).reject (booking) ->
@@ -115,6 +122,8 @@ ListingCtrl = ($scope, $http, $cookies) ->
       booking.check_out = moment booking.check_out
       booking.check_out < moment Date.today
     $scope.listing = listing
+
+  $scope.new_card = -> $scope.card == 'new_card'
 
   angular.element('#book-modal .payment form').submit ->
     disable = -> angular.element(@).find('button').prop('disabled', true)
@@ -127,8 +136,8 @@ ListingCtrl = ($scope, $http, $cookies) ->
         enable()
       else
         $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
-          check_in: $scope.check_in
-          check_out: $scope.check_out
+          check_in: $scope.dates.check_in
+          check_out: $scope.dates.check_out
           card: rsp.id
         }).success (rsp) ->
           console.log rsp
@@ -136,10 +145,36 @@ ListingCtrl = ($scope, $http, $cookies) ->
     false
 
   $scope.book = ->
-    if $scope.signedIn
-      angular.element('#book-modal').bPopup bPopOpts
+    form = angular.element('#book-modal .payment form')
+
+    disable = -> angular.element('#book-modal').find('button').prop('disabled', true)
+    enable  = -> angular.element('#book-modal').find('button').prop('disabled', false)
+
+    post = (card) ->
+      $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
+        check_in: $scope.dates.check_in
+        check_out: $scope.dates.check_out
+        card: card
+      }).success (rsp) ->
+        console.log rsp
+        angular.element('#book-modal').bPopup().close()
+
+    if $scope.card == 'new_card'
+      Stripe.createToken form, (_, rsp) ->
+        if rsp.error
+          console.log rsp.error.message
+          enable()
+        else
+          post rsp.id
     else
-      $scope.signInModal -> angular.element('#book-modal').bPopup bPopOpts
+      post $scope.card
+
+  $scope.bookModal = ->
+    if $scope.dates.check_in && $scope.dates.check_out
+      if $scope.signedIn
+        angular.element('#book-modal').bPopup bPopOpts
+      else
+        $scope.signInModal -> angular.element('#book-modal').bPopup bPopOpts
 
   $scope.checkInDate = (date) ->
     if $scope.listing
@@ -148,7 +183,7 @@ ListingCtrl = ($scope, $http, $cookies) ->
           booking.check_out   <= moment(date) ||
           booking.check_in    >  moment(date).add 'days', 1
         ) && moment()         <  moment(date) &&
-             $scope.check_out > date
+             $scope.dates.check_out > date
 
       valid() && [true, ''] || [false, '']
     else
@@ -161,21 +196,18 @@ ListingCtrl = ($scope, $http, $cookies) ->
           booking.check_out  < moment(date) ||
           booking.check_in   > moment(date)
         ) && moment()        < moment(date).subtract('days', 1) &&
-             $scope.check_in < date
+             $scope.dates.check_in < date
 
       valid() && [true, ''] || [false, '']
     else
       [false, '']
 
-  $scope.$watch 'check_in', (n, o) ->
-    unless o == n
-      timestamp = moment(n).format('X')
-      $cookies.check_in = timestamp
-
-  $scope.$watch 'check_out', (n, o) ->
-    unless o == n
-      timestamp = moment(n).format('X')
-      $cookies.check_out = timestamp
+  #$scope.$watch 'dates', ((n, o) ->
+  #  unless o == n
+  #    check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
+  #    check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
+  #    $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }
+  #  ), true
 
   bPopOpts =
     onOpen:  ->
