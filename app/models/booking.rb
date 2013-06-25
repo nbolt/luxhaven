@@ -30,6 +30,7 @@ class Booking < ActiveRecord::Base
         customer: customer_id
       )
       update_attributes payment_status: 'charged', stripe_charge_id: rsp.id
+      UserMailer.booked(self).deliver!
       return rsp
     rescue Stripe::CardError => err
       return err
@@ -40,6 +41,11 @@ class Booking < ActiveRecord::Base
     rescue BookingError => err
       return err
     end
+  end
+
+  def refund!
+    Stripe::Charge.retrieve(stripe_charge_id).refund
+    update_attribute :payment_status, 'refunded'
   end
 
   def transfer!

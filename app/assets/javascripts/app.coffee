@@ -56,7 +56,7 @@ ListingsCtrl = ($scope, $http, $cookieStore) ->
 
   $scope.checkInDate = (date) ->
     if $scope.dates.check_out
-      if $scope.dates.check_out <= date || moment() > moment(date)
+      if moment() > moment(date)
         [false, '']
       else
         [true, '']
@@ -96,6 +96,8 @@ ListingsCtrl = ($scope, $http, $cookieStore) ->
       check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
       check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
       $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: '/' }
+      if $scope.dates.check_out && moment($scope.dates.check_out) <= moment(parseInt(check_in)*1000)
+        $scope.dates.check_out = null
     ), true
 
   $scope.$watch 'region', -> fetch_listings() if $scope.region
@@ -120,7 +122,7 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     listing.bookings = _(listing.bookings).reject (booking) ->
       booking.check_in  = moment booking.check_in
       booking.check_out = moment booking.check_out
-      booking.check_out < moment Date.today
+      booking.check_out < moment Date.today || booking.payment_status != 'charged'
     $scope.listing = listing
 
   $scope.new_card = -> $scope.card == 'new_card'
@@ -182,8 +184,7 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
         (_($scope.listing.bookings).every (booking) ->
           booking.check_out   <= moment(date) ||
           booking.check_in    >  moment(date).add 'days', 1
-        ) && moment()         <  moment(date) &&
-             $scope.dates.check_out > date
+        ) && moment()         <  moment(date)
 
       valid() && [true, ''] || [false, '']
     else
@@ -196,18 +197,20 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
           booking.check_out  < moment(date) ||
           booking.check_in   > moment(date)
         ) && moment()        < moment(date).subtract('days', 1) &&
-             $scope.dates.check_in < date
+             ($scope.dates.check_in < date || !$scope.dates.check_in)
 
       valid() && [true, ''] || [false, '']
     else
       [false, '']
 
-  #$scope.$watch 'dates', ((n, o) ->
-  #  unless o == n
-  #    check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
-  #    check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
-  #    $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }
-  #  ), true
+  $scope.$watch 'dates', ((n, o) ->
+    unless o == n
+      check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
+      check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
+      #$cookieStore.put 'dates', { check_in: check_in, check_out: check_out }
+      if $scope.dates.check_out && moment($scope.dates.check_out) <= moment(parseInt(check_in)*1000)
+        $scope.dates.check_out = null
+    ), true
 
   bPopOpts =
     onOpen:  ->
@@ -224,6 +227,17 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date'])
   .controller('listing',  ListingCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
+  .directive('tab', -> (scope, element, attrs) ->
+    element.click ->
+      element.parent().children('a').removeClass 'active'
+      element.addClass 'active'
+      tabContent = element.parent().parent().children('.tab-content')
+      tabContent.children('.tab').removeClass 'active'
+      tabContent.children(attrs.href).addClass 'active'
+      if attrs.href == '#local-area'
+        scope.map = L.map('map').setView [attrs.lat, attrs.lng], 15 unless scope.map
+        L.tileLayer.provider('OpenStreetMap.Mapnik').addTo scope.map
+  )
   .directive('unslider', -> (scope, element) ->
     element.unslider {
       speed: 600

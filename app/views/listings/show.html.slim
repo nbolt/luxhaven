@@ -3,7 +3,21 @@
     - listing.images.each do |image|
       li style="background: url(#{image.image}) no-repeat center"
 
-.content ng:controller='listing'
+.listing-content ng:controller='listing'
+  .tabs
+    nav#top-nav
+      a.active href='#description' onclick='return false' tab=''
+        .tab Description
+      a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
+        .tab Local Area
+    .tab-content
+      .tab#description.active
+        | description
+      .tab#local-area
+        a target='_window' href="http://maps.google.com/maps?q=&layer=c&cbp=11,0,0,0,0&cbll=#{listing.address.latitude},#{listing.address.longitude}"
+          | Street View
+        #map
+
   #book
     .title Select your check in and check out dates to get started.
     .input= text_field_tag :check_in,   nil, placeholder: 'Check In',   :'ui:date' => '{beforeShowDay:checkInDate}', :'ng:model' => 'dates.check_in'

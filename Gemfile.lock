@@ -99,6 +99,7 @@ GEM
     foreigner (1.4.2)
       activerecord (>= 3.0.0)
     formatador (0.2.4)
+    geocoder (1.1.8)
     hashie (2.0.5)
     hike (1.2.3)
     httpauth (0.2.0)
@@ -239,6 +240,7 @@ DEPENDENCIES
   fog
   foreigner
   friendly_id!
+  geocoder
   jbuilder
   jquery-rails
   pg

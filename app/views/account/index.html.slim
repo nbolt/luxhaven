@@ -1,0 +1,6 @@
+.account-content
+  form action='/account/update' data-remote='true'
+    .input= text_field_tag :ssn,     nil, placeholder: 'SSN'
+    .input= text_field_tag :routing, nil, placeholder: 'Routing Number'
+    .input= text_field_tag :account, nil, placeholder: 'Account Number'
+    button.green Submit

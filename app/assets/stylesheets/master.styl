@@ -162,6 +162,16 @@ header
       color: white
       font-family: proxima-nova
 
+.account-content
+  margin: 150px auto
+  width: 980px
+  text-align: center
+
+.booking-content
+  margin: 150px auto
+  width: 980px
+  text-align: center
+
 #home
   background: url(/images/home.jpg) no-repeat
   height: 800px
@@ -366,7 +376,16 @@ header
         background: #fff
         opacity: 1
     
-.content
+#book-modal
+  display: none
+  background-color: white
+  width: 980px
+  height: 500px
+  border: thin solid light-grey
+  border-radius: 3px
+  box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1)
+
+.listing-content
   width: 976px
   margin: auto
   position: relative
@@ -394,12 +413,26 @@ header
       padding: 10px 15px
       font: .9em proxima-nova
       color: darker-grey
-
-#book-modal
-  display: none
-  background-color: white
-  width: 980px
-  height: 500px
-  border: thin solid light-grey
-  border-radius: 3px
-  box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1)
+  .tabs
+    .tab-content
+      width: 700px
+      .tab
+        display: none
+        margin: 5px 5px
+        &.active
+          display: block
+        &#local-area #map
+          height: 400px
+    nav
+      margin-top: 25px
+      a
+        .tab
+          display: inline-block
+          border-radius: 3px
+          padding: 6px 8px
+          margin: 0 5px
+          color: green
+          font: 1em proxima-nova
+        &:hover .tab, &.active .tab
+          background-color: green
+          color: white

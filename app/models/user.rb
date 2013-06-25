@@ -1,9 +1,9 @@
 class User < ActiveRecord::Base
   authenticates_with_sorcery!
 
-  validates :password,                presence: true, confirmation: true, length: { minimum: 3 }
+  validates :password,                presence: true, confirmation: true, length: { minimum: 3 }, on: :create
+  validates :password_confirmation,   presence: true, on: :create
   validates :email,                   presence: true, uniqueness: true
-  validates :password_confirmation,   presence: true
 
   has_many :listings, dependent: :destroy
   has_many :bookings, dependent: :destroy
