@@ -186,8 +186,7 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     console.log date
     if $scope.listing
       console.log '2'
-      valid = ->
-        (_($scope.listing.bookings).every (booking) ->
+      valid = (_($scope.listing.bookings).every (booking) ->
           booking.check_out   <= moment(date) ||
           booking.check_in    >  moment(date).add 'days', 1
         ) && moment()         <  moment(date)
@@ -196,8 +195,8 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
           booking.check_out   <= moment(date) ||
           booking.check_in    >  moment(date).add 'days', 1
         ))
-      console.log valid()
-      valid() && [true, ''] || [false, '']
+      console.log valid
+      valid && [true, ''] || [false, '']
     else
       console.log '3'
       [false, '']
