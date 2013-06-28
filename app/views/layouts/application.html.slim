@@ -13,12 +13,10 @@ html
     = stylesheet_link_tag 'application'
     = stylesheet_link_tag 'css_imports'
     = javascript_include_tag :application, 'data-turbolinks-track' => true
-    = javascript_include_tag '//use.typekit.net/sau2fxq.js'
     = javascript_include_tag 'https://js.stripe.com/v2/'
+    script onload='try{Typekit.load()}catch(e){}' src='//use.typekit.com/sau2fxq.js'
     = csrf_meta_tags
     = yield :head
-    javascript:
-      try{Typekit.load();}catch(e){}
     - if Rails.env == 'production'
       javascript:
         Stripe.setPublishableKey('pk_live_1ui1Hj5TlLbtfURiSjC9KVrU')

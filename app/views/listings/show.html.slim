@@ -12,10 +12,10 @@
         .tab Local Area
     .tab-content
       .tab#description.active
-        | description
       .tab#local-area
-        a target='_window' href="http://maps.google.com/maps?q=&layer=c&cbp=11,0,0,0,0&cbll=#{listing.address.latitude},#{listing.address.longitude}"
-          | Street View
+        .top
+          a target='_window' href="http://maps.google.com/maps?q=&layer=c&cbp=11,0,0,0,0&cbll=#{listing.address.latitude},#{listing.address.longitude}"
+            | Street View
         #map
 
   #book

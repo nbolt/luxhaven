@@ -2,6 +2,8 @@ class Listing < ActiveRecord::Base
   extend FriendlyId
   friendly_id :slug_candidates, use: :scoped, scope: :region_id
 
+  validates :slug, presence: true
+
   before_create do
     self.region_id = address.region.id
   end

@@ -20,7 +20,7 @@ describe Booking do
 
     booking.price_period = 'night'
 
-    booking.user = User.new
+    booking.user = User.new(email: 'test@luxhaven.co')
     booking.listing.user = User.new
   end
 

@@ -26,7 +26,6 @@ dragging()
 .dragging
   dragging()
 
-
 a
   text-decoration: none
 
@@ -263,6 +262,8 @@ header
           border: thin solid light-grey
           padding: 4px 12px 3px
           border-radius: 3px
+          &:focus
+            outline: none
           span
             color: darker-grey
             font: .9em proxima-nova
@@ -288,8 +289,33 @@ header
       .title
         font-size: 1.1em
       .sort
-        display: none
         float: right
+        .text
+          text-transform: uppercase
+          font-size: .8em
+          display: inline-block
+        .select2-container
+          width: 135px !important
+          a
+            background: none
+            border: none
+            padding: 4px 0 3px 12px
+            border-radius: 3px
+            &:focus
+              outline: none
+            span
+              color: green
+              font: .9em proxima-nova
+              font-weight: bold
+              margin-top: 3px
+            div
+              border: none
+              background: none
+              top: 3px
+              right: 2px
+          &.select2-dropdown-open
+            a
+              border-radius: 3px 3px 0 0
     .listing
       height: 100px
       background-color: grey
@@ -297,9 +323,11 @@ header
 
 .select2-drop
   border: thin solid light-grey !important
-  border-top: none !important
   .select2-result-label
     font: .95em proxima-nova
+  &.city
+    border-top: none !important
+    
 
 .slider
   position: relative
@@ -387,6 +415,7 @@ header
 
 .listing-content
   width: 976px
+  min-height: 500px
   margin: auto
   position: relative
   #book
@@ -421,8 +450,14 @@ header
         margin: 5px 5px
         &.active
           display: block
-        &#local-area #map
-          height: 400px
+        &#local-area
+          .top
+            height: 25px
+            a
+              float: right
+          #map
+            height: 400px
+            width: 100%
     nav
       margin-top: 25px
       a

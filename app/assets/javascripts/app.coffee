@@ -52,7 +52,9 @@ AppCtrl = ($scope, $http, $compile) ->
 ListingsCtrl = ($scope, $http, $cookieStore) ->
   $scope.minPrice = null
   $scope.maxPrice = null
+  $scope.pages    = null
   $scope.dates    = {}
+  $scope.sort     = 'recommended'
 
   $scope.checkInDate = (date) ->
     if $scope.dates.check_out
@@ -87,7 +89,9 @@ ListingsCtrl = ($scope, $http, $cookieStore) ->
     str
 
   fetch_listings = ->
-    $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) -> $scope.listings = rsp
+    $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) ->
+      $scope.listings = rsp
+      $scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 1
 
   watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (n, o) -> fetch_listings() unless o == n
 
@@ -179,15 +183,23 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
         $scope.signInModal -> angular.element('#book-modal').bPopup bPopOpts
 
   $scope.checkInDate = (date) ->
+    console.log date
     if $scope.listing
+      console.log '2'
       valid = ->
         (_($scope.listing.bookings).every (booking) ->
           booking.check_out   <= moment(date) ||
           booking.check_in    >  moment(date).add 'days', 1
         ) && moment()         <  moment(date)
-
+        console.log(moment()         <  moment(date))
+        console.log((_($scope.listing.bookings).every (booking) ->
+          booking.check_out   <= moment(date) ||
+          booking.check_in    >  moment(date).add 'days', 1
+        ))
+      console.log valid()
       valid() && [true, ''] || [false, '']
     else
+      console.log '3'
       [false, '']
 
   $scope.checkOutDate = (date) ->
@@ -237,6 +249,14 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date'])
       if attrs.href == '#local-area'
         scope.map = L.map('map').setView [attrs.lat, attrs.lng], 15 unless scope.map
         L.tileLayer.provider('OpenStreetMap.Mapnik').addTo scope.map
+  )
+  .directive('select2city', -> (scope, element) ->
+    element.on 'select2-opening', ->
+      angular.element('.select2-drop').removeClass('sort').addClass 'city'
+  )
+  .directive('select2sort', -> (scope, element) ->
+    element.on 'select2-opening', ->
+      angular.element('.select2-drop').removeClass('city').addClass 'sort'
   )
   .directive('unslider', -> (scope, element) ->
     element.unslider {

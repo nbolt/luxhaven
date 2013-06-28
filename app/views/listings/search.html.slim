@@ -8,7 +8,7 @@
     #filters
       .title Explore Results
       = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.id]}),
-        { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region.id' }
+        { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region.id', select2city: '' }
       = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '{beforeShowDay:checkInDate}',  :'ng:model' => 'dates.check_in'
       = text_field_tag :check_out, nil, placeholder: 'Check Out', :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'dates.check_out'
       #price.slider slider=''
@@ -35,12 +35,16 @@
   .right
     .top
       .sort
-        | Sort by
-        = select_tag :sort, options_for_select([]),
-          { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'city_id' }
+        .text Sort by
+        = select_tag :sort, options_for_select([['Recommended', 'recommended'], ['Price', 'price']]),
+          { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'sort', select2sort: '' }
       .title
         | {{ listings.length }} places in Los Angeles
     #listings
+      a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
+        .listing
+          .title
+          | {{ listing.title }}
       a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
         .listing
           .title

@@ -16,3 +16,14 @@
 //= require angular
 //= require leaflet
 //= require_tree .
+
+_.mixin({
+  rotate: function(array, n, guard) {
+    var head, tail
+    n = (n == null) || guard ? 1 : n
+    n = n % array.length
+    tail = array.slice(n)
+    head = array.slice(0, n)
+    return tail.concat(head)
+  }
+});
