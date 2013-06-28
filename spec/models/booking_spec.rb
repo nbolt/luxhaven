@@ -13,7 +13,7 @@ describe Booking do
     address.region = region
     address.save
 
-    listing = Listing.new
+    listing = Listing.new(title: 'test')
     listing.address = address
     booking.listing = listing
     booking.listing.price_per_night = 100
