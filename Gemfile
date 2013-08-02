@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.0.0'
 
-gem 'rails', '4.0.0.rc2'
+gem 'rails'
 gem 'puma'
 
 group :assets do
@@ -23,10 +23,11 @@ end
 
 gem 'rspec-rails', group: [:development, :test]
 
-gem 'stylus',        git: 'https://github.com/vojto/ruby-stylus'
-gem 'sorcery',       git: 'https://github.com/NoamB/sorcery.git'
-gem 'sentry-raven',  git: 'https://github.com/getsentry/raven-ruby.git'
+gem 'sorcery'#,       git: 'https://github.com/NoamB/sorcery.git'
+gem 'sentry-raven'#,  git: 'https://github.com/getsentry/raven-ruby.git'
 gem 'friendly_id',   github: 'FriendlyId/friendly_id', branch: 'master'
+
+gem 'stylus', '~> 1.0.0.beta'
 
 gem 'jbuilder'
 gem 'bcrypt-ruby'

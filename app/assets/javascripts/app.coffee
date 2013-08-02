@@ -180,37 +180,27 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
       if $scope.signedIn
         angular.element('#book-modal').bPopup bPopOpts
       else
-        $scope.signInModal -> angular.element('#book-modal').bPopup bPopOpts
+        $scope.signInModal -> angular.element('#book-modal').bPopup bPopOpts if $scope.signedIn
 
   $scope.checkInDate = (date) ->
-    console.log date
     if $scope.listing
-      console.log '2'
       valid = (_($scope.listing.bookings).every (booking) ->
           booking.check_out   <= moment(date) ||
           booking.check_in    >  moment(date).add 'days', 1
         ) && moment()         <  moment(date)
-        console.log(moment()         <  moment(date))
-        console.log((_($scope.listing.bookings).every (booking) ->
-          booking.check_out   <= moment(date) ||
-          booking.check_in    >  moment(date).add 'days', 1
-        ))
-      console.log valid
       valid && [true, ''] || [false, '']
     else
-      console.log '3'
       [false, '']
 
   $scope.checkOutDate = (date) ->
     if $scope.listing
-      valid = ->
-        (_($scope.listing.bookings).every (booking) ->
+      valid = (_($scope.listing.bookings).every (booking) ->
           booking.check_out  < moment(date) ||
           booking.check_in   > moment(date)
         ) && moment()        < moment(date).subtract('days', 1) &&
              ($scope.dates.check_in < date || !$scope.dates.check_in)
 
-      valid() && [true, ''] || [false, '']
+      valid && [true, ''] || [false, '']
     else
       [false, '']
 
