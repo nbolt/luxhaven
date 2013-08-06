@@ -1,9 +1,14 @@
-#home.head-image
+#home.head-image ng:controller='home'
   .overlay-container
     .overlay
-      .title Find a beautiful place to stay this holiday
-      a href='/los-angeles'
-        button.green Explore Properties
-      .house-info
-        .name Greenwood Mansion
-        .location Santa Monica
+      .right
+        .house-info
+          .name Greenwood Mansion
+          .location Santa Monica
+      .left
+        .title Find a beautiful place to stay this holiday
+        a href='/los-angeles'
+          button.green Explore Properties
+#content-below-container
+  #content-below
+  = render 'shared/footer'

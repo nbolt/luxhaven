@@ -8,6 +8,8 @@ class Listing < ActiveRecord::Base
     self.region_id = address.region.id
   end
 
+  mount_uploader :search_image, SearchImageUploader
+
   belongs_to :user
   belongs_to :region
   has_many :bookings, dependent: :destroy

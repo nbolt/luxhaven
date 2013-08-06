@@ -6,7 +6,7 @@ light-grey   = hsl(0, 0%, 85%)
 dark-grey    = hsl(0, 0%, 40%)
 darker-grey  = hsl(0, 0%, 30%)
 red          = hsl(360, 90%, 45%)
-green        = hsl(159, 73%, 41%)
+green        = hsl(159, 64%, 47%)
 
 placeholder-color(color)
   ::-webkit-input-placeholder
@@ -52,8 +52,14 @@ html
   height: 100%
 
 body
-  margin 0
+  margin: 0
   height: 100%
+  .body
+    overflow: auto
+  &.noscroll
+    position: fixed
+    overflow-y: scroll
+    width: 100%
 
 .modal
   display: none
@@ -148,18 +154,9 @@ header
         button
           margin-left: 20px
 
-.head-image
-  background-size: cover !important
-  z-index: 0
-  position: relative
-  .overlay-container
-    position: absolute
-    left: 50%
-    .overlay
-      position: relative
-      left: -50%
-      color: white
-      font-family: proxima-nova
+footer
+  background: url(/images/cross_scratches.png)
+  height: 150px
 
 .account-content
   margin: 150px auto
@@ -171,36 +168,57 @@ header
   width: 980px
   text-align: center
 
+#content-below-container
+  display: none
+  #content-below
+    height: 300px
+
 #home
   background: url(/images/home.jpg) no-repeat
-  height: 800px
-  .overlay-container
-    width: 965px
-    bottom: 80px
-    .overlay
-      .title
-        width: 450px
-        font: 2.5em adelle
-        font-weight: bold
-        text-shadow: 1px 1px 2px black
-      .house-info
-        float: right
-        text-align: right
-        border-right: 4px solid white
-        padding-right: 15px
-        line-height: 23px
-        .name
-          font-weight: 600
-        .location
-          color: hsl(360, 0.5%, 85%)
-          font-weight: 300
-          font-size: .9em
-          text-transform: uppercase
-      button
-        margin-top: 25px
-        font-size: 1em
-        text-transform: uppercase
-        padding: 10px 18px
+  &.head-image
+    background-size: cover !important
+    z-index: 0
+    position: absolute
+    bottom: 0
+    top: 0
+    width: 100%
+    .overlay-container
+      position: absolute
+      bottom: 75px
+      color: white
+      font-family: proxima-nova
+      width: 100%
+      .overlay
+        width: 965px
+        margin: auto
+        position: relative
+        .left
+          .title
+            width: 450px
+            font: 2.5em adelle
+            font-weight: bold
+            text-shadow: 1px 1px 2px black
+          button
+            margin-top: 25px
+            font-size: 1em
+            text-transform: uppercase
+            padding: 10px 18px
+        .right
+          position: absolute
+          bottom: 0
+          right: 0
+          .house-info
+            text-align: right
+            border-right: 4px solid white
+            padding-right: 15px
+            line-height: 23px
+            .name
+              font-weight: 600
+            .location
+              color: hsl(360, 0.5%, 85%)
+              font-weight: 300
+              font-size: .9em
+              text-transform: uppercase
 
 #city
   height: 375px
@@ -316,10 +334,59 @@ header
           &.select2-dropdown-open
             a
               border-radius: 3px 3px 0 0
-    .listing
-      height: 100px
-      background-color: grey
-      margin: 30px
+    #listings
+      .listing
+        height: 330px
+        margin: 30px
+        border: thin solid #afafaf
+        border-radius: 3px
+        .picture
+          height: 230px
+          background-color: white
+        .info-box
+          background-color: green
+          border-radius: 3px
+          width: 137px
+          height: 113px
+          float: right
+          margin: -30px 20px 0 0
+          box-sizing: border-box
+          padding: 15px 0 0 15px
+          font-family: proxima-nova
+          .price
+            color: white
+            font-size: 1.1em
+            margin-bottom: 8px
+            span
+              font-weight: bold
+          .rooms
+            color: #cbf5e6
+            font-size: .9em
+            .room
+              overflow: auto
+              .icon
+                width: 24px
+                height: 12px
+                float: left
+              .text
+                margin: -2px 0 4px 34px
+              &.people .icon
+                background-image: url(/images/people.png)
+              &.bedrooms .icon
+                background-image: url(/images/bedrooms.png)
+              &.baths .icon
+                background-image: url(/images/baths.png)
+        .title
+          color: darker-grey
+          font: 1.6em proxima-nova
+          font-weight: bold
+          margin: 25px 0 5px 20px
+        .neighborhood
+          color: grey
+          margin-left: 20px
+          font: .8em proxima-nova
+          font-weight: bold
+          text-transform: uppercase
 
 .select2-drop
   border: thin solid light-grey !important

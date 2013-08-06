@@ -79,4 +79,5 @@ html
             button.green ng:click='signOut()' ng:switch-when='true'
               | Sign Out
     .body= yield
-    footer
+    - unless request.fullpath == '/'
+      footer

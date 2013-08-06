@@ -43,12 +43,35 @@
     #listings
       a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
         .listing
-          .title
-          | {{ listing.title }}
-      a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
-        .listing
-          .title
-          | {{ listing.title }}
+          .picture ng:style="{'background-image': 'url(' + listing.search_image.url + ')'}"
+          .info-box
+            .price
+              | From 
+              span ${{ listing.price_per_night / 100 }}
+            .rooms
+              .people.room ng:switch='listing.accomodates_to'
+                .icon
+                .text ng:switch-when='1'
+                  | 1 person
+                .text ng:switch-default=''
+                  | {{ listing.accomodates_from }}-{{ listing.accomodates_to }} people
+              .bedrooms.room ng:switch='listing.bedrooms'
+                .icon
+                .text ng:switch-when='1'
+                  | 1 bedroom
+                .text ng:switch-default=''
+                  | {{ listing.bedrooms }} bedrooms
+              .baths.room ng:switch='listing.baths'
+                .icon
+                .text ng:switch-when='1'
+                  | 1 bath
+                .text ng:switch-default=''
+                  | {{ listing.baths }} baths
+          .title ng:bind="listing.title"
+          .neighborhood
+            span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
+            span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
+            span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
 
 javascript:
   var loadCity = setInterval(function(){

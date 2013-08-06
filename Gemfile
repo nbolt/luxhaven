@@ -21,14 +21,17 @@ group :test do
   gem 'shoulda-matchers'
 end
 
+gem 'simplecov', :require => false, :group => :test
+
 gem 'rspec-rails', group: [:development, :test]
 
-gem 'sorcery'#,       git: 'https://github.com/NoamB/sorcery.git'
-gem 'sentry-raven'#,  git: 'https://github.com/getsentry/raven-ruby.git'
+gem 'sorcery',       github: 'NoamB/sorcery', branch: 'master'
 gem 'friendly_id',   github: 'FriendlyId/friendly_id', branch: 'master'
 
 gem 'stylus', '~> 1.0.0.beta'
 
+gem 'rmagick'
+gem 'sentry-raven'
 gem 'jbuilder'
 gem 'bcrypt-ruby'
 gem 'pg'
@@ -46,3 +49,4 @@ gem 'clockwork'
 gem 'carrierwave'
 gem 'fog'
 gem 'geocoder'
+#gem 'breach-mitigation-rails'

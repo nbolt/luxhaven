@@ -48,8 +48,12 @@ AppCtrl = ($scope, $http, $compile) ->
       $http.defaults.headers.common['X-CSRF-Token'] = rsp.token
       angular.element('meta[name=csrf-token]').attr 'content', rsp.token
 
+HomeCtrl = ($scope, $http, $window) ->
+  angular.element('#content-below-container')
+    .css('margin-top', angular.element($window).height())
+    .css('display', 'block')
 
-ListingsCtrl = ($scope, $http, $cookieStore) ->
+SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.minPrice = null
   $scope.maxPrice = null
   $scope.pages    = null
@@ -103,6 +107,12 @@ ListingsCtrl = ($scope, $http, $cookieStore) ->
       if $scope.dates.check_out && moment($scope.dates.check_out) <= moment(parseInt(check_in)*1000)
         $scope.dates.check_out = null
     ), true
+
+  $scope.$watch 'listings', ->
+    $timeout(
+      (-> angular.element('#results .left').css('height', angular.element('#results .right').height())),
+      100
+    )
 
   $scope.$watch 'region', -> fetch_listings() if $scope.region
   watch SINGLE_VALUE_ATTRS
@@ -176,7 +186,7 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
       post $scope.card
 
   $scope.bookModal = ->
-    if $scope.dates.check_in && $scope.dates.check_out
+    if $scope.dates.check_in && $scope.dates.check_out # && 2 days apart
       if $scope.signedIn
         angular.element('#book-modal').bPopup bPopOpts
       else
@@ -186,7 +196,7 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     if $scope.listing
       valid = (_($scope.listing.bookings).every (booking) ->
           booking.check_out   <= moment(date) ||
-          booking.check_in    >  moment(date).add 'days', 1
+          booking.check_in    >  moment(date).add 'days', 2
         ) && moment()         <  moment(date)
       valid && [true, ''] || [false, '']
     else
@@ -224,7 +234,8 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
 
 app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date'])
   .controller('app',      AppCtrl)
-  .controller('listings', ListingsCtrl)
+  .controller('home',     HomeCtrl)
+  .controller('listings', SearchCtrl)
   .controller('listing',  ListingCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
