@@ -54,7 +54,7 @@
                 .text ng:switch-when='1'
                   | 1 person
                 .text ng:switch-default=''
-                  | {{ listing.accomodates_from }}-{{ listing.accomodates_to }} people
+                  | {{ listing.accomodates_from }} - {{ listing.accomodates_to }} people
               .bedrooms.room ng:switch='listing.bedrooms'
                 .icon
                 .text ng:switch-when='1'
