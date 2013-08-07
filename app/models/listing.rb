@@ -2,6 +2,8 @@ class Listing < ActiveRecord::Base
   extend FriendlyId
   friendly_id :slug_candidates, use: :scoped, scope: :region_id
 
+  serialize :unlisted_dates
+
   validates :slug, presence: true
 
   before_create do
@@ -17,7 +19,7 @@ class Listing < ActiveRecord::Base
   has_one :address, dependent: :destroy
 
   def conflicts? check_in, check_out
-    !!bookings.where(payment_status: 'charged').find do |booking|
+    !!bookings.charged.find do |booking|
       check_in  <  booking.check_out && check_in  >= booking.check_in ||
       check_out <= booking.check_out && check_out >  booking.check_in ||
       check_in  <= booking.check_in  && check_out >= booking.check_out
@@ -36,5 +38,21 @@ class Listing < ActiveRecord::Base
       :title,
       [:title, :id]
     ]
+  end
+
+  def self.price listings=Listing.all
+    listings.sort_by(&:price_per_night)
+  end
+
+  def self.recommended listings=Listing.all
+    listings.sort_by do |listing|
+      (listing.bookings.charged.select { |booking|
+        booking.check_in >= Date.today && booking.check_out <= Date.today + 180.days
+      }.map { |booking|
+        (booking.check_out - booking.check_in).to_i
+      }.reduce(:+) || 0) / 180.0 * (180 - (!listing.unlisted_dates && 0 || listing.unlisted_dates.select{ |date|
+        date >= Date.today.to_time.to_i && date <= (Date.today + 180.days).to_time.to_i
+      }.count) / 180.0)
+    end
   end
 end

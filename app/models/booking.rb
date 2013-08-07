@@ -4,6 +4,8 @@ class Booking < ActiveRecord::Base
 
   validate :conflicts
 
+  scope :charged, -> { where(payment_status: 'charged') }
+
   def conflicts
     errors.add :booking, 'Conflicts with another booking' if listing.conflicts? check_in, check_out
   end

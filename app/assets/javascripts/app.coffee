@@ -2,7 +2,7 @@ MULTIPLE_VALUE_ATTRS = {
   property_type: ['house', 'apartment']
 }
 
-SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice']
+SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort']
 
 
 AppCtrl = ($scope, $http, $compile) ->
@@ -107,6 +107,8 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       if $scope.dates.check_out && moment($scope.dates.check_out) <= moment(parseInt(check_in)*1000)
         $scope.dates.check_out = null
     ), true
+
+  $scope.$watch 'sort', (n, o) -> fetch_listings() unless o == n
 
   $scope.$watch 'listings', ->
     $timeout(
