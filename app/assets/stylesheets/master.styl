@@ -1,5 +1,24 @@
 @import url('http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps|Roboto+Slab')
 
+@keyframes spin
+  0%
+    transform:rotate(0deg)
+  50%
+    transform:rotate(-180deg)
+  100%
+    transform:rotate(-360deg)
+
+@keyframes scale
+  0%
+    transform:scale(1)
+  25%
+    transform:scale(0.5)
+  50%
+    transform:scale(1)
+  75%
+    transform:scale(0.5)
+  100%
+    transform:scale(1)
 
 grey         = hsl(0, 0%, 70%)
 light-grey   = hsl(0, 0%, 85%)
@@ -62,6 +81,26 @@ body
     position: fixed
     overflow-y: scroll
     width: 100%
+
+.loader
+  position: relative
+  width: 32px
+  height: 32px
+  animation: spin 4s infinite ease
+  display: inline-block
+  vertical-align: top
+  margin: 29px 0 0 23px
+  transition: opacity .5s
+  opacity: 0
+  i
+    border-style: solid
+    display: inline-block
+    box-sizing: border-box
+    border: 2px dashed green
+    border-radius: 50px
+    animation: scale 4s infinite linear
+    height: 32px
+    width: 32px
 
 .modal
   display: none
@@ -717,7 +756,7 @@ footer
               margin-top: 25px
             .error
               color: red
-              display: inline-block
+              display: none
               margin: 26px 0 0 15px
               vertical-align: top
               transition: opacity .5s

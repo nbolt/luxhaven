@@ -63,10 +63,10 @@ class ListingsController < ApplicationController
     if booking.save
       rsp = booking.book!
       if rsp.class == Stripe::Charge
-        render json: { success: true, stripe_charge: rsp }
+        render json: { success: true, stripe_id: rsp.id }
       else
         capture_exception rsp
-        render json: { success: false, error: rsp }
+        render json: { success: false, error: rsp.message }
       end
     else
       capture_message booking.errors.messages.first[1][0]

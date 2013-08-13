@@ -152,6 +152,8 @@
             button.green ng:click='book()'
               | Pay now
             .error
+            .loader
+              i
         .step.step3
           span ng:bind='stripe_id'
 

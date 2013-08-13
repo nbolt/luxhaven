@@ -146,7 +146,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     $scope.dates.check_in  = new Date(parseInt(dates.check_in) * 1000)  if dates.check_in
     $scope.dates.check_out = new Date(parseInt(dates.check_out) * 1000) if dates.check_out
 
-BookingCtrl = ($scope, $http, $timeout) ->
+BookingCtrl = ($scope, $http, $timeout, $q) ->
   $scope.booking =
     guests: '1'
     arrival: { hour: '0', minute: '00' }
@@ -170,12 +170,40 @@ BookingCtrl = ($scope, $http, $timeout) ->
     angular.element('#book-modal .step2').addClass 'active'
 
   error = (message) ->
+    loader = angular.element('#book-modal .loader')
     error_element = angular.element('#book-modal .error')
-    error_element.css 'opacity', 0
-    error_element.text message
-    $timeout (-> error_element.css 'opacity', 1), 500
+    if loader.css('opacity') == '1'
+      loader.css 'opacity', 0
+      $timeout(
+        (->
+          error_element.css 'display', 'inline-block'
+          error_element.css 'opacity', 1
+          error_element.text message
+        ), 500
+      )
+    else
+      error_element.css 'display', 'inline-block'
+      error_element.css 'opacity', 1
+      error_element.text message
+
+  loading = (promise) ->
+    loader = angular.element('#book-modal .loader')
+    error_element = angular.element('#book-modal .error')
+    if error_element.css('display') == 'inline-block'
+      error_element.css 'opacity', 0
+      $timeout(
+        (->
+          error_element.css 'display', 'none'
+          loader.css 'opacity', 1
+          $timeout (-> promise.resolve()), 600
+        ), 500
+      )
+    else
+      loader.css 'opacity', 1
+      $timeout (-> promise.resolve()), 600
 
   $scope.book = ->
+    defer = $q.defer()
     form = angular.element('#book-modal .payment form')
 
     disable = -> angular.element('#book-modal').find('button').prop('disabled', true)
@@ -188,21 +216,27 @@ BookingCtrl = ($scope, $http, $timeout) ->
         card: card
       }).success (rsp) ->
         if rsp.success
+          angular.element('#book-modal .loader').css 'opacity', 0
           angular.element('#book-modal .step2').removeClass 'active'
           angular.element('#book-modal .step3').addClass 'active'
-          $scope.stripe_id = rsp.stripe_charge.id
+          $scope.stripe_id = rsp.stripe_id
         else
           error rsp.error
 
-    if $scope.card == 'new_card'
-      Stripe.createToken form, (_, rsp) ->
-        if rsp.error
-          error rsp.error.message
-          enable()
-        else
-          post rsp.id
-    else
-      post $scope.card
+    loading defer
+
+    defer.promise.then(
+      (-> if $scope.card == 'new_card'
+            Stripe.createToken form, (_, rsp) ->
+              if rsp.error
+                error rsp.error.message
+                enable()
+              else
+                post rsp.id
+          else
+            post $scope.card
+      )
+    )
 
 ListingCtrl = ($scope, $http, $cookieStore) ->
   $scope.region    = null
