@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130807070414) do
+ActiveRecord::Schema.define(version: 20130812211112) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,7 +39,6 @@ ActiveRecord::Schema.define(version: 20130807070414) do
     t.date     "check_out"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "price_period"
     t.string   "payment_status"
     t.string   "transfer_status"
     t.string   "stripe_transfer_id"
@@ -70,8 +69,6 @@ ActiveRecord::Schema.define(version: 20130807070414) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "price_per_night"
-    t.integer  "price_per_week"
-    t.integer  "price_per_month"
     t.string   "property_type"
     t.string   "title"
     t.string   "slug"

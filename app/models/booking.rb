@@ -11,15 +11,20 @@ class Booking < ActiveRecord::Base
   end
 
   def price_total
-    nights = (check_out - check_in).to_i
-    case price_period
-    when 'night'
-      listing.price_per_night * nights
-    when 'week'
-      listing.price_per_week  * (nights / 7)
-    when 'month'
-      listing.price_per_month * (nights / 30.0).round
-    end
+    total = 0
+    nights_left = (check_out - check_in).to_i
+
+    months = nights_left / 30
+    nights_left -= months * 30
+    total += months * 30 * (listing.price_per_night * 0.9)
+
+    weeks = nights_left / 7
+    nights_left -= weeks * 7
+    total += weeks * 7 * (listing.price_per_night * 0.95)
+
+    total += listing.price_per_night * nights_left
+
+    total.to_i
   end
 
   def book!

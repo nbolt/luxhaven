@@ -3,10 +3,12 @@
 
 grey         = hsl(0, 0%, 70%)
 light-grey   = hsl(0, 0%, 85%)
+lighter-grey = hsl(0, 0%, 95%)
 dark-grey    = hsl(0, 0%, 40%)
 darker-grey  = hsl(0, 0%, 30%)
 red          = hsl(360, 90%, 45%)
 green        = hsl(159, 64%, 47%)
+light-green  = hsla(159, 64%, 47%, 8%)
 
 placeholder-color(color)
   ::-webkit-input-placeholder
@@ -273,28 +275,6 @@ footer
       > input
         margin-bottom: 10px
         color: darker-grey
-      .select2-container
-        margin-bottom: 10px
-        a
-          background: none
-          border: thin solid light-grey
-          padding: 4px 12px 3px
-          border-radius: 3px
-          &:focus
-            outline: none
-          span
-            color: darker-grey
-            font: .9em proxima-nova
-            font-weight: bold
-            margin-top: 3px
-          div
-            border: none
-            background: none
-            top: 3px
-            right: 2px
-        &.select2-dropdown-open
-          a
-            border-radius: 3px 3px 0 0
   .right
     overflow: auto
     .top
@@ -337,7 +317,7 @@ footer
     #listings
       .listing
         height: 330px
-        margin: 30px
+        margin: 20px 30px 30px
         border: thin solid #afafaf
         border-radius: 3px
         .picture
@@ -360,22 +340,14 @@ footer
             span
               font-weight: bold
           .rooms
-            color: #cbf5e6
-            font-size: .9em
             .room
-              overflow: auto
-              .icon
-                width: 24px
-                height: 12px
-                float: left
-              .text
-                margin: -2px 0 4px 34px
+              color: #cbf5e6
               &.people .icon
-                background-image: url(/images/people.png)
+                background-image: url(/images/people-green.png)
               &.bedrooms .icon
-                background-image: url(/images/bedrooms.png)
+                background-image: url(/images/bedrooms-green.png)
               &.baths .icon
-                background-image: url(/images/baths.png)
+                background-image: url(/images/baths-green.png)
         .title
           color: darker-grey
           font: 1.6em proxima-nova
@@ -387,14 +359,71 @@ footer
           font: .8em proxima-nova
           font-weight: bold
           text-transform: uppercase
+        &:hover
+          background-color: hsl(0, 0%, 96.5%)
+    .pagination
+      height: 35px
+      margin: 30px 0 20px
+      .typcn
+        font-size: 2em
+        margin: 0 25px
+        &.next
+          float: right
+        &:hover
+          color: green
+          cursor: pointer
+
+.rooms
+  font-size: .9em
+  .room
+    overflow: auto
+    .icon
+      width: 24px
+      height: 12px
+      float: left
+    .text
+      margin: -2px 0 4px 34px
+    &.people .icon
+      background-image: url(/images/people.png)
+    &.bedrooms .icon
+      background-image: url(/images/bedrooms.png)
+    &.baths .icon
+      background-image: url(/images/baths.png)
 
 .select2-drop
   border: thin solid light-grey !important
+  .select2-highlighted
+    background-color: green !important
   .select2-result-label
     font: .95em proxima-nova
-  &.city
+  &.continuous
     border-top: none !important
     
+.select2-bordered
+  .select2-container
+    margin-bottom: 10px
+    a
+      background: none
+      border: thin solid light-grey
+      padding: 4px 12px 3px
+      border-radius: 3px
+      &:focus
+        outline: none
+      span
+        color: darker-grey
+        font: .9em proxima-nova
+        font-weight: bold
+        margin-top: 3px
+      div
+        border: none
+        background: none
+        top: 3px
+        right: 2px
+    .select2-choice span
+      margin-right: 0
+    &.select2-dropdown-open
+      a
+        border-radius: 3px 3px 0 0
 
 .slider
   position: relative
@@ -475,10 +504,225 @@ footer
   display: none
   background-color: white
   width: 980px
-  height: 500px
+  height: 630px
   border: thin solid light-grey
   border-radius: 3px
   box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1)
+  .left
+    width: 300px
+    height: 630px
+    border-right: thin solid light-grey
+    float: left
+    box-sizing: border-box
+    padding: 25px
+    font-family: proxima-nova
+    img
+      width: 100%
+    > .title
+      font-size: 1.5em
+      font-weight: bold
+      color: green
+      margin: 10px 0 2px
+    .neighborhood
+      color: dark-grey
+      text-transform: uppercase
+      font-size: .8em
+    .rooms
+      margin: 25px 0 40px
+      .room
+        color: dark-grey
+        &.people .icon
+          background-image: url(/images/people-black.png)
+        &.bedrooms .icon
+          background-image: url(/images/bedrooms-black.png)
+        &.baths .icon
+          background-image: url(/images/baths-black.png)
+    .booking
+      background-color: hsl(0, 0%, 94%)
+      padding: 20px
+      color: hsl(0, 0%, 50%)
+      border-radius: 3px
+      .title
+        text-transform: uppercase
+        color: darker-grey
+        font-size: .8em
+        font-weight: bold
+        margin-bottom: 10px
+      .date
+        margin-bottom: 2px
+        span
+          color: darker-grey
+          font-weight: bold
+  .right
+    margin-left: 300px
+    font-family: proxima-nova
+    .top
+      height: 75px
+      border-bottom: thin solid light-grey
+      box-sizing: border-box
+      padding: 22px 0 0 30px
+      > .step, .circle, .text-container, .text, .typcn
+        display: inline-block
+      > .step
+        .circle
+          width: 30px
+          height: 30px
+          background-color: grey
+          border-radius: 20px
+          position: relative
+          .num
+            position: absolute
+            left: 11px
+            top: 6px
+            color: white
+            font-size: .95em
+        .text-container
+          vertical-align: top
+          margin: 6px 10px 0
+          .text
+            vertical-align: top
+            color: grey
+            text-transform: uppercase
+            font-weight: bold
+          .typcn
+            font-size: 2em
+            margin: -7px 10px 0 7px
+            color: light-grey
+        &.active
+          .circle
+            background-color: green
+          .text
+            color: green
+    > .content
+      .step
+        display: none
+        button
+          padding: 10px 20px
+        &.active
+          display: block
+        &.step1
+          .section
+            margin: 30px 30px 0
+            border-bottom: thin solid light-grey
+            .field
+              margin-bottom: 15px
+              .label
+                color: dark-grey
+                margin-top: 8px
+                float: left
+                width: 145px
+              .control-container
+                margin-left: 155px
+                .control
+                  width: 70px
+                  display: inline-block
+              &.guests
+                .select2-container
+                  width: 48px !important
+              &.purpose
+                .select2-container
+                  width: 100px !important
+              &.where
+                .select2-container
+                  width: 285px !important
+                .label
+                  margin-top: -1px
+              &.additional
+                .control
+                  width: 95%
+                  textarea
+                    width: 100%
+                    border-radius: 3px
+                    resize: none
+                    border: thin solid light-grey
+                    margin-bottom: 10px
+            &.times
+              .field
+                display: inline-block
+                &:last-child
+                  margin-left: 24px
+              .select2-container
+                width: 60px !important
+          button
+            margin: 28px 0 0 186px
+        &.step2
+          .content
+            width: 400px
+            margin: 50px auto
+            .total
+              color: white
+              background-color: darker-grey
+              box-sizing: border-box
+              font-size: 1.5em
+              padding: 16px 22px 20px
+              border-radius: 3px
+              height: 60px
+              margin-bottom: 15px
+              .text
+                float: left
+              .price
+                font-weight: bold
+                float: right
+            .payment
+              color: darker-grey
+              .card
+                margin: 10px 0 0 20px
+                .text
+                  display: inline-block
+                  vertical-align: top
+                  margin-top: 2px
+                input
+                  margin: 7px 10px 0 1px
+                  display: inline-block
+                  vertical-align: top
+                img
+                  margin-left: 10px
+              .card-entry
+                border: thin solid light-grey
+                border-radius: 3px
+                margin-top: 25px
+                .title
+                  margin-top: 20px
+                  background-color: lighter-grey
+                  padding: 10px
+                  color: dark-grey
+                  font-weight: bold
+                  font-size: 1.1em
+                  img
+                    float: right
+                .card-details
+                  padding: 20px
+                  .field
+                    display: inline-block
+                    .label
+                      font-size: .75em
+                      color: grey
+                      text-transform: uppercase
+                      font-weight: bold
+                      margin-bottom: 5px
+                    &.card-number
+                      input
+                        width: 185px
+                        margin-right: 17px
+                    &.expiry
+                      input
+                        width: 74px
+                    &.cvc
+                      margin: 12px 0 0 17px
+                      input
+                        width: 54px
+            button
+              text-transform: uppercase
+              font-size: 1.1em
+              margin-top: 25px
+            .error
+              color: red
+              display: inline-block
+              margin: 26px 0 0 15px
+              vertical-align: top
+              transition: opacity .5s
+              opacity: 0
+              width: 260px
 
 .listing-content
   width: 976px

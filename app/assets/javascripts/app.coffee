@@ -2,19 +2,22 @@ MULTIPLE_VALUE_ATTRS = {
   property_type: ['house', 'apartment']
 }
 
-SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort']
+SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page']
 
 
-AppCtrl = ($scope, $http, $compile) ->
+AppCtrl = ($scope, $http, $q, $compile) ->
   $scope.signinContent = angular.element('#sign-in').html()
   $scope.signupContent = angular.element('#sign-up').html()
+  $scope.auth = $q.defer()
 
   $http.post('/auth').success (rsp) ->
     if rsp.success
       $scope.signedIn = true
       $scope.user = JSON.parse rsp.user
+      $scope.auth.resolve()
     else
       $scope.signedIn = false
+      $scope.auth.reject()
 
   $scope.signInModal = (callback) ->
     angular.element('#sign-in').bPopup {
@@ -57,8 +60,12 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.minPrice = null
   $scope.maxPrice = null
   $scope.pages    = null
+  $scope.listings = []
   $scope.dates    = {}
   $scope.sort     = 'recommended'
+  $scope.page = $.url().param 'page'; $scope.page ||= '1'
+
+  angular.element('footer').css('display', 'none')
 
   $scope.checkInDate = (date) ->
     if $scope.dates.check_out
@@ -94,8 +101,22 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
 
   fetch_listings = ->
     $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) ->
-      $scope.listings = rsp
-      $scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 1
+      $scope.listings = rsp.listings
+      $scope.size = rsp.size
+      $scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 5
+      angular.element('footer').css('display', 'block')
+
+  $scope.next = ->
+    $scope.page = parseInt($scope.page) + 1
+    fetch_listings()
+
+  $scope.prev = ->
+    $scope.page = parseInt($scope.page) - 1
+    fetch_listings()
+
+  $scope.nextShow = -> $scope.size > $scope.page * 5
+
+  $scope.prevShow = -> parseInt($scope.page) > 1
 
   watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (n, o) -> fetch_listings() unless o == n
 
@@ -113,7 +134,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.$watch 'listings', ->
     $timeout(
       (-> angular.element('#results .left').css('height', angular.element('#results .right').height())),
-      100
+      10
     )
 
   $scope.$watch 'region', -> fetch_listings() if $scope.region
@@ -125,6 +146,63 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     $scope.dates.check_in  = new Date(parseInt(dates.check_in) * 1000)  if dates.check_in
     $scope.dates.check_out = new Date(parseInt(dates.check_out) * 1000) if dates.check_out
 
+BookingCtrl = ($scope, $http, $timeout) ->
+  $scope.booking =
+    guests: '1'
+    arrival: { hour: '0', minute: '00' }
+    departure: { hour: '0', minute: '00' }
+    purpose: 'Leisure'
+    where: 'Search engine'
+
+  $scope.auth.promise.then(
+    (-> $scope.card = $scope.user.cards[0] && $scope.user.cards[0].stripe_id || 'new_card'),
+    (-> $scope.card = 'new_card')
+  )
+
+  $scope.new_card = -> $scope.card == 'new_card'
+
+  $scope.step2 = ->
+    angular.element('#book-modal .step1').removeClass 'active'
+    angular.element('#book-modal .step2').addClass 'active'
+
+  $scope.step3 = ->
+    angular.element('#book-modal .step1').removeClass 'active'
+    angular.element('#book-modal .step2').addClass 'active'
+
+  error = (message) ->
+    error_element = angular.element('#book-modal .error')
+    error_element.css 'opacity', 0
+    error_element.text message
+    $timeout (-> error_element.css 'opacity', 1), 500
+
+  $scope.book = ->
+    form = angular.element('#book-modal .payment form')
+
+    disable = -> angular.element('#book-modal').find('button').prop('disabled', true)
+    enable  = -> angular.element('#book-modal').find('button').prop('disabled', false)
+
+    post = (card) ->
+      $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
+        check_in: $scope.dates.check_in
+        check_out: $scope.dates.check_out
+        card: card
+      }).success (rsp) ->
+        if rsp.success
+          angular.element('#book-modal .step2').removeClass 'active'
+          angular.element('#book-modal .step3').addClass 'active'
+          $scope.stripe_id = rsp.stripe_charge.id
+        else
+          error rsp.error
+
+    if $scope.card == 'new_card'
+      Stripe.createToken form, (_, rsp) ->
+        if rsp.error
+          error rsp.error.message
+          enable()
+        else
+          post rsp.id
+    else
+      post $scope.card
 
 ListingCtrl = ($scope, $http, $cookieStore) ->
   $scope.region    = null
@@ -141,58 +219,17 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
       booking.check_out < moment Date.today || booking.payment_status != 'charged'
     $scope.listing = listing
 
-  $scope.new_card = -> $scope.card == 'new_card'
-
-  angular.element('#book-modal .payment form').submit ->
-    disable = -> angular.element(@).find('button').prop('disabled', true)
-    enable  = -> angular.element(@).find('button').prop('disabled', false)
-
-    disable()
-    Stripe.createToken @, (_, rsp) ->
-      if rsp.error
-        console.log rsp.error.message
-        enable()
-      else
-        $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
-          check_in: $scope.dates.check_in
-          check_out: $scope.dates.check_out
-          card: rsp.id
-        }).success (rsp) ->
-          console.log rsp
-          angular.element('#book-modal').bPopup().close()
-    false
-
-  $scope.book = ->
-    form = angular.element('#book-modal .payment form')
-
-    disable = -> angular.element('#book-modal').find('button').prop('disabled', true)
-    enable  = -> angular.element('#book-modal').find('button').prop('disabled', false)
-
-    post = (card) ->
-      $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
-        check_in: $scope.dates.check_in
-        check_out: $scope.dates.check_out
-        card: card
-      }).success (rsp) ->
-        console.log rsp
-        angular.element('#book-modal').bPopup().close()
-
-    if $scope.card == 'new_card'
-      Stripe.createToken form, (_, rsp) ->
-        if rsp.error
-          console.log rsp.error.message
-          enable()
-        else
-          post rsp.id
-    else
-      post $scope.card
+  bookModal = ->
+    angular.element('#book-modal').bPopup bPopOpts
+    $http.get("/#{$scope.region.slug}/#{$scope.listing.slug}/pricing?check_in=#{$scope.dates.check_in}&check_out=#{$scope.dates.check_out}")
+      .success (rsp) -> $scope.price_total = rsp.total
 
   $scope.bookModal = ->
     if $scope.dates.check_in && $scope.dates.check_out # && 2 days apart
       if $scope.signedIn
-        angular.element('#book-modal').bPopup bPopOpts
+        bookModal()
       else
-        $scope.signInModal -> angular.element('#book-modal').bPopup bPopOpts if $scope.signedIn
+        $scope.signInModal -> bookModal() if $scope.signedIn
 
   $scope.checkInDate = (date) ->
     if $scope.listing
@@ -234,13 +271,19 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     opacity: 0.65
 
 
-app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date'])
+app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask'])
   .controller('app',      AppCtrl)
   .controller('home',     HomeCtrl)
   .controller('listings', SearchCtrl)
   .controller('listing',  ListingCtrl)
+  .controller('booking',  BookingCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
+  .directive('date', -> {
+    scope: { date: '@date' }
+    link: (scope, element, attrs) ->
+      element.text moment(scope.date).format('ddd, Do MMM YYYY')
+  })
   .directive('tab', -> (scope, element, attrs) ->
     element.click ->
       element.parent().children('a').removeClass 'active'
@@ -252,13 +295,13 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date'])
         scope.map = L.map('map').setView [attrs.lat, attrs.lng], 15 unless scope.map
         L.tileLayer.provider('OpenStreetMap.Mapnik').addTo scope.map
   )
-  .directive('select2city', -> (scope, element) ->
+  .directive('select2continuous', -> (scope, element) ->
     element.on 'select2-opening', ->
-      angular.element('.select2-drop').removeClass('sort').addClass 'city'
+      angular.element('.select2-drop').addClass 'continuous'
   )
-  .directive('select2sort', -> (scope, element) ->
+  .directive('select2bordered', -> (scope, element) ->
     element.on 'select2-opening', ->
-      angular.element('.select2-drop').removeClass('city').addClass 'sort'
+      angular.element('.select2-drop').removeClass 'continuous'
   )
   .directive('unslider', -> (scope, element) ->
     element.unslider {

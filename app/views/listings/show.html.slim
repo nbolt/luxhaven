@@ -26,28 +26,134 @@
       button.green ng:click='bookModal()'
         | Book
 
-  #book-modal
-    div ng:repeat='card in user.cards'
-      input type='radio' name='card' value='{{ card.stripe_id }}' ng:model='$parent.card'
-      | {{ card.last4 }}
-    input type='radio' name='card' value='new_card' ng:model='card'
-    | New Card
-    .payment ng:show='new_card()'
-      form
-        label
-          span Card Number
-          input data-stripe='number' size='20'
-        label
-          span CVC
-          input data-stripe='cvc' size='4'
-        label
-          span Expiration
-          input data-stripe='exp-month' size='2'
-          span
-            | /
-          input data-stripe='exp-year' size='2'
-    button.green ng:click='book()'
-      | Submit
+  #book-modal ng:controller='booking'
+    .left
+      img ng:src='{{ listing.search_image.url }}'
+      .title ng:bind="listing.title"
+      .neighborhood
+        span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
+        span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
+        span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
+      .rooms
+        .people.room ng:switch='listing.accomodates_to'
+          .icon
+          .text ng:switch-when='1'
+            | 1 person
+          .text ng:switch-default=''
+            | {{ listing.accomodates_from }} - {{ listing.accomodates_to }} people
+        .bedrooms.room ng:switch='listing.bedrooms'
+          .icon
+          .text ng:switch-when='1'
+            | 1 bedroom
+          .text ng:switch-default=''
+            | {{ listing.bedrooms }} bedrooms
+        .baths.room ng:switch='listing.baths'
+          .icon
+          .text ng:switch-when='1'
+            | 1 bath
+          .text ng:switch-default=''
+            | {{ listing.baths }} baths
+      .booking
+        .title Your booking
+        .date
+          | From - 
+          span date='{{ dates.check_in }}'
+        .date
+          | To - 
+          span date='{{ dates.check_out }}'
+    .right
+      .top
+        .step.step1.active
+          .circle
+            .num 1
+          .text-container
+            .text Details
+            .typcn.typcn-arrow-right
+        .step.step2
+          .circle
+            .num 2
+          .text-container
+            .text Payment
+            .typcn.typcn-arrow-right
+        .step.step3
+          .circle
+            .num 3
+          .text-container
+            .text Summary
+      .content.select2-bordered
+        .step.step1.active
+          .section
+            .field.guests
+              .label No. of guests
+              .control-container
+                .control= select_tag :guests, options_for_select((1..listing.accomodates_to).to_a),
+                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.guests', select2bordered: '' }
+          .section.times
+            .field
+              .label Arrival Time
+              .control-container
+                .control= select_tag :guests, options_for_select((0..23).to_a),
+                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.arrival.hour', select2continuous: '' }
+                .control= select_tag :guests, options_for_select(['00', '15', '30', '45']),
+                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.arrival.minute', select2continuous: '' }
+            .field
+              .label Departure Time
+              .control-container
+                .control= select_tag :guests, options_for_select((0..23).to_a),
+                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.departure.hour', select2continuous: '' }
+                .control= select_tag :guests, options_for_select(['00', '15', '30', '45']),
+                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.departure.minute', select2continuous: '' }
+          .section
+            .field.additional
+              .label Additional Requests
+              .control-container
+                .control= text_area_tag :additional_requests, nil, rows: 5
+            .field.purpose
+              .label Purpose of trip
+              .control-container
+                .control= select_tag :purpose, options_for_select(['Leisure', 'Business', 'Mixture']),
+                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.purpose', select2bordered: '' }
+            .field.where
+              .label Where did you hear about LuxHaven?
+              .control-container
+                .control= select_tag :guests, options_for_select(['Search engine', 'Social media (facebook, twitter, etc.)', 'Word of mouth', "I've stayed with LuxHaven before", "None of the above / I can't remember"]),
+                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.where', select2bordered: '' }
+          button.green ng:click='step2()'
+            | Continue
+        .step.step2
+          .content
+            .total
+              .text Total
+              .price ${{ price_total }}
+            .payment
+              .card ng:repeat='card in user.cards'
+                input type='radio' name='card' value='{{card.stripe_id}}' ng:model='$parent.card' ng:checked='$parent.card == card.stripe_id'
+                .text
+                  | **** **** **** {{ card.last4 }}
+                img ng:src='/images/{{card.card_type}}.jpg'
+              .card
+                input type='radio' name='card' value='new_card' ng:model='card'
+                .text New Card
+              .card-entry ng:show='new_card()'
+                .title
+                  = image_tag '/images/unknown.jpg'
+                  .text Payment Details
+                .card-details
+                  form
+                    .field.card-number
+                      .label Card Number
+                      input data-stripe='number' ui:mask='9999 9999 9999 9999' ng:model='entry_card.number'
+                    .field.expiry
+                      .label Expiry Date
+                      input data-stripe='expiry' ui:mask='99/99' ng:model='entry_card.expiry' placeholder='MM/YY'
+                    .field.cvc
+                      .label CV Code
+                      input data-stripe='cvc' ng:model='entry_card.cvc' placeholder='123'
+            button.green ng:click='book()'
+              | Pay now
+            .error
+        .step.step3
+          span ng:bind='stripe_id'
 
 javascript:
   var loadCity = setInterval(function(){

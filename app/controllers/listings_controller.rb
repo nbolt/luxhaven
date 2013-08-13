@@ -1,4 +1,5 @@
 class ListingsController < ApplicationController
+  include ActionView::Helpers::NumberHelper
 
   expose(:region) { Region.friendly.find params[:city] }
   expose(:listing) do
@@ -16,8 +17,9 @@ class ListingsController < ApplicationController
         listings = listings.where('price_per_night >= ?', params[:minPrice].to_i * 100) if params[:minPrice]
         listings = listings.where('price_per_night <= ?', params[:maxPrice].to_i * 100) if params[:maxPrice]
         listings = Listing.available params[:check_in], params[:check_out], listings rescue nil if params[:check_in] && params[:check_out]
-        listings = listings.send params[:sort] if params[:sort]
-        render json: listings.to_json(include: [:bookings, :address])
+        listings = listings.send params[:sort]
+        listings = Kaminari.paginate_array(listings).page(params[:page]).per 5
+        render json: { size: listings.size, listings: listings.as_json(include: [:bookings, :address]) }
       end
     end
   end
@@ -26,9 +28,17 @@ class ListingsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        render json: listing.to_json(include: :bookings)
+        render json: listing.to_json(include: [:address, :bookings])
       end
     end
+  end
+
+  def pricing
+    booking = Booking.new
+    booking.listing = listing
+    booking.check_in = params[:check_in]
+    booking.check_out = params[:check_out]
+    render json: { total: number_with_delimiter(booking.price_total / 100) }
   end
 
   def book
@@ -37,7 +47,6 @@ class ListingsController < ApplicationController
     booking.user = current_user
     booking.check_in = params[:check_in]
     booking.check_out = params[:check_out]
-    booking.price_period = 'night'
     case params[:card][0..2]
     when 'cus' then booking.customer_id = params[:card]
     when 'tok'
@@ -46,21 +55,22 @@ class ListingsController < ApplicationController
       card = current_user.cards.create({
         stripe_id: customer.id,
         last4: customer.active_card.last4,
-        card_type: customer.active_card.type.downcase,
+        card_type: customer.active_card.type.downcase.gsub(' ', '_'),
         fingerprint: customer.active_card.fingerprint
       })
+      current_user.cards.sort_by(&:created_at).first.destroy if current_user.cards.count > 3
     end
     if booking.save
       rsp = booking.book!
       if rsp.class == Stripe::Charge
-        render json: { success: true }
+        render json: { success: true, stripe_charge: rsp }
       else
         capture_exception rsp
-        render json: { success: false }
+        render json: { success: false, error: rsp }
       end
     else
       capture_message booking.errors.messages.first[1][0]
-      render json: { success: false }
+      render json: { success: false, error: booking.errors.messages.first[1][0] }
     end
   end
 
