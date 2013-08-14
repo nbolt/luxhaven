@@ -155,7 +155,19 @@
             .loader
               i
         .step.step3
-          span ng:bind='stripe_id'
+          .content
+            .title Thank you for your booking!
+            .total
+              .text Total
+              .price ${{ price_total }}
+            .text
+              p
+                | You'll receive an email confirmation and don't hesitate to contact us if anything arises!
+              p
+                | Your booking ID: 
+                span ng:bind='stripe_id'
+            button.green ng:click='close()'
+              | Close
 
 javascript:
   var loadCity = setInterval(function(){

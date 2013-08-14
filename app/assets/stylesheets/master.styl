@@ -637,6 +637,23 @@ footer
         display: none
         button
           padding: 10px 20px
+        .total
+          color: white
+          background-color: darker-grey
+          box-sizing: border-box
+          font-size: 1.5em
+          padding: 16px 22px 20px
+          border-radius: 3px
+          height: 60px
+          margin-bottom: 15px
+          .text
+            float: left
+          .price
+            font-weight: bold
+            float: right
+        > .content
+          width: 400px
+          margin: 50px auto
         &.active
           display: block
         &.step1
@@ -686,22 +703,6 @@ footer
             margin: 28px 0 0 186px
         &.step2
           .content
-            width: 400px
-            margin: 50px auto
-            .total
-              color: white
-              background-color: darker-grey
-              box-sizing: border-box
-              font-size: 1.5em
-              padding: 16px 22px 20px
-              border-radius: 3px
-              height: 60px
-              margin-bottom: 15px
-              .text
-                float: left
-              .price
-                font-weight: bold
-                float: right
             .payment
               color: darker-grey
               .card
@@ -762,6 +763,19 @@ footer
               transition: opacity .5s
               opacity: 0
               width: 260px
+        &.step3
+          .title
+            color: darker-grey
+            font-size: 2em
+            margin-bottom: 20px
+          p
+            color: hsl(0, 0%, 50%)
+            span
+              color: darker-grey
+              font-weight: bold
+          button
+            margin-top: 15px
+            font-size: 1em
 
 .listing-content
   width: 976px

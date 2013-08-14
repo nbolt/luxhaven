@@ -169,6 +169,9 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
     angular.element('#book-modal .step1').removeClass 'active'
     angular.element('#book-modal .step2').addClass 'active'
 
+  $scope.close = ->
+    angular.element('#book-modal').bPopup().close()
+
   error = (message) ->
     loader = angular.element('#book-modal .loader')
     error_element = angular.element('#book-modal .error')
