@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130812211112) do
+ActiveRecord::Schema.define(version: 20130814004317) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -123,6 +123,7 @@ ActiveRecord::Schema.define(version: 20130812211112) do
     t.string   "bank_name"
     t.string   "bank_last4"
     t.string   "bank_fingerprint"
+    t.string   "phone_number"
   end
 
   add_index "users", ["last_logout_at", "last_activity_at"], name: "index_users_on_last_logout_at_and_last_activity_at", using: :btree

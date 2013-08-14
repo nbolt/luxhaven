@@ -1,12 +1,14 @@
 deployment:
   development:
     branch: develop
-    heroku:
-      appname: luxhaven-dev
+    commands:
+      - git push git@heroku.com:luxhaven-dev.git $CIRCLE_SHA1:master
+      - heroku run rake db:migrate --app luxhaven-dev
   production:
     branch: master
-    heroku:
-      appname: luxhaven
+    commands:
+      - git push git@heroku.com:luxhaven.git $CIRCLE_SHA1:master
+      - heroku run rake db:migrate --app luxhaven
 
 machine:
   environment:
