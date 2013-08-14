@@ -207,8 +207,7 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
 
   $scope.book = ->
     defer = $q.defer()
-    form = angular.element('#book-modal .payment form')
-
+    
     disable = -> angular.element('#book-modal').find('button').prop('disabled', true)
     enable  = -> angular.element('#book-modal').find('button').prop('disabled', false)
 
@@ -229,15 +228,21 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
     loading defer
 
     defer.promise.then(
-      (-> if $scope.card == 'new_card'
-            Stripe.createToken form, (_, rsp) ->
-              if rsp.error
-                error rsp.error.message
-                enable()
-              else
-                post rsp.id
-          else
-            post $scope.card
+      (->
+        if $scope.card == 'new_card'
+          Stripe.createToken {
+            number: angular.element('#book-modal form input[data-stripe=number]').val()
+            cvc: angular.element('#book-modal form input[data-stripe=cvc]').val()
+            exp_month: angular.element('#book-modal form input[data-stripe=expiry]').val().split('/')[0]
+            exp_year: angular.element('#book-modal form input[data-stripe=expiry]').val().split('/')[1]
+          }, (_, rsp) ->
+            if rsp.error
+              error rsp.error.message
+              enable()
+            else
+              post rsp.id
+        else
+          post $scope.card
       )
     )
 
