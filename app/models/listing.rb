@@ -16,6 +16,7 @@ class Listing < ActiveRecord::Base
   belongs_to :region
   has_many :bookings, dependent: :destroy
   has_many :images, dependent: :destroy
+  has_many :paragraphs, dependent: :destroy
   has_one :address, dependent: :destroy
 
   def conflicts? check_in, check_out

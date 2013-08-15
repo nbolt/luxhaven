@@ -1,4 +1,4 @@
-class ImageUploader < CarrierWave::Uploader::Base
+class ParagraphImageUploader < CarrierWave::Uploader::Base
 
   # Include RMagick or MiniMagick support:
   include CarrierWave::RMagick
@@ -27,16 +27,24 @@ class ImageUploader < CarrierWave::Uploader::Base
   # end
 
   # Process files as they are uploaded:
-  process :resize_to_fill => [1800, 500]
+  # process :resize_to_fill => [400, 300]
   #
   # def scale(width, height)
   #   # do something
   # end
 
   # Create different versions of your uploaded files:
-  # version :thumb do
-  #   process :scale => [50, 50]
-  # end
+  version :full do
+    process :resize_to_fill => [665, 300]
+  end
+
+  version :side_landscape do
+    process :resize_to_fill => [350, 175]
+  end
+
+  version :side_portrait do
+    process :resize_to_fill => [220, 300]
+  end
 
   # Add a white list of extensions which are allowed to be uploaded.
   # For images you might use something like this:

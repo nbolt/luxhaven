@@ -815,7 +815,7 @@ footer
     .neighborhood
       color: grey
       font-size: 1.25em
-      font-weight: bold
+      font-weight: 600
     .price-container
       float: right
       margin-top: 20px
@@ -831,7 +831,7 @@ footer
       .price
         display: inline-block
         font-size: 2em
-        font-weight: bold
+        font-weight: 600
   #book
     border-radius: 3px
     position: absolute
@@ -857,19 +857,88 @@ footer
       font: .9em proxima-nova
       color: darker-grey
   .tabs
+    .side-info
+      float: right
+      width: 250px
+      margin-top: 20px
+      .contact-info
+        .contact
+          padding: 15px 0
+          border-bottom: thin solid light-grey
+          .text, a
+            float: right
+            color: hsl(7, 70%, 54%)
+          a:hover
+            font-weight: 600
+            cursor: pointer
+          .icon
+            width: 26px
+            height: 18px
+          &:first-child
+            padding-top: 7px
+      .includes
+        margin-top: 50px
+        text-transform: uppercase
+        color: darker-grey
+        font-size: .8em
+        font-weight: 600
+      .amenity-container
+        border: thin solid light-grey
+        border-radius: 3px
+        margin-top: 10px
+        .amenities
+          padding: 10px 8px 10px 15px
+          .amenity
+            padding: 8px 0
+            .icon
+              width: 20px
+              height: 20px
+              float: left
+            .text
+              color: darker-grey
+              font-weight: 600
+              font-size: .9em
+              margin: 2px 0 0 35px
+        .service
+          border-top: thin solid light-grey
+          padding: 15px 8px 15px 15px
+          font-size: .9em
+          .text
+            margin-bottom: 10px
+            color: grey
+          a
+            color: green
+            font-weight: 600
     .tab-content
-      width: 700px
-      margin-top: 12px
+      width: 675px
+      padding: 12px 25px 40px 0
+      border-right: thin solid grey
+      min-height: 540px
       .tab
         display: none
         margin: 5px 5px
         &.active
           display: block
+        &#description
+          p
+            color: darker-grey
+            margin-bottom: 30px
+            &:first-of-type
+              font-weight: 600
+          .image
+            .caption
+              color: dark-grey
+              font-size: .9em
+              font-style: italic
+              padding: 8px
         &#local-area
           .top
             height: 25px
             a
               float: right
+              color: green
+              &:hover
+                text-decoration: underline
           #map
             height: 400px
             width: 100%
@@ -886,6 +955,7 @@ footer
           font: 1em proxima-nova
           color: green
           font-size: 1.1em
+          margin-right: 5px
         &:hover .tab
           color: darker-grey
         &.active .tab

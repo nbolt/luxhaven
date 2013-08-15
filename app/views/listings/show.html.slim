@@ -26,8 +26,51 @@
       a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
         .tab Local Area
       .bar
+    .side-info
+      .contact-info
+        .contact
+          a href='mailto:avnish@luxhaven.co'
+            | Email us
+          .icon style='background-image:url(/images/mail.png)'
+        .contact
+          .text +1 424 242 8362
+          .icon style='background-image:url(/images/phone.png)'
+      .includes Pricing includes
+      .amenity-container
+        .amenities
+          .amenity
+            .icon style='background-image:url(/images/wifi.png)'
+            .text Wifi as standard
+          .amenity
+            .icon style='background-image:url(/images/iphone.png)'
+            .text iPhone for maps & local calls
+          .amenity
+            .icon style='background-image:url(/images/hand.png)'
+            .text Personal welcome
+          .amenity
+            .icon style='background-image:url(/images/present.png)'
+            .text Toiletries, towels, & 5* linens
+          .amenity
+            .icon style='background-image:url(/images/map.png)'
+            .text Local recommendations
+          .amenity
+            .icon style='background-image:url(/images/paint-roller.png)'
+            .text Hotel-grade cleaning
+          .amenity
+            .icon style='background-image:url(/images/phone2.png)'
+            .text 24/7 phone support
+        .service
+          .text C'mon just book the damn place we're awesome and you know it.
+          a href='javascript:void(0)'
+            | Our service policy
     .tab-content
       .tab#description.active
+        - listing.paragraphs.each do |p|
+          - if p.image
+            .image style="#{p.image.align && 'float: ' + p.image.align + (p.image.align == 'left' && '; padding-right: 20px' || p.image.align == 'right' && '; padding-left: 20px')}"
+              img src='#{p.image.image.send(p.image.version).url}'
+              .caption= p.image.caption
+          p= p.content
       .tab#local-area
         .top
           a target='_window' href="http://maps.google.com/maps?q=&layer=c&cbp=11,0,0,0,0&cbll=#{listing.address.latitude},#{listing.address.longitude}"
