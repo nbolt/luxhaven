@@ -41,6 +41,9 @@
       .title
         | {{ size }} places in Los Angeles
     #listings
+      .overlay
+        .loader
+          i
       a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
         .listing
           .picture ng:style="{'background-image': 'url(' + listing.search_image.url + ')'}"

@@ -99,20 +99,25 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
         str += '&'
     str
 
-  fetch_listings = ->
+  fetch_listings = (reset_page = true) ->
+    $scope.page = 1 if reset_page
+    angular.element('#listings .overlay').css 'display', 'block'
+    angular.element.scrollTo '#results .right .top', 600, { easing: 'swing' }
     $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) ->
+      angular.element('#results .right').css 'display', 'block'
+      angular.element('#listings .overlay').css 'display', 'none'
       $scope.listings = rsp.listings
       $scope.size = rsp.size
       $scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 5
-      angular.element('footer').css('display', 'block')
+      angular.element('footer').css 'display', 'block'
 
   $scope.next = ->
     $scope.page = parseInt($scope.page) + 1
-    fetch_listings()
+    fetch_listings false
 
   $scope.prev = ->
     $scope.page = parseInt($scope.page) - 1
-    fetch_listings()
+    fetch_listings false
 
   $scope.nextShow = -> $scope.size > $scope.page * 5
 

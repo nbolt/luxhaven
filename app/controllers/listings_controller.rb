@@ -9,6 +9,8 @@ class ListingsController < ApplicationController
   
   def search
     expires_in 1.hour, public: true
+    
+    response.headers['Vary'] = 'Accept'
     respond_to do |format|
       format.html
       format.json do
@@ -25,6 +27,7 @@ class ListingsController < ApplicationController
   end
 
   def show
+    response.headers['Vary'] = 'Accept'
     respond_to do |format|
       format.html
       format.json do

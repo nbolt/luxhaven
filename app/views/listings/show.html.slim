@@ -1,15 +1,31 @@
 .images unslider=''
   ul
-    - listing.images.each do |image|
-      li style="background: url(#{image.image}) no-repeat center"
+    - listing.images.each do |i|
+      li style="background: url(#{i.image}) no-repeat center"
 
 .listing-content ng:controller='listing'
+  .title-container
+    .price-container
+      .from From 
+      .price ${{listing.price_per_night / 100}}
+    .title ng:bind='listing.title'
+    .neighborhood
+      span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
+      span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
+      span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
   .tabs
     nav#top-nav
       a.active href='#description' onclick='return false' tab=''
         .tab Description
+      a href='#features' onclick='return false' tab=''
+        .tab Features
+      a href='#rooms' onclick='return false' tab=''
+        .tab Rooms
+      a href='#home-truths' onclick='return false' tab=''
+        .tab Home Truths
       a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
         .tab Local Area
+      .bar
     .tab-content
       .tab#description.active
       .tab#local-area
@@ -17,7 +33,6 @@
           a target='_window' href="http://maps.google.com/maps?q=&layer=c&cbp=11,0,0,0,0&cbll=#{listing.address.latitude},#{listing.address.longitude}"
             | Street View
         #map
-
   #book
     .title Select your check in and check out dates to get started.
     .input= text_field_tag :check_in,   nil, placeholder: 'Check In',   :'ui:date' => '{beforeShowDay:checkInDate}', :'ng:model' => 'dates.check_in'

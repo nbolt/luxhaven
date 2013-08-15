@@ -84,14 +84,8 @@ body
 
 .loader
   position: relative
-  width: 32px
-  height: 32px
   animation: spin 4s infinite ease
-  display: inline-block
-  vertical-align: top
-  margin: 29px 0 0 23px
   transition: opacity .5s
-  opacity: 0
   i
     border-style: solid
     display: inline-block
@@ -99,8 +93,6 @@ body
     border: 2px dashed green
     border-radius: 50px
     animation: scale 4s infinite linear
-    height: 32px
-    width: 32px
 
 .modal
   display: none
@@ -316,6 +308,7 @@ footer
         color: darker-grey
   .right
     overflow: auto
+    display: none
     .top
       margin: 0 29px
       padding: 19px 0 20px
@@ -354,11 +347,29 @@ footer
             a
               border-radius: 3px 3px 0 0
     #listings
+      position: relative
+      .overlay
+        position: absolute
+        top: 0
+        bottom: 0
+        left: 0
+        right: 0
+        background-color: hsla(0, 0%, 0%, 0.35)
+        display: none
+        .loader
+          margin: 50px auto
+          width: 100px
+          height: 100px
+          i
+            border: 4px dashed green
+            width: 100px
+            height: 100px
       .listing
         height: 330px
         margin: 20px 30px 30px
         border: thin solid #afafaf
         border-radius: 3px
+        background-color: white
         .picture
           height: 230px
           background-color: white
@@ -399,7 +410,7 @@ footer
           font-weight: bold
           text-transform: uppercase
         &:hover
-          background-color: hsl(0, 0%, 96.5%)
+          background-color: hsl(0, 0%, 96%)
     .pagination
       height: 35px
       margin: 30px 0 20px
@@ -547,6 +558,16 @@ footer
   border: thin solid light-grey
   border-radius: 3px
   box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1)
+  .loader
+    margin: 29px 0 0 23px
+    display: inline-block
+    vertical-align: top
+    opacity: 0
+    width: 32px
+    height: 32px
+    i
+      width: 32px
+      height: 32px
   .left
     width: 300px
     height: 630px
@@ -561,7 +582,7 @@ footer
       font-size: 1.5em
       font-weight: bold
       color: green
-      margin: 10px 0 2px
+      margin: 10px 0 4px
     .neighborhood
       color: dark-grey
       text-transform: uppercase
@@ -782,11 +803,40 @@ footer
   min-height: 500px
   margin: auto
   position: relative
+  font-family: proxima-nova
+  .title-container
+    height: 125px
+    max-width: 700px
+    .title
+      color: darker-grey
+      font-size: 2em
+      padding-top: 15px
+      font-weight: bold
+    .neighborhood
+      color: grey
+      font-size: 1.25em
+      font-weight: bold
+    .price-container
+      float: right
+      margin-top: 20px
+      color: darker-grey
+      .from
+        vertical-align: top
+        margin: 4px 8px 0 0
+        display: inline-block
+        font-size: .85em
+        font-weight: bold
+        text-transform: uppercase
+        color: grey
+      .price
+        display: inline-block
+        font-size: 2em
+        font-weight: bold
   #book
     border-radius: 3px
     position: absolute
     right: 0
-    top: -54px
+    top: -55px
     background-color: hsl(360, 2.5%, 92%)
     width: 250px
     .input
@@ -809,6 +859,7 @@ footer
   .tabs
     .tab-content
       width: 700px
+      margin-top: 12px
       .tab
         display: none
         margin: 5px 5px
@@ -824,14 +875,21 @@ footer
             width: 100%
     nav
       margin-top: 25px
+      .bar
+        width: 100%
+        border-bottom: thin solid grey
+        margin-top: -1px
       a
         .tab
           display: inline-block
-          border-radius: 3px
-          padding: 6px 8px
-          margin: 0 5px
-          color: green
+          padding: 7px 12px
           font: 1em proxima-nova
-        &:hover .tab, &.active .tab
-          background-color: green
-          color: white
+          color: green
+          font-size: 1.1em
+        &:hover .tab
+          color: darker-grey
+        &.active .tab
+          border: thin solid grey
+          border-bottom: thin solid white
+          font-weight: bold
+          color: darker-grey
