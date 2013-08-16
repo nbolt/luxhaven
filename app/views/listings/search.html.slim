@@ -51,7 +51,7 @@
             .price
               | From 
               span ${{ listing.price_per_night / 100 }}
-            .rooms
+            .rooms.portrait
               .people.room ng:switch='listing.accomodates_to'
                 .icon
                 .text ng:switch-when='1'

@@ -427,18 +427,24 @@ footer
   font-size: .9em
   .room
     overflow: auto
+    color: dark-grey
     .icon
       width: 24px
       height: 12px
-      float: left
-    .text
-      margin: -2px 0 4px 34px
-    &.people .icon
-      background-image: url(/images/people.png)
-    &.bedrooms .icon
-      background-image: url(/images/bedrooms.png)
-    &.baths .icon
-      background-image: url(/images/baths.png)
+  &.portrait
+    .room
+      .icon
+        float: left
+      .text
+        margin: -2px 0 4px 34px
+  &.landscape
+    .room, .room .icon, .room .text
+      display: inline-block
+    .room
+      .text
+        margin: 0 50px 0 18px
+        font-weight: 600
+
 
 .select2-drop
   border: thin solid light-grey !important
@@ -587,16 +593,16 @@ footer
       color: dark-grey
       text-transform: uppercase
       font-size: .8em
+      font-weight: 600
     .rooms
       margin: 25px 0 40px
       .room
-        color: dark-grey
         &.people .icon
-          background-image: url(/images/people-black.png)
+          background-image: url(/images/people-white.png)
         &.bedrooms .icon
-          background-image: url(/images/bedrooms-black.png)
+          background-image: url(/images/bedrooms-white.png)
         &.baths .icon
-          background-image: url(/images/baths-black.png)
+          background-image: url(/images/baths-white.png)
     .booking
       background-color: hsl(0, 0%, 94%)
       padding: 20px
@@ -921,7 +927,7 @@ footer
         &#description
           p
             color: darker-grey
-            margin-bottom: 30px
+            margin: 0 0 30px 2px
             &:first-of-type
               font-weight: 600
           .image
@@ -930,6 +936,81 @@ footer
               font-size: .9em
               font-style: italic
               padding: 8px
+        &#features
+          .general
+            padding: 15px
+            background-color: lighter-grey
+            border-radius: 3px
+            .title
+              color: darker-grey
+              font-weight: bold
+              text-transform: uppercase
+              font-size: .9em
+              margin-bottom: 18px
+            .rooms
+              .room
+                color: dark-grey
+                &.people .icon
+                  background-image: url(/images/people-grey.png)
+                &.bedrooms .icon
+                  background-image: url(/images/bedrooms-grey.png)
+                &.baths .icon
+                  background-image: url(/images/baths-grey.png)
+          .feature-groups
+            margin-top: 35px
+            .feature-group
+              margin: 25px 0
+              .features, .feature
+                display: inline-block
+              .title
+                color: darker-grey
+                font-weight: bold
+                font-size: .9em
+                text-transform: uppercase
+                width: 200px
+                float: left
+        .features
+          width: 400px
+          .feature
+            background-color: grey
+            padding: 8px 10px
+            margin: 0 10px 10px 0
+            border-radius: 3px
+            color: white
+            font-size: .9em
+        &#rooms
+          .room
+            min-height: 165px
+            .image
+              float: left
+              padding: 3px
+              border: thin solid light-grey
+              border-radius: 3px
+              position: relative
+              width: 125px
+              height: 125px
+              cursor: pointer
+              .num
+                background: hsl(16, 85%, 57%) url(/images/camera.png) no-repeat
+                background-position: 70% 45%
+                position: absolute
+                bottom: 10px
+                right: 0
+                width: 56px
+                height: 30px
+                box-sizing: border-box
+                padding: 5px 0 0 9px
+                font-weight: bold
+                color: white
+            .info
+              margin-left: 150px
+              .name
+                font-size: 1.25em
+                font-weight: 600
+                margin-bottom: 10px
+              .features
+                .feature
+                  display: inline-block
         &#local-area
           .top
             height: 25px

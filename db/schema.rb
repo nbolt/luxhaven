@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130815205516) do
+ActiveRecord::Schema.define(version: 20130816030752) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,11 +57,43 @@ ActiveRecord::Schema.define(version: 20130815205516) do
     t.string   "card_type"
   end
 
+  create_table "feature_groups", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "feature_types", force: true do |t|
+    t.integer  "feature_id"
+    t.string   "color"
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "features", force: true do |t|
+    t.integer  "feature_group_id"
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "features_listings", id: false, force: true do |t|
+    t.integer "feature_id"
+    t.integer "listing_id"
+  end
+
+  create_table "features_rooms", id: false, force: true do |t|
+    t.integer "feature_id"
+    t.integer "room_id"
+  end
+
   create_table "images", force: true do |t|
     t.string   "image"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "listing_id"
+    t.integer  "room_id"
   end
 
   create_table "listings", force: true do |t|
@@ -116,6 +148,13 @@ ActiveRecord::Schema.define(version: 20130815205516) do
     t.date     "check_in"
     t.date     "check_out"
     t.integer  "listing_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "rooms", force: true do |t|
+    t.integer  "listing_id"
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -21,8 +21,8 @@
         .tab Features
       a href='#rooms' onclick='return false' tab=''
         .tab Rooms
-      a href='#home-truths' onclick='return false' tab=''
-        .tab Home Truths
+      /a href='#home-truths' onclick='return false' tab=''
+      /  .tab Home Truths
       a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
         .tab Local Area
       .bar
@@ -71,6 +71,48 @@
               img src='#{p.image.image.send(p.image.version).url}'
               .caption= p.image.caption
           p= p.content
+      .tab#features
+        .general
+          .title General features
+          .rooms.landscape
+            .people.room ng:switch='listing.accomodates_to'
+              .icon
+              .text ng:switch-when='1'
+                | 1 person
+              .text ng:switch-default=''
+                | {{ listing.accomodates_from }} - {{ listing.accomodates_to }} people
+            .bedrooms.room ng:switch='listing.bedrooms'
+              .icon
+              .text ng:switch-when='1'
+                | 1 bedroom
+              .text ng:switch-default=''
+                | {{ listing.bedrooms }} bedrooms
+            .baths.room ng:switch='listing.baths'
+              .icon
+              .text ng:switch-when='1'
+                | 1 bath
+              .text ng:switch-default=''
+                | {{ listing.baths }} baths
+        .feature-groups
+          - FeatureGroup.all.each do |fg|
+            - features = listing.features.select{|f| f.feature_group == fg}
+            - unless features.empty?
+              .feature-group
+                .title= fg.name
+                .features
+                  - features.each do |f|
+                    .feature= f.name
+      .tab#rooms
+        - listing.rooms.each do |room|
+          .room
+            .image
+              img src='#{room.images.first.image.thumb.url}'
+              .num #{room.images.count}
+            .info
+              .name= room.name
+              .features
+                - room.features.each do |f|
+                  .feature= f.name
       .tab#local-area
         .top
           a target='_window' href="http://maps.google.com/maps?q=&layer=c&cbp=11,0,0,0,0&cbll=#{listing.address.latitude},#{listing.address.longitude}"
@@ -92,7 +134,7 @@
         span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
         span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
         span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
-      .rooms
+      .rooms.portrait
         .people.room ng:switch='listing.accomodates_to'
           .icon
           .text ng:switch-when='1'
