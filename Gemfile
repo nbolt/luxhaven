@@ -8,8 +8,10 @@ gem 'puma'
 group :assets do
   gem 'therubyracer', platforms: :ruby
   gem 'coffee-rails'
+  gem 'sass-rails'
   gem 'uglifier'
   gem 'angularjs-rails'
+  gem 'fotoramajs'
 end
 
 group :development do
@@ -51,4 +53,5 @@ gem 'fog'
 gem 'geocoder'
 gem 'kaminari'
 gem 'rails_12factor'
+gem 'rack-rewrite'
 #gem 'breach-mitigation-rails'

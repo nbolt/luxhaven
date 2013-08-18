@@ -1,9 +1,6 @@
-.images unslider=''
-  ul
-    - listing.images.each do |i|
-      li style="background: url(#{i.image}) no-repeat center"
+#header-image style="background: url(#{listing.header_image}) no-repeat center"
 
-.listing-content ng:controller='listing'
+#listing-content ng:controller='listing'
   .title-container
     .price-container
       .from From 
@@ -19,10 +16,12 @@
         .tab Description
       a href='#features' onclick='return false' tab=''
         .tab Features
+      a href='#gallery' onclick='return false' tab=''
+        .tab Gallery
       a href='#rooms' onclick='return false' tab=''
         .tab Rooms
-      /a href='#home-truths' onclick='return false' tab=''
-      /  .tab Home Truths
+      a href='#home-truths' onclick='return false' tab=''
+        .tab Home Truths
       a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
         .tab Local Area
       .bar
@@ -102,6 +101,11 @@
                 .features
                   - features.each do |f|
                     .feature= f.name
+      .tab#gallery
+        .fotorama data-nav='thumbs' data-loop='true' data-keyboard='true'
+          - listing.images.each do |i|
+            a href='#{i.image}' data-caption='#{i.caption}'
+              img src='#{i.image.thumb}'
       .tab#rooms
         - listing.rooms.each do |room|
           .room
@@ -113,6 +117,7 @@
               .features
                 - room.features.each do |f|
                   .feature= f.name
+      .tab#home-truths
       .tab#local-area
         .top
           a target='_window' href="http://maps.google.com/maps?q=&layer=c&cbp=11,0,0,0,0&cbll=#{listing.address.latitude},#{listing.address.longitude}"

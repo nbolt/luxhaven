@@ -15,7 +15,11 @@
 //= require turbolinks
 //= require angular
 //= require leaflet
+//= require moment.min
+//= require fotorama
 //= require_tree .
+
+$.cookie.json = true
 
 _.mixin({
   rotate: function(array, n, guard) {
@@ -26,4 +30,4 @@ _.mixin({
     head = array.slice(0, n)
     return tail.concat(head)
   }
-});
+})

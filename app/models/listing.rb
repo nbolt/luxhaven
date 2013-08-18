@@ -11,6 +11,7 @@ class Listing < ActiveRecord::Base
   end
 
   mount_uploader :search_image, SearchImageUploader
+  mount_uploader :header_image, HeaderImageUploader
 
   belongs_to :user
   belongs_to :region

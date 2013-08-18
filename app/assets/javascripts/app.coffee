@@ -68,22 +68,19 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   angular.element('footer').css('display', 'none')
 
   $scope.checkInDate = (date) ->
-    if $scope.dates.check_out
-      if moment() > moment(date)
-        [false, '']
-      else
-        [true, '']
+    if moment() > moment(date)
+      [false, '']
     else
       [true, '']
 
   $scope.checkOutDate = (date) ->
     if $scope.dates.check_in
-      if $scope.dates.check_in >= date || moment() > moment(date).subtract 'days', 1
+      if moment($scope.dates.check_in) >= moment(date).subtract('days', 1) || moment() > moment(date).subtract 'days', 2
         [false, '']
       else
         [true, '']
     else
-      [true, '']
+      [false, '']
 
   urlAttrs = ->
     str = '?'
@@ -129,8 +126,8 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     unless o == n
       check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
       check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
-      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: '/' }
-      if $scope.dates.check_out && moment($scope.dates.check_out) <= moment(parseInt(check_in)*1000)
+      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region.slug}" }
+      if $scope.dates.check_out && moment($scope.dates.check_out).subtract('days', 1) <= moment(parseInt(check_in)*1000)
         $scope.dates.check_out = null
     ), true
 
@@ -279,34 +276,34 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
         $scope.signInModal -> bookModal() if $scope.signedIn
 
   $scope.checkInDate = (date) ->
-    if $scope.listing
+    if $scope.listing && date
       valid = (_($scope.listing.bookings).every (booking) ->
           booking.check_out   <= moment(date) ||
-          booking.check_in    >  moment(date).add 'days', 2
-        ) && moment()         <  moment(date)
+          booking.check_in    >  moment(date).add 'days', 1
+        ) && moment()         <  moment(date) &&
+             moment(date)     <  moment($scope.dates.check_out).subtract 'days', 1
       valid && [true, ''] || [false, '']
     else
       [false, '']
 
   $scope.checkOutDate = (date) ->
-    if $scope.listing
+    if $scope.listing && $scope.dates.check_in && date
+      range = moment().range moment($scope.dates.check_in), moment(date).subtract('days', 1)
       valid = (_($scope.listing.bookings).every (booking) ->
-          booking.check_out  < moment(date) ||
-          booking.check_in   > moment(date)
-        ) && moment()        < moment(date).subtract('days', 1) &&
-             ($scope.dates.check_in < date || !$scope.dates.check_in)
-
+          !range.contains(moment booking.check_in)
+        ) && moment()     < moment(date).subtract('days', 1) &&
+             moment(date) > moment($scope.dates.check_in).add 'days', 1
       valid && [true, ''] || [false, '']
     else
       [false, '']
 
   $scope.$watch 'dates', ((n, o) ->
     unless o == n
-      check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
-      check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
-      #$cookieStore.put 'dates', { check_in: check_in, check_out: check_out }
-      if $scope.dates.check_out && moment($scope.dates.check_out) <= moment(parseInt(check_in)*1000)
-        $scope.dates.check_out = null
+      if $scope.checkInDate($scope.dates.check_in)[0]
+        check_in  = moment($scope.dates.check_in).format  'X'
+        check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
+      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region.slug}" }
+      $scope.dates.check_out = null unless $scope.checkOutDate($scope.dates.check_out)[0]
     ), true
 
   bPopOpts =
@@ -326,6 +323,11 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('booking',  BookingCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
+  .service('$cookieStore', ->
+    @get = (name) -> $.cookie name
+    @put = (name, value, options) -> $.cookie name, value, options
+    @remove = (name) -> $.removeCookie name
+  )
   .directive('date', -> {
     scope: { date: '@date' }
     link: (scope, element, attrs) ->
@@ -352,7 +354,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   )
   .directive('unslider', -> (scope, element) ->
     element.unslider {
-      speed: 600
+      speed: 800
       delay: 7500
       dots: true
       keys: true
