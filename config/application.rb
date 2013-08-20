@@ -19,7 +19,6 @@ module Luxhaven
     # config.i18n.default_locale = :de
     config.action_mailer.delivery_method   = :postmark
     config.action_mailer.postmark_settings = { api_key: '36ce3dca-315b-4369-8bfe-17b66285b0bc' }
-    config.stripe.publishable_key = 'pk_test_8RTCDG9oe65V4VpMm5vC0mCO'
     Stylus.setup Sprockets, config.assets rescue nil
     config.middleware.insert_before(Rack::Runtime, Rack::Rewrite) do
       r301 %r{^/(.*)/$}, '/$1'

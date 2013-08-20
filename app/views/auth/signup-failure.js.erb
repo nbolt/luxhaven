@@ -1,9 +1,14 @@
-$('.auth-error').text("<%= @err.html_safe %>")
+auth_error = $('#modal .auth-error')
 
-if ($('.auth-error').css('visibility') == 'hidden') {
-  $('.auth-error').hide().css('visibility', 'visible').fadeIn()
+display_error = function(){
+  auth_error.text("<%= @err.html_safe %>")
+  auth_error.fadeIn()
+}
+
+if (auth_error.css('display') == 'none') {
+  display_error()
 } else {
-  $('.auth-error').fadeOut(400, function(){
-    $('.auth-error').hide().css('visibility', 'visible').fadeIn()
+  auth_error.fadeOut(400, function(){
+    display_error()
   })
 }

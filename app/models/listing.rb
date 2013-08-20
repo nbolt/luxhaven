@@ -6,9 +6,7 @@ class Listing < ActiveRecord::Base
 
   validates :slug, presence: true
 
-  before_create do
-    self.region_id = address.region.id
-  end
+  before_save { self.region_id = address.region.id }
 
   mount_uploader :search_image, SearchImageUploader
   mount_uploader :header_image, HeaderImageUploader

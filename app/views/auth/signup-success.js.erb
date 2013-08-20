@@ -1,6 +1,8 @@
-$('#sign-up').bPopup().close()
+$('#modal .auth-error').text('')
+$('#modal').bPopup().close()
 
 var scope = $('body').scope()
 scope.$apply(function(){
   scope.signedIn = true
+  scope.user = <%= current_user.to_json(include: :cards).html_safe %>
 })

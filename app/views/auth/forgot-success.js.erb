@@ -1,11 +1,8 @@
 auth_error = $('#modal .auth-error')
 
 display_error = function(){
-  <% if User.where(email: params[:user][:email]).first %>
-    auth_error.text('Incorrect password')
-  <% else %>
-    auth_error.text("That email is not yet registered with us")
-  <% end %>
+  auth_error.addClass('green')
+  auth_error.text("We've sent you an email with further instructions.")
   auth_error.fadeIn()
 }
 

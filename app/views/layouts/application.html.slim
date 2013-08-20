@@ -27,6 +27,35 @@ html
 
 
   body ng:controller='app'
+    #modal.modal
+    #reset.modal
+      .luxhaven
+          a
+            .logo
+              img src='/images/logo-small.png' width='25'
+            .name LuxHaven
+      = form_tag '/reset', remote: true, autocomplete: 'off' do
+        .top-message Set a new password.
+        = hidden_field_tag :token, params[:reset_token]
+        .input= password_field_tag :password, nil, placeholder: 'Password', required: true
+        .auth-error-container
+          .auth-error
+        button.green Reset Password
+    #forgot.modal
+      .luxhaven
+          a
+            .logo
+              img src='/images/logo-small.png' width='25'
+            .name LuxHaven
+      = form_tag '/forgot', remote: true, autocomplete: 'off' do
+        .top-message Enter the email associated with your account, and we'll email you a link to reset your password.
+        .input= email_field_tag :email, nil, placeholder: 'Email', required: true
+        .auth-error-container
+          .auth-error
+        button.green Send Email
+        .message
+          a ng:click='toSignin()'
+            | Return to login
     #sign-in.modal
       .luxhaven
           a
@@ -34,13 +63,14 @@ html
               img src='/images/logo-small.png' width='25'
             .name LuxHaven
       = form_for :user, url: '/signin', html: { remote: true, autocomplete: 'off' } do |f|
-        .input= f.email_field :email, placeholder: 'Email'
-        .input= f.password_field :password, placeholder: 'Password'
-        .auth-error
-        button.green Sign In
+        .input= f.email_field :email, placeholder: 'Email', required: true
+        .input= f.password_field :password, placeholder: 'Password', required: true
+        .auth-error-container
+          .auth-error
+        button.green Log in
         .message
-          a ng:click='toSignup()'
-            | Don't have an account with us? Sign up here!
+          a ng:click='toForgot()' Forgot your password?
+          a ng:click='toSignup()' Not registered? Sign up
     #sign-up.modal
       .luxhaven
           a
@@ -48,16 +78,16 @@ html
               img src='/images/logo-small.png' width='25'
             .name LuxHaven
       = form_for :user, url: '/signup', html: { remote: true, autocomplete: 'off' } do |f|
-        .input= f.text_field :firstname, placeholder: 'First Name'
-        .input= f.text_field :lastname, placeholder: 'Last Name'
-        .input= f.email_field :email, placeholder: 'Email'
-        .input= f.password_field :password, placeholder: 'Password'
-        .input= f.password_field :password_confirmation, placeholder: 'Again'
-        .auth-error
+        .input= f.text_field :firstname, placeholder: 'First Name', required: true
+        .input= f.text_field :lastname, placeholder: 'Last Name', required: true
+        .input= f.email_field :email, placeholder: 'Email', required: true
+        .input= f.password_field :password, placeholder: 'Password', required: true
+        .input= f.password_field :password_confirmation, placeholder: 'Confirm Password', required: true
+        .auth-error-container
+          .auth-error
         button.green Sign Up
         .message
-          a ng:click='toSignin()'
-            | Already have an account with us? Sign in here!
+          a ng:click='toSignin()' Already registered? Log in
     header
       .pad
         nav.luxhaven
@@ -71,14 +101,18 @@ html
             | Properties
           a List Your Property
         nav.right
-          a About
-          a FAQs
-          a Contact
+          .links
+            a About
+            a FAQs
+            a Contact
+          - if current_user && current_user.is_admin?
+            a href='/listings/manage'
+              button.green Manage Listings
           ng:switch on='signedIn'
             button.green ng:click='signInModal()' ng:switch-when='false'
-              | Sign In
+              | Log In
             button.green ng:click='signOut()' ng:switch-when='true'
-              | Sign Out
+              | Log Out
     .body= yield
-    - unless request.fullpath == '/'
+    - unless request.fullpath == '/' || request.fullpath == '/listings/manage'
       = render 'shared/footer'

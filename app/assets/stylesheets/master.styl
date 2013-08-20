@@ -102,6 +102,11 @@ body
   .luxhaven
     overflow: auto
     margin: 40px auto
+  .top-message
+    width: 310px
+    margin: 0 auto 25px
+    font-size: .9em
+    color: darker-grey
   .message
     text-align: center
     margin-top: 12px
@@ -111,13 +116,27 @@ body
       &:hover
         color: green
         cursor: pointer
-  .auth-error
-    visibility: hidden
-    text-align: center
-    color: red
-    font: 1em proxima-nova
-    margin-top: 16px
+      &:first-child
+        float: left
+        margin-left: 20px
+      &:last-child
+        float: right
+        margin-right: 20px
+  &.sign-up, &.forgot
+    .message a
+      float: none
+  .auth-error-container
     height: 19px
+    margin-top: 16px
+    .auth-error
+      display: none
+      text-align: center
+      color: red
+      font: 1em proxima-nova
+      &.green
+        color: green
+      &.small
+        font-size: .9em
   form
     button
       width: 100%
@@ -132,10 +151,14 @@ body
       input
         color: hsl(0, 0%, 55%)
         width: 100%
-  &#sign-in
+  &.sign-in
     height: 325px
-  &#sign-up
+  &.sign-up
     height: 460px
+  &.forgot
+    height: 335px
+  &#reset
+    height: 305px
 
 .luxhaven
   width: 140px
@@ -165,7 +188,6 @@ header
     nav
       display: inline-block
       &.right, &.left
-        margin-left: 50px
         a
           font: .9em proxima-nova
           color: hsl(0, 0%, 37%)
@@ -179,11 +201,14 @@ header
             color: green
       &.right
         float: right
-        a
-          margin-left: 15px
-          font-weight: 400
-          &:hover
-            border-bottom: thin solid green
+        margin-top: 2px
+        .links
+          display: inline-block
+          a
+            margin-left: 15px
+            font-weight: 400
+            &:hover
+              border-bottom: thin solid green
         button
           margin-left: 20px
 
@@ -455,6 +480,11 @@ footer
   &.continuous
     border-top: none !important
     
+.select2-drop-above
+  .select2-choices, .select2-choice
+    background-image: none !important
+    border: thin solid light-grey !important
+
 .select2-bordered
   .select2-container
     margin-bottom: 10px
@@ -1049,3 +1079,47 @@ footer
           border-bottom: thin solid white
           font-weight: bold
           color: darker-grey
+
+#manage-container
+  width: 700px
+  margin: 125px auto 40px
+  input
+    color: darker-grey
+  .top
+    text-align: center
+    margin-bottom: 50px
+    span
+      color: darker-grey
+      text-transform: uppercase
+      font-size: .9em
+      margin: 0 20px
+  #listing-form
+    .submit
+      button
+        margin-top: 25px
+    .rsp
+      display: inline-block
+      color: green
+      margin-left: 40px
+      font-weight: 300
+      font-family: proxima-nova
+      opacity: 0
+      transition: opacity .5s
+    .field
+      margin-bottom: 15px
+      .label
+        color: darker-grey
+        margin-top: 8px
+        float: left
+        width: 145px
+        font-size: 1.1em
+        font-weight: 600
+      .control-container
+        margin-left: 155px
+        .control
+          width: 70px
+          display: inline-block
+          input[type=text]
+            width: 300px
+          .select2-container
+            width: 185px !important

@@ -4,12 +4,14 @@ class ListingsController < ApplicationController
   expose(:region) { Region.friendly.find params[:city] }
   expose(:listing) do
     region = Region.friendly.find params[:city]
-    Listing.where(region_id: region.id).friendly.find params[:listing_title]
+    Listing.where(region_id: region.id).friendly.find params[:listing_slug]
   end
+
+  before_filter :admin, only: [:manage, :update, :create]
   
   def search
     expires_in 1.hour, public: true
-    
+
     response.headers['Vary'] = 'Accept'
     respond_to do |format|
       format.html
@@ -75,6 +77,30 @@ class ListingsController < ApplicationController
       capture_message booking.errors.messages.first[1][0]
       render json: { success: false, error: booking.errors.messages.first[1][0] }
     end
+  end
+
+  def update
+    JSON.parse(request.body.read)['listing_updates'].each do |attr, value|
+      if value.class == Hash
+        case attr
+        when 'address'
+          address = listing.address
+          value.each {|attr, value| address[attr] = value}
+          address.save
+        end
+      else
+        listing[attr] = value
+      end
+    end
+    listing.save
+    render nothing: true
+  end
+
+  def create
+  end
+
+  def admin
+    redirect_to '/' unless current_user && current_user.is_admin?
   end
 
 end

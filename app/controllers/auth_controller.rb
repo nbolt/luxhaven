@@ -26,6 +26,28 @@ class AuthController < ApplicationController
     render json: { token: form_authenticity_token }
   end
 
+  def forgot    
+    user = User.where(email: params[:email]).first
+    if user
+      UserMailer.forgot(user).deliver!
+      render 'forgot-success'
+    else
+      render 'forgot-failure'
+    end
+  end
+
+  def reset
+    user = User.where(reset_password_token: params[:token]).first
+    user.change_password! params[:password]
+    auto_login user
+    render 'reset-success'
+  end
+
+  def check
+    user = User.where(reset_password_token: params[:token]).first
+    render json: { success: user && true || false }
+  end
+
   def auth
     render json: { success: logged_in?, user: current_user && current_user.to_json(include: :cards) }
   end

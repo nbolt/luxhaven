@@ -1,0 +1,25 @@
+auth_error = $('#reset.modal .auth-error')
+
+display_error = function(){
+  auth_error.addClass('green').addClass('small')
+  auth_error.text("Your new password has been set, and we've signed you in.")
+  auth_error.fadeIn()
+}
+
+if (auth_error.css('display') == 'none') {
+  display_error()
+} else {
+  auth_error.fadeOut(400, function(){
+    display_error()
+  })
+}
+
+setTimeout(function(){
+  $('#reset.modal').bPopup().close()
+
+  var scope = $('body').scope()
+  scope.$apply(function(){
+    scope.signedIn = true
+    scope.user = <%= current_user.to_json(include: :cards).html_safe %>
+  })
+}, 5000)

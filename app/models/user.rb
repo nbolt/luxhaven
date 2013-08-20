@@ -28,6 +28,10 @@ class User < ActiveRecord::Base
     !listings.empty?
   end
 
+  def is_admin?
+    ['c@chrisbolton.me'].select {|e| email == e}
+  end
+
   def self.hosts
     User.select{|u|!u.listings.empty?}
   end

@@ -1,0 +1,47 @@
+#manage-container ng:controller='manage'
+  .top
+    = text_field_tag :url, nil, placeholder: 'Enter listing url', style: 'width:500px;text-align:center', 'ng:model' => 'url'
+    span Or
+    button.green New Listing
+  #listing-form ng:show='listing'
+    .section
+      .field
+        .label Title
+        .control-container
+          .control= text_field_tag :title, nil, 'ng:model' => 'listing_updates.title'
+      .field
+        .label Street 1
+        .control-container
+          .control= text_field_tag :street1, nil, 'ng:model' => 'listing_updates.address.street1'
+      .field
+        .label Street 2
+        .control-container
+          .control= text_field_tag :street2, nil, 'ng:model' => 'listing_updates.address.street2'
+      .field
+        .label City
+        .control-container
+          .control= text_field_tag :city, nil, 'ng:model' => 'listing_updates.address.city', id: 'city_name'
+      .field
+        .label State
+        .control-container.select2-bordered
+          .control= select_tag :state, options_for_select(STATES.map{|s|[s[1], s[0]]}),
+            { :'ui:select2' => '', :'ng:model' => 'lising_updates.address.state', select2bordered: '' }
+      .field
+        .label Zip
+        .control-container
+          .control= text_field_tag :zip, nil, 'ng:model' => 'listing_updates.address.zip'
+      .field
+        .label Neighborhood
+        .control-container
+          .control= text_field_tag :neighborhood, nil, 'ng:model' => 'listing_updates.address.neighborhood'
+      .field
+        .label County
+        .control-container
+          .control= text_field_tag :county, nil, 'ng:model' => 'listing_updates.address.county'
+      .field
+        .label Price per night
+        .control-container
+          .control= text_field_tag :price_per_night, nil, 'ng:model' => 'listing_updates.price_per_night'
+      .submit
+        button.green ng:click='update()' Update Listing
+        .rsp Updated

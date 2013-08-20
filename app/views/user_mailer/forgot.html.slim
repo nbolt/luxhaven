@@ -1,0 +1,24 @@
+html
+  body
+    | Hi #{@user.firstname},
+    br
+    br
+    | We've received a request to reset your password. If you didn't make the request, just ignore this email. Otherwise, 
+    | you can reset your password using this link:
+    br
+    br
+    | www.luxhaven.co/?reset_token=#{@user.reset_password_token}
+    br
+    br
+    | Thanks,
+    br
+    | The Luxhaven Team
+    br
+    br
+    br
+    br
+    | Sent from Luxhaven HQ in Los Angeles, CA, USA
+    br
+    | +13109547948
+    br
+    | hello@luxhaven.com

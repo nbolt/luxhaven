@@ -8,6 +8,7 @@ SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page']
 AppCtrl = ($scope, $http, $q, $compile) ->
   $scope.signinContent = angular.element('#sign-in').html()
   $scope.signupContent = angular.element('#sign-up').html()
+  $scope.forgotContent = angular.element('#forgot').html()
   $scope.auth = $q.defer()
 
   $http.post('/auth').success (rsp) ->
@@ -20,29 +21,28 @@ AppCtrl = ($scope, $http, $q, $compile) ->
       $scope.auth.reject()
 
   $scope.signInModal = (callback) ->
-    angular.element('#sign-in').bPopup {
+    angular.element('#modal').bPopup {
       onOpen:  ->
         angular.element('body').css('overflow', 'hidden')
+        $scope.toSignin()
       onClose: ->
         angular.element('body').css('overflow', 'auto')
-        angular.element('#sign-in').html $compile($scope.signinContent)($scope)
-        angular.element('#sign-up').html $compile($scope.signupContent)($scope)
         callback() if callback
       modalColor: 'white'
       opacity: 0.65
     }
 
   $scope.toSignup = ->
-    angular.element('#sign-in').attr('id', 'signup')
-    angular.element('#sign-up').attr('id', 'sign-in')
-    angular.element('#signup').attr('id', 'sign-up')
-    angular.element('#sign-up').html $compile($scope.signupContent)($scope)
+    angular.element('#modal').html $compile($scope.signupContent)($scope)
+    angular.element('#modal').removeClass('sign-in').removeClass('forgot').addClass('sign-up')
 
   $scope.toSignin = ->
-    angular.element('#sign-up').attr('id', 'signin')
-    angular.element('#sign-in').attr('id', 'sign-up')
-    angular.element('#signin').attr('id', 'sign-in')
-    angular.element('#sign-in').html $compile($scope.signinContent)($scope)
+    angular.element('#modal').html $compile($scope.signinContent)($scope)
+    angular.element('#modal').removeClass('sign-up').removeClass('forgot').addClass('sign-in')
+
+  $scope.toForgot = ->
+    angular.element('#modal').html $compile($scope.forgotContent)($scope)
+    angular.element('#modal').removeClass('sign-in').removeClass('sign-up').addClass('forgot')
 
   $scope.signOut = ->
     $http.post('/signout').success (rsp) ->
@@ -51,10 +51,25 @@ AppCtrl = ($scope, $http, $q, $compile) ->
       $http.defaults.headers.common['X-CSRF-Token'] = rsp.token
       angular.element('meta[name=csrf-token]').attr 'content', rsp.token
 
+  reset_token = $.url().param 'reset_token'
+  if reset_token
+    $http.get("/check_reset_token?token=#{reset_token}").success (rsp) ->
+      if rsp.success
+        angular.element('#reset.modal').bPopup {
+          onOpen:  ->
+            angular.element('body').css('overflow', 'hidden')
+          onClose: ->
+            angular.element('body').css('overflow', 'auto')
+          modalColor: 'white'
+          opacity: 0.65
+        }
+
+
 HomeCtrl = ($scope, $http, $window) ->
   angular.element('#content-below-container')
     .css('margin-top', angular.element($window).height())
     .css('display', 'block')
+
 
 SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.minPrice = null
@@ -147,6 +162,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   if dates
     $scope.dates.check_in  = new Date(parseInt(dates.check_in) * 1000)  if dates.check_in
     $scope.dates.check_out = new Date(parseInt(dates.check_out) * 1000) if dates.check_out
+
 
 BookingCtrl = ($scope, $http, $timeout, $q) ->
   $scope.booking =
@@ -315,12 +331,46 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     opacity: 0.65
 
 
+ManageCtrl = ($scope, $http, $timeout) ->
+  $scope.listing_updates = {}
+
+  $scope.update = ->
+    $http(
+      method: 'PATCH'
+      url:    $scope.url
+      data:   { listing_updates: $scope.listing_updates }
+    ).success ->
+      angular.element('.rsp').css 'opacity', 1
+      $timeout(
+        (-> angular.element('.rsp').css 'opacity', 0),
+        5000
+      )
+
+  $scope.$watch 'url', (n, o) ->
+    if o != n && $scope.url
+      $http.get($scope.url).success (listing) ->
+        $scope.listing = listing
+        for attr, value of listing
+          if typeof(value) == 'object'
+            for a, v of value
+              el = angular.element("#listing-form [name=#{a}]")
+              if el.is 'select'
+                el.select2 'val', v
+              else
+                el.val v
+          else
+            angular.element("#listing-form input[name=#{attr}]").val value
+    else
+      $scope.listing = null
+
+
 app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask'])
   .controller('app',      AppCtrl)
   .controller('home',     HomeCtrl)
   .controller('listings', SearchCtrl)
   .controller('listing',  ListingCtrl)
   .controller('booking',  BookingCtrl)
+  .controller('manage',   ManageCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
   .service('$cookieStore', ->
