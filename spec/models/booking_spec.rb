@@ -6,7 +6,7 @@ describe Booking do
 
   before(:each) do
     booking.check_in  = Date.today
-    booking.check_out = Date.today + 28.days
+    booking.check_out = Date.today + 40.days
 
     region  = Region.create
     address = Address.new
@@ -16,7 +16,7 @@ describe Booking do
     listing = Listing.new(title: 'test')
     listing.address = address
     booking.listing = listing
-    booking.listing.price_per_night = 100
+    booking.listing.price_per_night = 50000
 
     booking.user = User.new(email: 'test@luxhaven.co')
     booking.listing.user = User.new
@@ -29,25 +29,14 @@ describe Booking do
     booking.listing.region_id.should_not eq(nil)
   end
 
-  #describe 'price total' do
-  #  it 'calculates correctly for nightly' do
-  #    booking.listing.price_per_night = 100
-  #    booking.price_total.should eq(2800)
-  #  end
-
-  #  it 'calculates correctly for weekly' do
-  #    booking.listing.price_per_week = 600
-  #    booking.price_total.should eq(2400)
-  #  end
-
-  #  it 'calculates correctly for monthly' do
-  #   booking.listing.price_per_month = 2000
-  #    booking.price_total.should eq(2000)
-  #  end
-  #end
+  describe 'price total' do
+    it 'calculates the total correctly' do
+      booking.price_total.should eq(1832500)
+    end
+  end
 
   describe 'booking process' do
-    it 'books successfully' do
+    before(:each) do
       card = {
         number: '4242424242424242',
         exp_month: 12,
@@ -55,6 +44,9 @@ describe Booking do
       }
       customer = Stripe::Customer.create(card: card)
       booking.customer_id = customer.id
+    end
+
+    it 'books successfully' do
       rsp = booking.book!
       rsp.should be_instance_of(Stripe::Charge)
       booking.payment_status.should eq('charged')
@@ -64,6 +56,12 @@ describe Booking do
     it 'responds with a booking error instance correctly' do
       booking.payment_status = 'charged'
       booking.book!.should be_instance_of(BookingError)
+    end
+
+    it 'refunds successfully' do
+      booking.book!
+      booking.refund!
+      booking.payment_status.should eq('refunded')
     end
   end
 

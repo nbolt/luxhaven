@@ -18,6 +18,6 @@ class User < ActiveRecord::Base
   end
 
   def self.hosts
-    User.select{|u|!u.listings.empty?}
+    User.select{|u|u.is_host?}
   end
 end

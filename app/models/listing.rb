@@ -51,6 +51,9 @@ class Listing < ActiveRecord::Base
   end
 
   def self.recommended listings=Listing.all
+    # a pretty lame algorithm that pushes the following listings towards the top:
+    #   - listings with the most availability in the next six months
+    #   - listings with the smallest availability windows (from the host's side) in the next six months
     listings.sort_by do |listing|
       (listing.bookings.charged.select { |booking|
         booking.check_in >= Date.today && booking.check_out <= Date.today + 180.days

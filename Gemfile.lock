@@ -1,13 +1,14 @@
 GIT
   remote: git://github.com/FriendlyId/friendly_id.git
-  revision: 823c46d67984f4401eeb0ccd272acc3e9e218ace
+  revision: 684c43ea161fa0f43c8c95e75cff1cf437ba51c7
   branch: master
   specs:
-    friendly_id (5.0.0.beta2)
+    friendly_id (5.0.0.rc1)
+      activerecord (~> 4.0.0)
 
 GIT
   remote: git://github.com/NoamB/sorcery.git
-  revision: 66f76962f73c2ec0a64e8d63ae0bc586993d2553
+  revision: 3a8a2ec16fbb8f103f44b69bb2ad38f4d2d147dd
   branch: master
   specs:
     sorcery (0.8.2)
@@ -42,7 +43,7 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
-    analytics-ruby (0.3.1)
+    analytics-ruby (0.3.4)
       faraday (>= 0.8, < 0.10)
       faraday_middleware (>= 0.8, < 0.10)
       multi_json (~> 1.0)
@@ -68,12 +69,18 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.3)
+    colorize (0.5.8)
+    coveralls (0.6.7)
+      colorize
+      multi_json (~> 1.3)
+      rest-client
+      simplecov (>= 0.7)
+      thor
     decent_exposure (2.2.1)
     diff-lcs (1.2.4)
     erubis (2.7.0)
     excon (0.25.3)
-    execjs (1.4.0)
-      multi_json (~> 1.0)
+    execjs (2.0.1)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
     faraday_middleware (0.9.0)
@@ -91,7 +98,7 @@ GEM
     foreigner (1.4.2)
       activerecord (>= 3.0.0)
     formatador (0.2.4)
-    fotoramajs (4.3.0.1)
+    fotoramajs (4.3.3)
       jquery-rails (>= 2.1.0)
       sprockets (>= 2)
     geocoder (1.1.8)
@@ -99,7 +106,7 @@ GEM
     hike (1.2.3)
     httpauth (0.2.0)
     i18n (0.6.5)
-    jbuilder (1.5.0)
+    jbuilder (1.5.1)
       activesupport (>= 3.0.0)
       multi_json (>= 1.2.0)
     jquery-rails (3.0.4)
@@ -111,7 +118,7 @@ GEM
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
-    libv8 (3.11.8.17)
+    libv8 (3.16.14.3)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -138,7 +145,7 @@ GEM
     postmark (1.0.1)
       json
       rake
-    postmark-rails (0.5.1)
+    postmark-rails (0.5.2)
       actionmailer (>= 3.0.0)
       postmark (~> 1.0)
     pry (0.9.12.2)
@@ -218,7 +225,7 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (~> 2.8)
-    stripe (1.8.5)
+    stripe (1.8.6)
       multi_json (>= 1.0.4, < 2)
       rest-client (~> 1.4)
     stripe-rails (0.2.5)
@@ -231,8 +238,8 @@ GEM
     sucker_punch (1.0.1)
       celluloid (~> 0.14.1)
     temple (0.6.6)
-    therubyracer (0.11.4)
-      libv8 (~> 3.11.8.12)
+    therubyracer (0.12.0)
+      libv8 (~> 3.16.14.0)
       ref
     thor (0.18.1)
     thread_safe (0.1.2)
@@ -245,7 +252,7 @@ GEM
     turbolinks (1.3.0)
       coffee-rails
     tzinfo (0.3.37)
-    uglifier (2.1.2)
+    uglifier (2.2.1)
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
     uuidtools (2.1.4)
@@ -260,6 +267,7 @@ DEPENDENCIES
   carrierwave
   clockwork
   coffee-rails
+  coveralls
   decent_exposure
   fog
   foreigner
@@ -283,7 +291,6 @@ DEPENDENCIES
   sass-rails
   sentry-raven
   shoulda-matchers
-  simplecov
   slim
   sorcery!
   stripe

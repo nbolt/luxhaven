@@ -25,7 +25,7 @@ group :test do
   gem 'shoulda-matchers'
 end
 
-gem 'simplecov', :require => false, :group => :test
+gem 'coveralls', require: false, group: :test
 
 gem 'rails_12factor', group: :production
 gem 'rspec-rails', group: [:development, :test]

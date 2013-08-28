@@ -163,9 +163,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       10
     )
 
-  $scope.$watch 'region', (n, o) ->
-    unless o == n
-      window.location.href = "/#{$scope.region}"
+  $scope.$watch 'region', (n, o) -> window.location.href = "/#{$scope.region}" unless o == n
 
   watch SINGLE_VALUE_ATTRS
   _(MULTIPLE_VALUE_ATTRS).each (attrs) -> watch attrs
@@ -315,8 +313,7 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
       valid = (_($scope.listing.bookings).every (booking) ->
           booking.check_out   <= moment(date) ||
           booking.check_in    >  moment(date).add 'days', 1
-        ) && moment()         <  moment(date) &&
-             moment(date)     <  moment($scope.dates.check_out).subtract 'days', 1
+        ) && moment()         <  moment(date)
       valid && [true, ''] || [false, '']
     else
       [false, '']
@@ -533,10 +530,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     @put = (name, value, options) -> $.cookie name, value, options
     @remove = (name) -> $.removeCookie name
   )
-  .directive('date', ->
-    scope: { date: '@date' }
-    link: (scope, element, attrs) ->
-      element.text moment(scope.date).format('ddd, Do MMM YYYY')
+  .directive('date', -> (scope, element, attrs) ->
+    scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
+      element.text moment(n).format('ddd, Do MMM YYYY')
   )
   .directive('tab', -> (scope, element, attrs) ->
     element.click ->
