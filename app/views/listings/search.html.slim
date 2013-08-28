@@ -1,4 +1,4 @@
-#city.head-image style="background: url(/images/#{params[:city]}.jpg) no-repeat center"
+#city.head-image style="background: url(#{region.image}) no-repeat center"
   .overlay-container
     .overlay
       .title= region.name
@@ -7,8 +7,8 @@
   .left
     #filters.select2-bordered
       .title Explore Results
-      = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.id]}),
-        { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region.id', select2bordered: '' }
+      = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.slug]}),
+        { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region', select2bordered: '' }
       = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '{beforeShowDay:checkInDate}',  :'ng:model' => 'dates.check_in'
       = text_field_tag :check_out, nil, placeholder: 'Check Out', :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'dates.check_out'
       #price.slider slider=''

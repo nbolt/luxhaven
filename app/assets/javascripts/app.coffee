@@ -127,6 +127,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       $scope.size = rsp.size
       $scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 5
       angular.element('footer').css 'display', 'block'
+  fetch_listings()
 
   $scope.next = ->
     $scope.page = parseInt($scope.page) + 1
@@ -154,12 +155,18 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.$watch 'sort', (n, o) -> fetch_listings() unless o == n
 
   $scope.$watch 'listings', ->
+    left = angular.element('#results .left')
+    right = angular.element('#results .right')
+    height = parseInt left.css('height')
     $timeout(
-      (-> angular.element('#results .left').css('height', angular.element('#results .right').height())),
+      (-> left.css('height', right.height()) if right.height() > height),
       10
     )
 
-  $scope.$watch 'region', -> fetch_listings() if $scope.region
+  $scope.$watch 'region', (n, o) ->
+    unless o == n
+      window.location.href = "/#{$scope.region}"
+
   watch SINGLE_VALUE_ATTRS
   _(MULTIPLE_VALUE_ATTRS).each (attrs) -> watch attrs
 
