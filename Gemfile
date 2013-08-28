@@ -27,6 +27,7 @@ end
 
 gem 'simplecov', :require => false, :group => :test
 
+gem 'rails_12factor', group: :production
 gem 'rspec-rails', group: [:development, :test]
 
 gem 'sorcery',       github: 'NoamB/sorcery', branch: 'master'
@@ -45,13 +46,13 @@ gem 'foreigner'
 gem 'stripe-rails'
 gem 'stripe'
 gem 'slim'
-gem 'preact'
 gem 'decent_exposure'
 gem 'clockwork'
 gem 'carrierwave'
 gem 'fog'
 gem 'geocoder'
 gem 'kaminari'
-gem 'rails_12factor', group: :production
 gem 'rack-rewrite'
+gem 'sucker_punch'
+gem 'analytics-ruby'
 #gem 'breach-mitigation-rails'

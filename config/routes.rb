@@ -1,9 +1,14 @@
 Luxhaven::Application.routes.draw do
 
   post '/stripe-event' => 'stripe#event'
+
   post '/forgot' => 'auth#forgot'
   post '/reset' => 'auth#reset'
   get '/check_reset_token' => 'auth#check'
+  get '/features' => 'application#features'
+
+  get '/hiring' => 'home#hiring'
+
   match '/listings/:action' => 'listings', via: [:get, :post]
 
   post '/signup'  => 'auth#signup'
@@ -17,12 +22,12 @@ Luxhaven::Application.routes.draw do
   get '/booking/:booking' => 'booking#index'
   match '/booking/:booking/:action' => 'booking', via: [:get, :post]
 
+  match '/listing_management/:id/:action' => 'listing_management', via: [:get, :post, :patch]
+
   get   '/:city' => 'listings#search'
   get   '/:city/:listing_slug' => 'listings#show'
   patch '/:city/:listing_slug' => 'listings#update'
   match '/:city/:listing_slug/:action' => 'listings', via: [:get, :post]
-
-  get '/hiring' => 'home#hiring'
 
   root to: 'home#index'
 end

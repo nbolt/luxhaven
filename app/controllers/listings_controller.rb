@@ -2,9 +2,10 @@ class ListingsController < ApplicationController
   include ActionView::Helpers::NumberHelper
 
   expose(:region) { Region.friendly.find params[:city] }
+  expose(:region_listings) { Listing.where(region_id: region.id) }
   expose(:listing) do
     region = Region.friendly.find params[:city]
-    Listing.where(region_id: region.id).friendly.find params[:listing_slug]
+    region_listings.friendly.find params[:listing_slug]
   end
 
   before_filter :admin, only: [:manage, :update, :create]
@@ -16,7 +17,7 @@ class ListingsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        listings = Listing.all
+        listings = region_listings
         listings = listings.where(property_type: params[:property_type].split(','))     if params[:property_type]
         listings = listings.where('price_per_night >= ?', params[:minPrice].to_i * 100) if params[:minPrice]
         listings = listings.where('price_per_night <= ?', params[:maxPrice].to_i * 100) if params[:maxPrice]
@@ -33,7 +34,16 @@ class ListingsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        render json: listing.to_json(include: [:address, :bookings])
+        render json: listing.to_json(
+          include: {
+            images: nil,
+            bookings: nil,
+            features: nil,
+            address: { include: :region },
+            paragraphs: { include: :image },
+            rooms: { include: [:features, :images] }
+          }
+        )
       end
     end
   end
@@ -68,7 +78,7 @@ class ListingsController < ApplicationController
     if booking.save
       rsp = booking.book!
       if rsp.class == Stripe::Charge
-        render json: { success: true, stripe_id: rsp.id }
+        render json: { success: true, charge: rsp }
       else
         capture_exception rsp
         render json: { success: false, error: rsp.message }
@@ -93,14 +103,14 @@ class ListingsController < ApplicationController
       end
     end
     listing.save
-    render nothing: true
+    render json: { url: "http://#{request.domain}:#{request.port}/#{listing.slugs}" }
   end
 
   def create
   end
 
   def admin
-    redirect_to '/' unless current_user && current_user.is_admin?
+    redirect_to '/' unless current_user && current_user.admin
   end
 
 end

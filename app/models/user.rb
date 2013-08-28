@@ -10,30 +10,14 @@ class User < ActiveRecord::Base
   has_many :cards,    dependent: :destroy
 
   def name
-    self.firstname + ' ' + self.lastname
-  end
-
-  def to_preact
-    {
-      :name => self.name,
-      :email => self.email,
-      :uid => self.id,
-      :properties => {
-        :created_at => self.created_at.to_i
-      }
-    }
+    firstname + ' ' + lastname
   end
 
   def is_host?
     !listings.empty?
   end
 
-  def is_admin?
-    ['c@chrisbolton.me'].select {|e| email == e}
-  end
-
   def self.hosts
     User.select{|u|!u.listings.empty?}
   end
-
 end

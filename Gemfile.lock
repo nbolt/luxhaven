@@ -42,6 +42,10 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
+    analytics-ruby (0.3.1)
+      faraday (>= 0.8, < 0.10)
+      faraday_middleware (>= 0.8, < 0.10)
+      multi_json (~> 1.0)
     angularjs-rails (1.0.7)
     arel (4.0.0)
     atomic (1.1.13)
@@ -51,6 +55,8 @@ GEM
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
       json (>= 1.7)
+    celluloid (0.14.1)
+      timers (>= 1.0.0)
     clockwork (0.6.0)
       activesupport
       tzinfo (~> 0.3.35)
@@ -70,6 +76,8 @@ GEM
       multi_json (~> 1.0)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
+    faraday_middleware (0.9.0)
+      faraday (>= 0.7.4, < 0.9)
     fog (1.15.0)
       builder
       excon (~> 0.25.0)
@@ -133,9 +141,6 @@ GEM
     postmark-rails (0.5.1)
       actionmailer (>= 3.0.0)
       postmark (~> 1.0)
-    preact (0.7.0)
-      multi_json (~> 1.0)
-      rest-client
     pry (0.9.12.2)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -223,6 +228,8 @@ GEM
       execjs
       stylus-source
     stylus-source (0.34.1)
+    sucker_punch (1.0.1)
+      celluloid (~> 0.14.1)
     temple (0.6.6)
     therubyracer (0.11.4)
       libv8 (~> 3.11.8.12)
@@ -231,6 +238,7 @@ GEM
     thread_safe (0.1.2)
       atomic
     tilt (1.4.1)
+    timers (1.1.0)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
@@ -246,6 +254,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  analytics-ruby
   angularjs-rails
   bcrypt-ruby
   carrierwave
@@ -262,7 +271,6 @@ DEPENDENCIES
   kaminari
   pg
   postmark-rails
-  preact
   pry-rails
   puma
   rack-rewrite
@@ -281,6 +289,7 @@ DEPENDENCIES
   stripe
   stripe-rails
   stylus (~> 1.0.0.beta)
+  sucker_punch
   therubyracer
   turbolinks
   uglifier

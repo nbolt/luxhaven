@@ -31,3 +31,20 @@ _.mixin({
     return tail.concat(head)
   }
 })
+
+var is_chrome = navigator.userAgent.indexOf('Chrome') > -1; 
+var is_explorer = navigator.userAgent.indexOf('MSIE') > -1; 
+var is_firefox = navigator.userAgent.indexOf('Firefox') > -1; 
+var is_safari = navigator.userAgent.indexOf("Safari") > -1; 
+var is_opera = navigator.userAgent.indexOf("Presto") > -1; 
+if ((is_chrome)&&(is_safari)) {is_safari=false;}
+
+if (!is_firefox) {
+  XMLHttpRequest.prototype.sendAsBinary = function(datastr) {
+  var ui8a = new Uint8Array(datastr.length);
+  for (var i = 0; i < datastr.length; i++) {
+    ui8a[i] = (datastr.charCodeAt(i) & 0xff);
+  }
+  this.send(ui8a);
+}
+}

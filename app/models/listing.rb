@@ -35,6 +35,10 @@ class Listing < ActiveRecord::Base
     listings.select { |listing| !listing.conflicts?(check_in, check_out) }
   end
 
+  def slugs
+    "#{address.region.slug}/#{slug}"
+  end
+
   def slug_candidates
     [
       :title,

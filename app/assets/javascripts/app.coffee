@@ -16,6 +16,10 @@ AppCtrl = ($scope, $http, $q, $compile) ->
       $scope.signedIn = true
       $scope.user = JSON.parse rsp.user
       $scope.auth.resolve()
+      analytics.identify $scope.user.id,
+        name: "#{$scope.user.firstname} #{$scope.user.lastname}"
+        email: $scope.user.email
+        stripe_recipient: $scope.user.stripe_recipient
     else
       $scope.signedIn = false
       $scope.auth.reject()
@@ -79,6 +83,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.dates    = {}
   $scope.sort     = 'recommended'
   $scope.page = $.url().param 'page'; $scope.page ||= '1'
+  $scope.region = $.url().attr('directory').split('/')[1]
 
   angular.element('footer').css('display', 'none')
 
@@ -115,7 +120,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     $scope.page = 1 if reset_page
     angular.element('#listings .overlay').css 'display', 'block'
     angular.element.scrollTo '#results .right .top', 600, { easing: 'swing' }
-    $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) ->
+    $http.get("/#{$scope.region}#{urlAttrs()}").success (rsp) ->
       angular.element('#results .right').css 'display', 'block'
       angular.element('#listings .overlay').css 'display', 'none'
       $scope.listings = rsp.listings
@@ -141,7 +146,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     unless o == n
       check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
       check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
-      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region.slug}" }
+      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region}" }
       if $scope.dates.check_out && moment($scope.dates.check_out).subtract('days', 1) <= moment(parseInt(check_in)*1000)
         $scope.dates.check_out = null
     ), true
@@ -230,7 +235,7 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
     enable  = -> angular.element('#book-modal').find('button').prop('disabled', false)
 
     post = (card) ->
-      $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
+      $http.post("/#{$scope.region}/#{$scope.listing.slug}/book", {
         check_in: $scope.dates.check_in
         check_out: $scope.dates.check_out
         card: card
@@ -239,7 +244,10 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
           angular.element('#book-modal .loader').css 'opacity', 0
           angular.element('#book-modal .step2').removeClass 'active'
           angular.element('#book-modal .step3').addClass 'active'
-          $scope.stripe_id = rsp.stripe_id
+          $scope.stripe_id = rsp.charge.id
+          analytics.track 'booking:booked',
+            note: rsp.charge.id
+            revenue: rsp.amount
         else
           error rsp.error
 
@@ -265,7 +273,7 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
     )
 
 ListingCtrl = ($scope, $http, $cookieStore) ->
-  $scope.region    = null
+  $scope.region = $.url().attr('directory').split('/')[1]
   $scope.dates     = {}
   dates = $cookieStore.get 'dates'
   if dates
@@ -277,11 +285,15 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
       booking.check_in  = moment booking.check_in
       booking.check_out = moment booking.check_out
       booking.check_out < moment Date.today || booking.payment_status != 'charged'
+    $scope.auth.promise.then ->
+      if $scope.user
+        analytics.track 'listing:viewed',
+          note: "#{$scope.region}/#{listing.slug}"
     $scope.listing = listing
 
   bookModal = ->
     angular.element('#book-modal').bPopup bPopOpts
-    $http.get("/#{$scope.region.slug}/#{$scope.listing.slug}/pricing?check_in=#{$scope.dates.check_in}&check_out=#{$scope.dates.check_out}")
+    $http.get("/#{$scope.region}/#{$scope.listing.slug}/pricing?check_in=#{$scope.dates.check_in}&check_out=#{$scope.dates.check_out}")
       .success (rsp) -> $scope.price_total = rsp.total
 
   $scope.bookModal = ->
@@ -318,7 +330,7 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
       if $scope.checkInDate($scope.dates.check_in)[0]
         check_in  = moment($scope.dates.check_in).format  'X'
         check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
-      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region.slug}" }
+      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region}" }
       $scope.dates.check_out = null unless $scope.checkOutDate($scope.dates.check_out)[0]
     ), true
 
@@ -330,26 +342,156 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     modalColor: 'white'
     opacity: 0.65
 
+AccountCtrl = ($scope, $http, $timeout) ->
+
+  $scope.update = ->
+    $http.post('/account/update', { ssn: $scope.ssn, routing: $scope.routing, account: $scope.account })
 
 ManageCtrl = ($scope, $http, $timeout) ->
   $scope.listing_updates = {}
 
-  $scope.update = ->
+  $http.get('/features').success (features) ->$scope.features = features
+  $scope.update_info = ->
     $http(
       method: 'PATCH'
       url:    $scope.url
       data:   { listing_updates: $scope.listing_updates }
-    ).success ->
-      angular.element('.rsp').css 'opacity', 1
-      $timeout(
-        (-> angular.element('.rsp').css 'opacity', 0),
-        5000
-      )
+    ).success (rsp) -> $scope.url = rsp.url
+     # angular.element('.rsp').css 'opacity', 1
+     # $timeout(
+     #   (-> angular.element('.rsp').css 'opacity', 0),
+     #   5000
+     # )
+
+  $scope.update_paragraph = (paragraph) ->
+    $http.post "/listing_management/#{paragraph.id}/update_paragraph", { content: paragraph.content, order: paragraph.order }
+
+  $scope.remove_paragraph = (paragraph) ->
+    paragraph.unbind_align()
+    paragraph.unbind_version()
+    $http.post("/listing_management/#{paragraph.id}/remove_paragraph").success -> update_listing()
+
+  $scope.remove_image = (image) ->
+    $http.post("/listing_management/#{image.id}/remove_image").success -> update_listing()
+
+  $scope.remove_paragraph_image = (paragraph) ->
+    $http.post("/listing_management/#{paragraph.id}/remove_paragraph_image").success -> update_listing()
+
+  $scope.remove_header_image = (listing) ->
+    $http.post("/listing_management/#{listing.id}/remove_header_image").success -> update_listing()
+
+  $scope.remove_search_image = (listing) ->
+    $http.post("/listing_management/#{listing.id}/remove_search_image").success -> update_listing()
+
+  $scope.new_paragraph = ->
+    $http.post("/listing_management/#{$scope.listing.id}/new_paragraph").success (paragraph) ->
+      $scope.listing.paragraphs.push paragraph
+
+  $scope.new_room = ->
+    console.log $scope.listing
+    $http.post("/listing_management/#{$scope.listing.id}/new_room", { name: $scope.new_room_name })
+      .success -> update_listing()
+
+  $scope.update_room = (el, room) ->
+    features = angular.element(el).parent().children('.features').select2 'val'
+    $http.post("/listing_management/#{room.id}/update_room", { features: features, images: room.new_images })
+      .success -> update_listing()
+
+  $scope.update_features = (el) ->
+    features = angular.element(el).parent().children('.features').select2 'val'
+    $http.post("/listing_management/#{$scope.listing.id}/update_features", { features: features })
+      .success -> update_listing()
+
+  $scope.new_image = (el, scope) ->
+    xhr = new XMLHttpRequest()
+    xhr.overrideMimeType 'text/plain; charset=x-user-defined-binary'
+    xhr.open 'POST', "/listing_management/#{scope.listing.id}/new_image"
+
+    reader = new FileReader()
+    reader.onload = (e) -> xhr.sendAsBinary e.target.result
+
+    xhr.upload.addEventListener 'load', (-> update_listing();angular.element('.images input').val('')), false
+
+    reader.readAsBinaryString el.files[0]
+
+  $scope.new_header_image = (el, scope) ->
+    xhr = new XMLHttpRequest()
+    xhr.overrideMimeType 'text/plain; charset=x-user-defined-binary'
+    xhr.open 'POST', "/listing_management/#{scope.listing.id}/new_header_image"
+
+    reader = new FileReader()
+    reader.onload = (e) -> xhr.sendAsBinary e.target.result
+
+    xhr.upload.addEventListener 'load', (-> update_listing()), false
+
+    reader.readAsBinaryString el.files[0]
+
+  $scope.new_search_image = (el, scope) ->
+    xhr = new XMLHttpRequest()
+    xhr.overrideMimeType 'text/plain; charset=x-user-defined-binary'
+    xhr.open 'POST', "/listing_management/#{scope.listing.id}/new_search_image"
+
+    reader = new FileReader()
+    reader.onload = (e) -> xhr.sendAsBinary e.target.result
+
+    xhr.upload.addEventListener 'load', (-> update_listing()), false
+
+    reader.readAsBinaryString el.files[0]
+
+  $scope.new_paragraph_image = (el, scope) ->
+    xhr = new XMLHttpRequest()
+    xhr.overrideMimeType 'text/plain; charset=x-user-defined-binary'
+    xhr.open 'POST', "/listing_management/#{scope.paragraph.id}/new_paragraph_image"
+
+    reader = new FileReader()
+    reader.onload = (e) -> xhr.sendAsBinary e.target.result
+
+    xhr.upload.addEventListener 'load', (-> update_listing()), false
+
+    reader.readAsBinaryString el.files[0]
+
+  update_listing = (listing) ->
+    if listing
+      $scope.listing = listing
+      post_listing_update()
+    else
+      $http.get($scope.url).success (listing) ->
+        $scope.listing = listing
+        post_listing_update()
+
+  post_listing_update = ->
+    set_feature_list()
+    set_new_room_attrs()
+    bind_paragraph_images()
+
+  set_feature_list = ->
+    feature_list = _($scope.listing.features).map((f) -> f.name).join ','
+    angular.element('.section.features input').val(feature_list).trigger 'change'
+
+  set_new_room_attrs = ->
+    _($scope.listing.rooms).each (room) ->
+      room.new_features = _(room.features).map((f) -> f.name).join ','
+      room.new_images = _(_(_($scope.listing.images).sortBy((i) -> i.created_at)).map(
+        (img, index) -> if _(room.images).any((i) -> img.id is i.id) then index+1
+      )).compact().join ' '
+
+  bind_paragraph_images = (paragraphs) ->
+    _($scope.listing.paragraphs).each (paragraph) ->
+      if paragraph.image
+        paragraph.unbind_align =
+          $scope.$watch (->paragraph.image.align), (n, o) -> update_alignment(paragraph) unless o == n
+        paragraph.unbind_version =
+          $scope.$watch (->paragraph.image.version), (n, o) -> update_version(paragraph) unless o == n
+
+  update_alignment = (paragraph) ->
+    $http.post "/listing_management/#{paragraph.id}/update_alignment", { alignment: paragraph.image.align }
+
+  update_version = (paragraph) ->
+    $http.post "/listing_management/#{paragraph.id}/update_version", { version: paragraph.image.version }
 
   $scope.$watch 'url', (n, o) ->
     if o != n && $scope.url
       $http.get($scope.url).success (listing) ->
-        $scope.listing = listing
         for attr, value of listing
           if typeof(value) == 'object'
             for a, v of value
@@ -359,7 +501,12 @@ ManageCtrl = ($scope, $http, $timeout) ->
               else
                 el.val v
           else
-            angular.element("#listing-form input[name=#{attr}]").val value
+            el = angular.element("#listing-form [name=#{attr}]")
+            if el.is 'select'
+              el.select2 'val', value
+            else
+              el.val value
+        update_listing listing
     else
       $scope.listing = null
 
@@ -371,6 +518,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('listing',  ListingCtrl)
   .controller('booking',  BookingCtrl)
   .controller('manage',   ManageCtrl)
+  .controller('account',  AccountCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
   .service('$cookieStore', ->
@@ -378,11 +526,11 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     @put = (name, value, options) -> $.cookie name, value, options
     @remove = (name) -> $.removeCookie name
   )
-  .directive('date', -> {
+  .directive('date', ->
     scope: { date: '@date' }
     link: (scope, element, attrs) ->
       element.text moment(scope.date).format('ddd, Do MMM YYYY')
-  })
+  )
   .directive('tab', -> (scope, element, attrs) ->
     element.click ->
       element.parent().children('a').removeClass 'active'
@@ -401,6 +549,16 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .directive('select2bordered', -> (scope, element) ->
     element.on 'select2-opening', ->
       angular.element('.select2-drop').removeClass 'continuous'
+  )
+  .directive('select2FeatureTags', ($timeout) -> (scope, element) ->
+    $timeout ->
+      element.select2
+        tags: _(scope.features).map (f) -> f.name
+        initSelection: (e,c) -> c _(e.val().split(',')).map (f) -> { text: f, id: f }
+  )
+  .directive('initRoomImages', -> (scope, element, attrs) ->
+    nums = _(scope.room.images).map (img, index) -> index
+    element.val nums
   )
   .directive('unslider', -> (scope, element) ->
     element.unslider {

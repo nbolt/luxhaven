@@ -1,6 +1,5 @@
-.account-content
-  form action='/account/update' data-remote='true'
-    .input= text_field_tag :ssn,     nil, placeholder: 'SSN'
-    .input= text_field_tag :routing, nil, placeholder: 'Routing Number'
-    .input= text_field_tag :account, nil, placeholder: 'Account Number'
-    button.green Submit
+.account-content ng:controller='account'
+  .input= text_field_tag :ssn,     nil, placeholder: 'SSN', 'ng:model' => 'ssn'
+  .input= text_field_tag :routing, nil, placeholder: 'Routing Number', 'ng:model' => 'routing'
+  .input= text_field_tag :account, nil, placeholder: 'Account Number', 'ng:model' => 'account'
+  button.green ng:click='update()' Submit

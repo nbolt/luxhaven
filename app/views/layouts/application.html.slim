@@ -18,12 +18,22 @@ html
     script onload='try{Typekit.load()}catch(e){}' src='//use.typekit.com/sau2fxq.js'
     = csrf_meta_tags
     = yield :head
+
+    javascript:
+      var analytics;
+      init_segmentio = function(){
+        analytics=analytics||[];(function(){var e=["identify","track","trackLink","trackForm","trackClick","trackSubmit","page","pageview","ab","alias","ready","group"],t=function(e){return function(){analytics.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var n=0;n<e.length;n++)analytics[e[n]]=t(e[n])})(),analytics.load=function(e){var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src=("https:"===document.location.protocol?"https://":"http://")+"d2dq2ahtl5zl1z.cloudfront.net/analytics.js/v1/"+e+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)};
+        analytics.load("hs0tr4be48")
+      }
+
     - if Rails.env == 'production'
       javascript:
         Stripe.setPublishableKey('pk_live_1ui1Hj5TlLbtfURiSjC9KVrU')
+        init_segmentio()
     - else
       javascript:
         Stripe.setPublishableKey('pk_test_8RTCDG9oe65V4VpMm5vC0mCO')
+        analytics={};analytics.track=function(){};analytics.identify=function(){};
 
 
   body ng:controller='app'
@@ -105,9 +115,8 @@ html
             a About
             a FAQs
             a Contact
-          - if current_user && current_user.is_admin?
-            a href='/listings/manage'
-              button.green Manage Listings
+          a href='/listings/manage' ng:show='user && user.admin'
+            button.green Manage Listings
           ng:switch on='signedIn'
             button.green ng:click='signInModal()' ng:switch-when='false'
               | Log In

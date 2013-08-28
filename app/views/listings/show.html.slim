@@ -20,8 +20,8 @@
         .tab Gallery
       a href='#rooms' onclick='return false' tab=''
         .tab Rooms
-      a href='#home-truths' onclick='return false' tab=''
-        .tab Home Truths
+      /a href='#home-truths' onclick='return false' tab=''
+      /  .tab Home Truths
       a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
         .tab Local Area
       .bar
@@ -64,9 +64,9 @@
             | Our service policy
     .tab-content
       .tab#description.active
-        - listing.paragraphs.each do |p|
+        - listing.paragraphs.sort_by(&:order).each do |p|
           - if p.image
-            .image style="#{p.image.align && 'float: ' + p.image.align + (p.image.align == 'left' && '; padding-right: 20px' || p.image.align == 'right' && '; padding-left: 20px')}"
+            .image style="#{p.image.version == 'full' && '' || p.image.align && 'float: ' + p.image.align + (p.image.align == 'left' && '; padding-right: 20px' || p.image.align == 'right' && '; padding-left: 20px')}"
               img src='#{p.image.image.send(p.image.version).url}'
               .caption= p.image.caption
           p= p.content
@@ -110,7 +110,7 @@
         - listing.rooms.each do |room|
           .room
             .image
-              img src='#{room.images.first.image.thumb.url}'
+              img src='#{room.images.first && room.images.first.image.large_thumb.url}'
               .num #{room.images.count}
             .info
               .name= room.name
@@ -273,14 +273,4 @@
                 span ng:bind='stripe_id'
             button.green ng:click='close()'
               | Close
-
-javascript:
-  var loadCity = setInterval(function(){
-    if ( $('#book').scope() ) {
-      var scope = $('#book').scope()
-      scope.$apply(function(){
-        scope.region = #{region.to_json.html_safe}
-      })
-      clearInterval(loadCity)
-    }
-  })
+              

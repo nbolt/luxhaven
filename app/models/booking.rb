@@ -30,15 +30,15 @@ class Booking < ActiveRecord::Base
   def book!
     begin
       raise BookingError, "Booking ##{id} has already been processed." if payment_status
-      rsp = Stripe::Charge.create(
+      charge = Stripe::Charge.create(
         amount: price_total,
         currency: 'usd',
         description: id,
         customer: customer_id
       )
-      update_attributes payment_status: 'charged', stripe_charge_id: rsp.id
+      update_attributes payment_status: 'charged', stripe_charge_id: charge.id
       UserMailer.booked(self).deliver!
-      return rsp
+      return charge
     rescue Stripe::CardError => err
       return err
     rescue Stripe::InvalidRequestError => err
@@ -51,7 +51,8 @@ class Booking < ActiveRecord::Base
   end
 
   def refund!
-    Stripe::Charge.retrieve(stripe_charge_id).refund
+    charge = Stripe::Charge.retrieve stripe_charge_id
+    charge.refund
     update_attribute :payment_status, 'refunded'
   end
 

@@ -6,6 +6,11 @@
   #listing-form ng:show='listing'
     .section
       .field
+        .label User
+        .control-container.select2-bordered
+          .control= select_tag :user_id, options_for_select(User.all.map{|u|[u.email, u.id]}),
+            { :'ui:select2' => '', :'ng:model' => 'listing_updates.user_id', select2bordered: '' }
+      .field
         .label Title
         .control-container
           .control= text_field_tag :title, nil, 'ng:model' => 'listing_updates.title'
@@ -21,6 +26,11 @@
         .label City
         .control-container
           .control= text_field_tag :city, nil, 'ng:model' => 'listing_updates.address.city', id: 'city_name'
+      .field
+        .label Region
+        .control-container.select2-bordered
+          .control= select_tag :region_id, options_for_select(Region.all.map{|r|[r.name, r.id]}),
+            { :'ui:select2' => '', :'ng:model' => 'listing_updates.address.region_id', select2bordered: '' }
       .field
         .label State
         .control-container.select2-bordered
@@ -43,5 +53,58 @@
         .control-container
           .control= text_field_tag :price_per_night, nil, 'ng:model' => 'listing_updates.price_per_night'
       .submit
-        button.green ng:click='update()' Update Listing
+        button.green ng:click='update_info()' Update
         .rsp Updated
+    .section
+      .title Description
+      .paragraphs
+        .paragraph ng:repeat="paragraph in listing.paragraphs | orderBy:'order'"
+          .right
+            .positioning.select2-bordered ng:show='paragraph.image'
+              .field= select_tag :state, options_for_select([['Left', 'left'], ['Right', 'right']]),
+                { :'ui:select2' => '', :'ng:model' => 'paragraph.image.align', select2bordered: '' }
+              .field= select_tag :state, options_for_select([['Landscape', 'side_landscape'], ['Portrait', 'side_portrait'], ['Full', 'full']]),
+                { :'ui:select2' => '', :'ng:model' => 'paragraph.image.version', select2bordered: '' }
+            .image
+              img ng:src='{{ paragraph.image.image[paragraph.image.version].url }}' ng:show='paragraph.image'
+              .typcn.typcn-times ng:click='remove_paragraph_image(paragraph)' ng:show='paragraph.image'
+              .upload ng:hide='paragraph.image'
+                = file_field_tag :image, onchange: 'scope=angular.element(this).scope();scope.new_paragraph_image(this, scope)'
+            .buttons
+              button.green ng:click='update_paragraph(paragraph)' Update
+              button.green ng:click='remove_paragraph(paragraph)' Remove
+            .order style="margin-top: {{ paragraph.image && '3' || '13' }}px"
+              = text_field_tag :order, nil, 'ng:model' => 'paragraph.order'
+          textarea ng:model='paragraph.content'
+      button.green ng:click='new_paragraph()' Add Paragraph
+    .section
+      .title Images
+      .single-image.header
+        img ng:src='{{ listing.header_image.url }}' ng:show='listing.header_image.url'
+        .typcn.typcn-times ng:click='remove_header_image(listing)' ng:show='listing.header_image.url'
+        .upload ng:hide='listing.header_image.url'
+          = file_field_tag :image, onchange: 'scope=angular.element(this).scope();scope.new_header_image(this, scope)'
+      .single-image.search
+        img ng:src='{{ listing.search_image.url }}' ng:show='listing.search_image.url'
+        .typcn.typcn-times ng:click='remove_search_image(listing)' ng:show='listing.search_image.url'
+        .upload ng:hide='listing.search_image.url'
+          = file_field_tag :image, onchange: 'scope=angular.element(this).scope();scope.new_search_image(this, scope)'
+      .images
+        .image ng:repeat="image in listing.images | orderBy:'created_at'"
+          img ng:src='{{ image.image.large_thumb.url }}'
+          .typcn.typcn-times ng:click='remove_image(image)'
+        = file_field_tag :image, onchange: 'scope=angular.element(this).scope();scope.new_image(this, scope)'
+    .section
+      .title Rooms
+      .rooms
+        .room ng:repeat="room in listing.rooms"
+          .name ng:bind='room.name'
+          input.features ng:model='room.new_features' select2-feature-tags=''
+          input.images ng:model='room.new_images' init-room-images=''
+          button.green ng:click='update_room($event.target, room)' Update
+      input ng:model='new_room_name'
+      button.green ng:click='new_room()' Add Room
+    .section.features
+      .title Features
+      input.features ng:model='feature_list' select2-feature-tags=''
+      button.green ng:click='update_features($event.target)' Update

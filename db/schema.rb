@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130816201511) do
+ActiveRecord::Schema.define(version: 20130821041826) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -121,8 +121,8 @@ ActiveRecord::Schema.define(version: 20130816201511) do
   create_table "paragraph_images", force: true do |t|
     t.integer  "paragraph_id"
     t.string   "image"
-    t.string   "align"
-    t.string   "version"
+    t.string   "align",        default: "right"
+    t.string   "version",      default: "side_landscape"
     t.string   "caption"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -133,7 +133,7 @@ ActiveRecord::Schema.define(version: 20130816201511) do
     t.integer  "listing_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "order"
+    t.integer  "order",      default: 0
   end
 
   create_table "regions", force: true do |t|
@@ -162,7 +162,7 @@ ActiveRecord::Schema.define(version: 20130816201511) do
   end
 
   create_table "users", force: true do |t|
-    t.string   "email",                           null: false
+    t.string   "email",                                           null: false
     t.string   "crypted_password"
     t.string   "salt"
     t.string   "firstname"
@@ -183,6 +183,7 @@ ActiveRecord::Schema.define(version: 20130816201511) do
     t.string   "bank_last4"
     t.string   "bank_fingerprint"
     t.string   "phone_number"
+    t.boolean  "admin",                           default: false
   end
 
   add_index "users", ["last_logout_at", "last_activity_at"], name: "index_users_on_last_logout_at_and_last_activity_at", using: :btree

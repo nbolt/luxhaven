@@ -68,6 +68,7 @@ input
   font: .9em proxima-nova
   font-weight: bold
   padding: 8px 12px
+  outline: none
 
 html
   height: 100%
@@ -490,6 +491,7 @@ footer
     margin-bottom: 10px
     a
       background: none
+      background-color: white
       border: thin solid light-grey
       padding: 4px 12px 3px
       border-radius: 3px
@@ -1094,9 +1096,44 @@ footer
       font-size: .9em
       margin: 0 20px
   #listing-form
+    font-family: proxima-nova
     .submit
       button
         margin-top: 25px
+    .paragraph
+      height: 175px
+      width: 900px
+      textarea
+        width: 450px
+        height: 150px
+        border: thin solid light-grey
+      .right
+        float: right
+        button
+          margin-top: 16px
+          &:first-child
+            margin-right: 15px
+          &:last-child
+            margin-right: 60px
+        .order
+          float: right
+          input
+            width: 40px
+        .buttons
+          float: left
+        .positioning
+          float: right
+          .select2-container
+            width: 180px !important
+        .image
+          margin-right: 200px
+          position: relative
+          height: 110px
+          .upload
+            input
+              width: 220px
+          img
+            height: 110px
     .rsp
       display: inline-block
       color: green
@@ -1123,3 +1160,41 @@ footer
             width: 300px
           .select2-container
             width: 185px !important
+    .section
+      .typcn
+        position: absolute
+        top: 0
+        left: 0
+        color: green
+        font-size: 2.25em
+        cursor: pointer
+        img
+          width: 220px
+      > .title
+        margin: 25px 0 15px
+        font-size: 1.5em
+        font-weight: 600
+      .single-image
+        position: relative
+        margin: 25px 0
+        img
+          width: 450px
+      .images
+        .image
+          width: 125px
+          height: 125px
+          display: inline-block
+          margin: 0 10px 10px 0
+          position: relative
+          &:last-child
+            margin: 0
+        img
+          display: inline-block
+      .rooms
+        .select2-container
+          width:  500px !important
+        .room
+          margin: 20px 0
+      &.features
+        .select2-container
+          width: 500px !important

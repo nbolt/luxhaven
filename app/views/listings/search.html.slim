@@ -78,14 +78,3 @@
     .pagination
       .next.typcn.typcn-chevron-right ng:click='next()' ng:show='nextShow()'
       .prev.typcn.typcn-chevron-left ng:click='prev()' ng:show='prevShow()'
-
-javascript:
-  var loadCity = setInterval(function(){
-    if ( $('#results').scope() ) {
-      var scope = $('#results').scope()
-      scope.$apply(function(){
-        scope.region = #{region.to_json.html_safe}
-      })
-      clearInterval(loadCity)
-    }
-  })
