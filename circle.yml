@@ -13,4 +13,4 @@ deployment:
 machine:
   environment:
     STRIPE_API_KEY: sk_test_CD1Nt7HWaB65fDfUOzud5JqH
-    COVERALLS_REPO_TOKEN: ztg4Z6CStA7UFal0C9uerPQ3d4R4zCezi`
+    COVERALLS_REPO_TOKEN: ztg4Z6CStA7UFal0C9uerPQ3d4R4zCezi
