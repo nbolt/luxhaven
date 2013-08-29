@@ -62,17 +62,18 @@ class ListingsController < ApplicationController
     booking.user = current_user
     booking.check_in = params[:check_in]
     booking.check_out = params[:check_out]
-    case params[:card][0..2]
-    when 'cus' then booking.customer_id = params[:card]
-    when 'tok'
+    if params[:card][0..2] == 'cus'
+      booking.customer_id = params[:card]
+    else
       customer = Stripe::Customer.create(email: current_user.email, card: params[:card])
       booking.customer_id = customer.id
-      card = current_user.cards.create({
+      card = current_user.cards.build({
         stripe_id: customer.id,
         last4: customer.active_card.last4,
         card_type: customer.active_card.type.downcase.gsub(' ', '_'),
         fingerprint: customer.active_card.fingerprint
       })
+      card.save
       current_user.cards.sort_by(&:created_at).first.destroy if current_user.cards.count > 3
     end
     if booking.save
