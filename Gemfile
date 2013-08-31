@@ -20,6 +20,11 @@ group :development do
   gem 'pry-rails'
 end
 
+group :production do
+  gem 'rack-ssl'
+  gem 'rails_12factor'
+end
+
 group :test do
   gem 'rr'
   gem 'shoulda-matchers'
@@ -27,7 +32,6 @@ end
 
 gem 'coveralls', require: false, group: :test
 
-gem 'rails_12factor', group: :production
 gem 'rspec-rails', group: [:development, :test]
 
 gem 'sorcery',       github: 'NoamB/sorcery', branch: 'master'
