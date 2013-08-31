@@ -17,7 +17,7 @@ class ListingsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        listings = region_listings
+        listings = region_listings.where 'user_id is not null'
         listings = listings.where(property_type: params[:property_type].split(','))     if params[:property_type]
         listings = listings.where('price_per_night >= ?', params[:minPrice].to_i * 100) if params[:minPrice]
         listings = listings.where('price_per_night <= ?', params[:maxPrice].to_i * 100) if params[:maxPrice]
@@ -108,6 +108,11 @@ class ListingsController < ApplicationController
   end
 
   def create
+    listing = Listing.new(title: 'New Listing')
+    listing.address = Address.create
+    listing.address.region = Region.first
+    listing.save
+    render json: { url: "http://#{request.domain}:#{request.port}/#{listing.slugs}" }
   end
 
   def admin

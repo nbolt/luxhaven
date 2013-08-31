@@ -302,7 +302,7 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
       .success (rsp) -> $scope.price_total = rsp.total
 
   $scope.bookModal = ->
-    if $scope.dates.check_in && $scope.dates.check_out # && 2 days apart
+    if $scope.dates.check_out
       if $scope.signedIn
         bookModal()
       else
@@ -366,6 +366,32 @@ ManageCtrl = ($scope, $http, $timeout) ->
      #   (-> angular.element('.rsp').css 'opacity', 0),
      #   5000
      # )
+
+  $scope.$watch 'url', (n, o) ->
+    if o != n && $scope.url
+      $http.get($scope.url).success (listing) ->
+        for attr, value of listing
+          if typeof(value) == 'object'
+            for a, v of value
+              el = angular.element("#listing-form [name=#{a}]")
+              if el.is 'select'
+                el.select2 'val', v
+              else
+                el.val v
+          else
+            el = angular.element("#listing-form [name=#{attr}]")
+            if el.is 'select'
+              el.select2 'val', value
+            else
+              el.val value
+        update_listing listing
+    else
+      $scope.listing = null
+
+  $scope.new_listing = ->
+    $http.post('/listings/create').success (rsp) ->
+      $scope.url = rsp.url
+      update_listing()
 
   $scope.update_paragraph = (paragraph) ->
     $http.post "/listing_management/#{paragraph.id}/update_paragraph", { content: paragraph.content, order: paragraph.order }
@@ -492,27 +518,6 @@ ManageCtrl = ($scope, $http, $timeout) ->
 
   update_version = (paragraph) ->
     $http.post "/listing_management/#{paragraph.id}/update_version", { version: paragraph.image.version }
-
-  $scope.$watch 'url', (n, o) ->
-    if o != n && $scope.url
-      $http.get($scope.url).success (listing) ->
-        for attr, value of listing
-          if typeof(value) == 'object'
-            for a, v of value
-              el = angular.element("#listing-form [name=#{a}]")
-              if el.is 'select'
-                el.select2 'val', v
-              else
-                el.val v
-          else
-            el = angular.element("#listing-form [name=#{attr}]")
-            if el.is 'select'
-              el.select2 'val', value
-            else
-              el.val value
-        update_listing listing
-    else
-      $scope.listing = null
 
 
 app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask'])

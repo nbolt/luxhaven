@@ -2,7 +2,7 @@
   .top
     = text_field_tag :url, nil, placeholder: 'Enter listing url', style: 'width:500px;text-align:center', 'ng:model' => 'url'
     span Or
-    button.green New Listing
+    button.green ng:click='new_listing()' New Listing
   #listing-form ng:show='listing'
     .section
       .field
