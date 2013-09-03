@@ -3,7 +3,13 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+  expose(:region) { Region.friendly.find params[:region] }
+
   def features
     render json: Feature.all.as_json
+  end
+
+  def jregion
+    render json: region.as_json
   end
 end

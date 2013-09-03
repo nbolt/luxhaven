@@ -134,7 +134,7 @@
   #book-modal ng:controller='booking'
     .left
       img ng:src='{{ listing.search_image.url }}'
-      .title ng:bind="listing.title"
+      .title ng:bind='listing.title'
       .neighborhood
         span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
         span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'

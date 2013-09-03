@@ -11,6 +11,8 @@ Luxhaven::Application.routes.draw do
 
   match '/listings/:action' => 'listings', via: [:get, :post]
 
+  get '/region/:region' => 'application#jregion'
+
   post '/signup'  => 'auth#signup'
   post '/signin'  => 'auth#signin'
   post '/signout' => 'auth#signout'

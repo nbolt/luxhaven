@@ -16,7 +16,6 @@
 //= require angular
 //= require leaflet
 //= require moment.min
-//= require fotorama
 //= require_tree .
 
 $.cookie.json = true

@@ -280,10 +280,10 @@ footer
               text-transform: uppercase
 
 #city
-  height: 375px
+  height: 325px
   overflow: auto
   .overlay-container
-    margin-top: 200px
+    margin-top: 175px
     .overlay
       text-align: center
       .title
@@ -300,10 +300,24 @@ footer
   margin: auto
   .left
     width: 250px
-    float: left
+    display: inline-block
     padding-right: 30px
     border-right: thin solid grey
     #filters
+      .tabs
+        margin: 10px 0 20px
+        text-align: center
+        .tab
+          color: green
+          font-weight: 600
+          display: inline-block
+          margin-right: 15px
+          cursor: pointer
+          &.active
+            color: white
+            background-color: green
+            padding: 7px 10px
+            border-radius: 3px
       > .title
         text-transform: uppercase
         font: .95em proxima-nova
@@ -340,6 +354,14 @@ footer
   .right
     overflow: auto
     display: none
+    vertical-align: top
+    width: 695px
+    #map
+      position: absolute
+      top: 0
+      bottom: 0
+      right: 0
+      left: 311px
     .top
       margin: 0 29px
       padding: 19px 0 20px

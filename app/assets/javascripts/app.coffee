@@ -82,10 +82,13 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.listings = []
   $scope.dates    = {}
   $scope.sort     = 'recommended'
-  $scope.page = $.url().param 'page'; $scope.page ||= '1'
-  $scope.region = $.url().attr('directory').split('/')[1]
+  $scope.tab      = 'list'
+  $scope.page     = $.url().param 'page'; $scope.page ||= '1'
+  $scope.region   = { slug: $.url().attr('directory').split('/')[1] }
 
   angular.element('footer').css('display', 'none')
+
+  $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
 
   $scope.checkInDate = (date) ->
     if moment() > moment(date)
@@ -120,8 +123,8 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     $scope.page = 1 if reset_page
     angular.element('#listings .overlay').css 'display', 'block'
     angular.element.scrollTo '#results .right .top', 600, { easing: 'swing' }
-    $http.get("/#{$scope.region}#{urlAttrs()}").success (rsp) ->
-      angular.element('#results .right').css 'display', 'block'
+    $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) ->
+      angular.element('#results .right').css 'display', 'inline-block'
       angular.element('#listings .overlay').css 'display', 'none'
       $scope.listings = rsp.listings
       $scope.size = rsp.size
@@ -147,7 +150,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     unless o == n
       check_in  = moment($scope.dates.check_in).format  'X' if $scope.dates.check_in
       check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
-      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region}" }
+      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region.slug}" }
       if $scope.dates.check_out && moment($scope.dates.check_out).subtract('days', 1) <= moment(parseInt(check_in)*1000)
         $scope.dates.check_out = null
     ), true
@@ -163,7 +166,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       10
     )
 
-  $scope.$watch 'region', (n, o) -> window.location.href = "/#{$scope.region}" unless o == n
+  $scope.$watch 'region.slug', (n, o) -> window.location.href = "/#{$scope.region.slug}" unless o == n
 
   watch SINGLE_VALUE_ATTRS
   _(MULTIPLE_VALUE_ATTRS).each (attrs) -> watch attrs
@@ -240,7 +243,7 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
     enable  = -> angular.element('#book-modal').find('button').prop('disabled', false)
 
     post = (card) ->
-      $http.post("/#{$scope.region}/#{$scope.listing.slug}/book", {
+      $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
         check_in: $scope.dates.check_in
         check_out: $scope.dates.check_out
         card: card
@@ -278,12 +281,14 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
     )
 
 ListingCtrl = ($scope, $http, $cookieStore) ->
-  $scope.region = $.url().attr('directory').split('/')[1]
-  $scope.dates     = {}
+  $scope.region = { slug: $.url().attr('directory').split('/')[1] }
+  $scope.dates  = {}
   dates = $cookieStore.get 'dates'
   if dates
     $scope.dates.check_in  = new Date(parseInt(dates.check_in) * 1000)  if dates.check_in
     $scope.dates.check_out = new Date(parseInt(dates.check_out) * 1000) if dates.check_out
+
+  $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
 
   $http.get('').success (listing) ->
     listing.bookings = _(listing.bookings).reject (booking) ->
@@ -293,12 +298,12 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     $scope.auth.promise.then ->
       if $scope.user
         analytics.track 'listing:viewed',
-          note: "#{$scope.region}/#{listing.slug}"
+          note: "#{$scope.region.slug}/#{listing.slug}"
     $scope.listing = listing
 
   bookModal = ->
     angular.element('#book-modal').bPopup bPopOpts
-    $http.get("/#{$scope.region}/#{$scope.listing.slug}/pricing?check_in=#{$scope.dates.check_in}&check_out=#{$scope.dates.check_out}")
+    $http.get("/#{$scope.region.slug}/#{$scope.listing.slug}/pricing?check_in=#{$scope.dates.check_in}&check_out=#{$scope.dates.check_out}")
       .success (rsp) -> $scope.price_total = rsp.total
 
   $scope.bookModal = ->
@@ -329,12 +334,16 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     else
       [false, '']
 
+  $scope.list_view = ->
+
+  $scope.map_view = ->
+
   $scope.$watch 'dates', ((n, o) ->
     unless o == n
       if $scope.checkInDate($scope.dates.check_in)[0]
         check_in  = moment($scope.dates.check_in).format  'X'
         check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
-      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region}" }
+      $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region.slug}" }
       $scope.dates.check_out = null unless $scope.checkOutDate($scope.dates.check_out)[0]
     ), true
 
@@ -538,6 +547,31 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .directive('date', -> (scope, element, attrs) ->
     scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
       element.text moment(n).format('ddd, Do MMM YYYY')
+  )
+  .directive('searchTab', ($timeout) -> (scope, element, attrs) ->
+    element.click -> scope.$apply ->
+      scope.tab = attrs.searchTab
+      angular.element('.tabs .tab').removeClass 'active'
+      element.addClass 'active'
+      if attrs.searchTab == 'map' && !scope.map
+        $timeout(
+          (->
+            angular.element('#results').css('margin', '0 0 0 30px')
+            scope.map = new GMaps
+              div: 'map'
+              lat: scope.region.latitude
+              lng: scope.region.longitude
+              zoom: 12
+            _(scope.listings).each (listing) ->
+              scope.map.addMarker
+                lat: listing.address.latitude
+                lng: listing.address.longitude
+                title: listing.title
+          )
+        )
+      else if attrs.searchTab == 'list'
+        angular.element('#results').css('margin', 'auto')
+        scope.map = null
   )
   .directive('tab', -> (scope, element, attrs) ->
     element.click ->

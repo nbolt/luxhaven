@@ -3,78 +3,84 @@
     .overlay
       .title= region.name
 
-#results ng:controller='listings'
-  .left
-    #filters.select2-bordered
-      .title Explore Results
-      = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.slug]}),
-        { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region', select2bordered: '' }
-      = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '{beforeShowDay:checkInDate}',  :'ng:model' => 'dates.check_in'
-      = text_field_tag :check_out, nil, placeholder: 'Check Out', :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'dates.check_out'
-      #price.slider slider=''
-        .title Price per night
-        .selection
-          .knob-one $0
-          |  - 
-          .knob-two $5000
-        .bar
-        .knob.one
+#results-container style='position:relative'
+  #results ng:controller='listings'
+    .left
+      #filters.select2-bordered
+        .title Explore Results
+        .tabs
+          .tab.active search-tab='list' List
+          .tab search-tab='map' Map
+        = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.slug]}),
+          { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region.slug', select2bordered: '' }
+        = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '{beforeShowDay:checkInDate}',  :'ng:model' => 'dates.check_in'
+        = text_field_tag :check_out, nil, placeholder: 'Check Out', :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'dates.check_out'
+        #price.slider slider=''
+          .title Price per night
           .selection
-        .knob.two
-          .selection
-      .filter-category
-        .title Type of Property
-        .filter
-          = check_box_tag :house, 0, nil, :'ng:model' => 'house'
-          label for='house'
-            | House
-        .filter
-          = check_box_tag :apartment, 0, nil, :'ng:model' => 'apartment'
-          label for='apartment'
-            | Apartment
-  .right
-    .top
-      .sort
-        .text Sort by
-        = select_tag :sort, options_for_select([['Recommended', 'recommended'], ['Price', 'price']]),
-          { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'sort', select2bordered: '' }
-      .title
-        | {{ size }} places in Los Angeles
-    #listings
-      .overlay
-        .loader
-          i
-      a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
-        .listing
-          .picture ng:style="{'background-image': 'url(' + listing.search_image.url + ')'}"
-          .info-box
-            .price
-              | From 
-              span ${{ listing.price_per_night / 100 }}
-            .rooms.portrait
-              .people.room ng:switch='listing.accomodates_to'
-                .icon
-                .text ng:switch-when='1'
-                  | 1 person
-                .text ng:switch-default=''
-                  | {{ listing.accomodates_from }} - {{ listing.accomodates_to }} people
-              .bedrooms.room ng:switch='listing.bedrooms'
-                .icon
-                .text ng:switch-when='1'
-                  | 1 bedroom
-                .text ng:switch-default=''
-                  | {{ listing.bedrooms }} bedrooms
-              .baths.room ng:switch='listing.baths'
-                .icon
-                .text ng:switch-when='1'
-                  | 1 bath
-                .text ng:switch-default=''
-                  | {{ listing.baths }} baths
-          .title ng:bind="listing.title"
-          .neighborhood
-            span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
-            span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
-            span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
-    .pagination
-      .next.typcn.typcn-chevron-right ng:click='next()' ng:show='nextShow()'
-      .prev.typcn.typcn-chevron-left ng:click='prev()' ng:show='prevShow()'
+            .knob-one $0
+            |  - 
+            .knob-two $5000
+          .bar
+          .knob.one
+            .selection
+          .knob.two
+            .selection
+        .filter-category
+          .title Type of Property
+          .filter
+            = check_box_tag :house, 0, nil, :'ng:model' => 'house'
+            label for='house'
+              | House
+          .filter
+            = check_box_tag :apartment, 0, nil, :'ng:model' => 'apartment'
+            label for='apartment'
+              | Apartment
+    .right ng:switch='' on='tab'
+      #map ng:switch-when='map'
+      div ng:switch-when='list'
+        .top
+          .sort
+            .text Sort by
+            = select_tag :sort, options_for_select([['Recommended', 'recommended'], ['Price', 'price']]),
+              { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'sort', select2bordered: '' }
+          .title
+            | {{ size }} places in Los Angeles
+        #listings
+          .overlay
+            .loader
+              i
+          a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
+            .listing
+              .picture ng:style="{'background-image': 'url(' + listing.search_image.url + ')'}"
+              .info-box
+                .price
+                  | From 
+                  span ${{ listing.price_per_night / 100 }}
+                .rooms.portrait
+                  .people.room ng:switch='listing.accomodates_to'
+                    .icon
+                    .text ng:switch-when='1'
+                      | 1 person
+                    .text ng:switch-default=''
+                      | {{ listing.accomodates_from }} - {{ listing.accomodates_to }} people
+                  .bedrooms.room ng:switch='listing.bedrooms'
+                    .icon
+                    .text ng:switch-when='1'
+                      | 1 bedroom
+                    .text ng:switch-default=''
+                      | {{ listing.bedrooms }} bedrooms
+                  .baths.room ng:switch='listing.baths'
+                    .icon
+                    .text ng:switch-when='1'
+                      | 1 bath
+                    .text ng:switch-default=''
+                      | {{ listing.baths }} baths
+              .title ng:bind="listing.title"
+              .neighborhood
+                span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
+                span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
+                span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
+        .pagination
+          .next.typcn.typcn-chevron-right ng:click='next()' ng:show='nextShow()'
+          .prev.typcn.typcn-chevron-left ng:click='prev()' ng:show='prevShow()'
