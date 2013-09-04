@@ -615,34 +615,45 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   )
   .directive('searchTab', ($timeout) -> (scope, element, attrs) ->
     element.click -> scope.$apply ->
-      scope.tab = attrs.searchTab
       angular.element('.tabs .tab').removeClass 'active'
       element.addClass 'active'
       if attrs.searchTab == 'map' && !scope.map
+        scope.tab = attrs.searchTab
         $timeout(
           (->
-            angular.element('#results').css('margin', '80px 0 0 30px')
-            angular.element('#results .left').css('height', angular.element(window).height() - 80).css('overflow-y', 'scroll')
-            angular.element('#city').css('display', 'none')
+            angular.element('#results').css('width', '95%')
+            angular.element('#results').css('margin-top', '245px')
+            angular.element('#results').animate({'margin-top': '80'},400,'linear')
+            angular.element('#results .left')
+              .css('height', angular.element(window).height() - 80).css('overflow-y', 'scroll')
+            angular.element('#city')
+              .css('position', 'absolute').css('right', '0').css('left', '0')
+              .fadeOut 400
             angular.element('footer').css('display', 'none')
-            scope.map = new GMaps
-              div: 'map'
-              lat: scope.region.latitude
-              lng: scope.region.longitude
-              zoom: 12
-            _(scope.listings).each (listing) ->
-              scope.map.addMarker
-                lat: listing.address.latitude
-                lng: listing.address.longitude
-                title: listing.title
+            angular.element.scrollTo 0, 400, { easing: 'swing' }
+            $timeout(
+              (-> scope.map = new GMaps
+                    div: 'map'
+                    lat: scope.region.latitude
+                    lng: scope.region.longitude
+                    zoom: 12
+                  _(scope.listings).each (listing) ->
+                    scope.map.addMarker
+                      lat: listing.address.latitude
+                      lng: listing.address.longitude
+                      title: listing.title
+              ),500)
           )
         )
       else if attrs.searchTab == 'list'
-        angular.element('#results').css('margin', 'auto')
+        angular.element('#results').css('width', '976px')
         angular.element('#results .left').css('height', 'inherit').css('overflow', 'auto')
-        angular.element('#city').css('display', 'block')
+        angular.element('#results').animate({'margin-top': '325'},400,'linear')
+        angular.element('#city').fadeIn(400, ->
+          angular.element('#city').css('position', 'relative')
+          angular.element('#results').css('margin', 'auto')
+          scope.$apply -> scope.tab = attrs.searchTab)
         angular.element('footer').css('display', 'block')
-        angular.element.scrollTo 325
         scope.map = null
   )
   .directive('tab', -> (scope, element, attrs) ->
