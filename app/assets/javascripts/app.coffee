@@ -49,12 +49,48 @@ AppCtrl = ($scope, $http, $q, $compile) ->
     angular.element('#modal').html $compile($scope.forgotContent)($scope)
     angular.element('#modal').removeClass('sign-in').removeClass('sign-up').addClass('forgot')
 
+  $scope.logIn = ->
+    $http.post('/signin', { email: $scope.email, password: $scope.password }).success (rsp) ->
+      auth_response rsp
+
+  $scope.signUp = ->
+    if $scope.firstname && $scope.lastname && $scope.email && $scope.password && $scope.password_confirmation
+      $http.post('/signup', {
+        user:
+          email: $scope.email
+          firstname: $scope.firstname
+          lastname: $scope.lastname
+          password: $scope.password
+          password_confirmation: $scope.password_confirmation
+      }).success (rsp) -> auth_response rsp
+
   $scope.signOut = ->
     $http.post('/signout').success (rsp) ->
       $scope.signedIn = false
       $scope.user = null
       $http.defaults.headers.common['X-CSRF-Token'] = rsp.token
       angular.element('meta[name=csrf-token]').attr 'content', rsp.token
+
+  auth_response = (rsp) ->
+    if rsp.success
+      angular.element('#modal .auth-error').text('')
+      angular.element('#modal').bPopup().close()
+      $scope.signedIn = true
+      $scope.user = rsp.user
+      $scope.email = null
+      $scope.firstname = null
+      $scope.lastname = null
+      $scope.password = null
+      $scope.password_confirmation = null
+    else
+      auth_error = angular.element('#modal .auth-error')
+      if auth_error.css('display') == 'none'
+        auth_error.text rsp.error_message
+        auth_error.fadeIn()
+      else
+        auth_error.fadeOut 400, ->
+          auth_error.text rsp.error_message
+          auth_error.fadeIn()
 
   reset_token = $.url().param 'reset_token'
   if reset_token
@@ -195,16 +231,45 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
 
   $scope.new_card = -> $scope.card == 'new_card'
 
-  $scope.step2 = ->
-    angular.element('#book-modal .step1').removeClass 'active'
-    angular.element('#book-modal .step2').addClass 'active'
-
-  $scope.step3 = ->
-    angular.element('#book-modal .step1').removeClass 'active'
-    angular.element('#book-modal .step2').addClass 'active'
+  $scope.step = (step) ->
+    angular.element('#book-modal .step').removeClass 'active'
+    angular.element("#book-modal .step#{step}").addClass 'active'
 
   $scope.close = ->
     angular.element('#book-modal').bPopup().close()
+
+  $scope.logIn = ->
+    $http.post('/signin', { email: $scope.email, password: $scope.password }).success (rsp) ->
+      auth_response rsp
+
+  $scope.signUp = ->
+    if $scope.firstname && $scope.lastname && $scope.email && $scope.password && $scope.password_confirmation
+      $http.post('/signup', {
+        user:
+          email: $scope.email
+          firstname: $scope.firstname
+          lastname: $scope.lastname
+          password: $scope.password
+          password_confirmation: $scope.password_confirmation
+      }).success (rsp) -> auth_response rsp
+
+  auth_response = (rsp) ->
+    if rsp.success
+      $scope.step(3)
+      $scope.email = null
+      $scope.firstname = null
+      $scope.lastname = null
+      $scope.password = null
+      $scope.password_confirmation = null
+    else
+      auth_error = angular.element('#book-modal .auth-error')
+      if auth_error.css('display') == 'none'
+        auth_error.text rsp.error_message
+        auth_error.fadeIn()
+      else
+        auth_error.fadeOut 400, ->
+          auth_error.text rsp.error_message
+          auth_error.fadeIn()
 
   error = (message) ->
     loader = angular.element('#book-modal .loader')
@@ -253,8 +318,8 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
       }).success (rsp) ->
         if rsp.success
           angular.element('#book-modal .loader').css 'opacity', 0
-          angular.element('#book-modal .step2').removeClass 'active'
-          angular.element('#book-modal .step3').addClass 'active'
+          angular.element('#book-modal .step').removeClass 'active'
+          angular.element('#book-modal .step4').addClass 'active'
           $scope.stripe_id = rsp.charge.id
           analytics.track 'booking:booked',
             note: rsp.charge.id
@@ -306,15 +371,12 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
 
   bookModal = ->
     angular.element('#book-modal').bPopup bPopOpts
+    angular.element('#book-modal .step').removeClass 'active'
+    angular.element('#book-modal .step1').addClass 'active'
     $http.get("/#{$scope.region.slug}/#{$scope.listing.slug}/pricing?check_in=#{$scope.dates.check_in}&check_out=#{$scope.dates.check_out}")
       .success (rsp) -> $scope.price_total = rsp.total
 
-  $scope.bookModal = ->
-    if $scope.dates.check_out
-      if $scope.signedIn
-        bookModal()
-      else
-        $scope.signInModal -> bookModal() if $scope.signedIn
+  $scope.bookModal = -> bookModal() if $scope.dates.check_out
 
   $scope.checkInDate = (date) ->
     if $scope.listing && date
@@ -560,7 +622,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         $timeout(
           (->
             angular.element('#results').css('margin', '80px 0 0 30px')
-            angular.element('#results .left').css('height', angular.element(window).height()).css('overflow-y', 'scroll')
+            angular.element('#results .left').css('height', angular.element(window).height() - 80).css('overflow-y', 'scroll')
             angular.element('#city').css('display', 'none')
             angular.element('footer').css('display', 'none')
             scope.map = new GMaps

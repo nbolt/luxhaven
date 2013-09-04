@@ -168,7 +168,7 @@
           span date='check_out'
     .right
       .top
-        .step.step1.active
+        .step.step1 ng:click='step(1)'
           .circle
             .num 1
           .text-container
@@ -178,13 +178,19 @@
           .circle
             .num 2
           .text-container
-            .text Payment
+            .text Auth
             .typcn.typcn-arrow-right
         .step.step3
           .circle
             .num 3
           .text-container
-            .text Summary
+            .text Payment
+            .typcn.typcn-arrow-right
+        .step.step4
+          .circle
+            .num 4
+          .text-container
+            .text Confirmation
       .content.select2-bordered
         .step.step1.active
           .section
@@ -223,9 +229,30 @@
               .control-container
                 .control= select_tag :guests, options_for_select(['Search engine', 'Social media (facebook, twitter, etc.)', 'Word of mouth', "I've stayed with LuxHaven before", "None of the above / I can't remember"]),
                   { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.where', select2bordered: '' }
-          button.green ng:click='step2()'
+          button.green ng:click='step(2)'
             | Continue
         .step.step2
+          .sign-in ng:show='user'
+            .message For security measures, please re-authorize your account.
+            form autocomplete='off'
+              .input= email_field_tag :email, nil, placeholder: 'Email', 'ng:model' => 'email'
+              .input= password_field_tag :password, nil, placeholder: 'Password', 'ng:model' => 'password'
+              .auth-error-container
+                .auth-error
+              button.green ng:click='logIn()' Log in
+          .sign-up ng:hide='user'
+            form autocomplete='off'
+              .input= text_field_tag :firstname, nil, placeholder: 'First Name', 'ng:model' => 'firstname'
+              .input= text_field_tag :lastname, nil, placeholder: 'Last Name', 'ng:model' => 'lastname'
+              .input= email_field_tag :email, nil, placeholder: 'Email', 'ng:model' => 'email'
+              .input= password_field_tag :password, nil, placeholder: 'Password', 'ng:model' => 'password'
+              .input= password_field_tag :password_confirmation, nil, placeholder: 'Confirm Password', 'ng:model' => 'password_confirmation'
+              .auth-error-container
+                .auth-error
+              button.green ng:click='signUp()' Sign Up
+              .message
+                a ng:click='toSignin()' Already registered? Log in
+        .step.step3
           .content
             .total
               .text Total
@@ -259,7 +286,7 @@
             .error
             .loader
               i
-        .step.step3
+        .step.step4
           .content
             .title Thank you for your booking!
             .total

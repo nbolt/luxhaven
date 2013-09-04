@@ -73,12 +73,12 @@ html
             .logo
               img src='/images/logo-small.png' width='25'
             .name LuxHaven
-      = form_for :user, url: '/signin', html: { remote: true, autocomplete: 'off' } do |f|
-        .input= f.email_field :email, placeholder: 'Email', required: true
-        .input= f.password_field :password, placeholder: 'Password', required: true
+      form autocomplete='off'
+        .input= email_field_tag :email, nil, placeholder: 'Email', 'ng:model' => 'email'
+        .input= password_field_tag :password, nil, placeholder: 'Password', 'ng:model' => 'password'
         .auth-error-container
           .auth-error
-        button.green Log in
+        button.green ng:click='logIn()' Log in
         .message
           a ng:click='toForgot()' Forgot your password?
           a ng:click='toSignup()' Not registered? Sign up
@@ -88,15 +88,15 @@ html
             .logo
               img src='/images/logo-small.png' width='25'
             .name LuxHaven
-      = form_for :user, url: '/signup', html: { remote: true, autocomplete: 'off' } do |f|
-        .input= f.text_field :firstname, placeholder: 'First Name', required: true
-        .input= f.text_field :lastname, placeholder: 'Last Name', required: true
-        .input= f.email_field :email, placeholder: 'Email', required: true
-        .input= f.password_field :password, placeholder: 'Password', required: true
-        .input= f.password_field :password_confirmation, placeholder: 'Confirm Password', required: true
+      form autocomplete='off'
+        .input= text_field_tag :firstname, nil, placeholder: 'First Name', 'ng:model' => 'firstname'
+        .input= text_field_tag :lastname, nil, placeholder: 'Last Name', 'ng:model' => 'lastname'
+        .input= email_field_tag :email, nil, placeholder: 'Email', 'ng:model' => 'email'
+        .input= password_field_tag :password, nil, placeholder: 'Password', 'ng:model' => 'password'
+        .input= password_field_tag :password_confirmation, nil, placeholder: 'Confirm Password', 'ng:model' => 'password_confirmation'
         .auth-error-container
           .auth-error
-        button.green Sign Up
+        button.green ng:click='signUp()' Sign Up
         .message
           a ng:click='toSignin()' Already registered? Log in
     header

@@ -4,20 +4,20 @@ class AuthController < ApplicationController
     user = User.new user_params
     if user.save
       auto_login user
-      render 'signup-success'
+      render json: { user: current_user.as_json(include: :cards), success: true }
     else
       err = user.errors.messages.first
-      @err = "#{err[0]} #{err[1][0]}"
       user.destroy
-      render 'signup-failure'
+      render json: { success: false, error_message: "#{err[0]} #{err[1][0]}".capitalize }
     end
   end
 
   def signin
-    if login(params[:user][:email], params[:user][:password], true)
-      render 'signin-success'
+    if login(params[:email], params[:password], true)
+      render json: { user: current_user.as_json(include: :cards), success: true }
     else
-      render 'signin-failure'
+      user = User.where(email: params[:email]).first
+      render json: { success: false, error_message: user && 'Incorrect password' || 'That email is not yet registered with us' }
     end
   end
 
