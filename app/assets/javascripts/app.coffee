@@ -621,7 +621,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         scope.tab = attrs.searchTab
         $timeout(
           (->
-            angular.element('#results').css('width', '95%')
+            angular.element('#results').css('width', '95%').css('background-color', 'white')
             angular.element('#results').css('margin-top', '245px')
             angular.element('#results').animate({'margin-top': '80'},400,'linear')
             angular.element('#results .left')
@@ -632,7 +632,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
             angular.element('footer').css('display', 'none')
             angular.element.scrollTo 0, 400, { easing: 'swing' }
             $timeout(
-              (-> scope.map = new GMaps
+              (-> 
+                  scope.map = new GMaps
                     div: 'map'
                     lat: scope.region.latitude
                     lng: scope.region.longitude
@@ -646,6 +647,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           )
         )
       else if attrs.searchTab == 'list'
+        angular.element('#map').hide()
         angular.element('#results').css('width', '976px')
         angular.element('#results .left').css('height', 'inherit').css('overflow', 'auto')
         angular.element('#results').animate({'margin-top': '325'},400,'linear')
