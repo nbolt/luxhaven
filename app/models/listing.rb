@@ -13,6 +13,7 @@ class Listing < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :region
+  belongs_to :district
   has_and_belongs_to_many :features
   has_many :bookings, dependent: :destroy
   has_many :images, dependent: :destroy

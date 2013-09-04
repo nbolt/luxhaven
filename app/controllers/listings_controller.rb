@@ -19,8 +19,17 @@ class ListingsController < ApplicationController
       format.json do
         listings = region_listings.where 'user_id is not null'
         listings = listings.where(property_type: params[:property_type].split(','))     if params[:property_type]
+        ['garden', 'balcony', 'smoking', 'pets', 'children', 'babies', 'toddlers', 'tv',
+         'temp_control', 'pool', 'jacuzzi', 'washer']
+          .each do |amenity|
+            listings = listings.where("#{amenity} is #{params[amenity]}") if params[amenity]
+          end
+        listings = listings.where('parking > 0') if params[:parking]
         listings = listings.where('price_per_night >= ?', params[:minPrice].to_i * 100) if params[:minPrice]
         listings = listings.where('price_per_night <= ?', params[:maxPrice].to_i * 100) if params[:maxPrice]
+        listings = listings.where('sleeps >= ?', params[:sleeps]) if params[:sleeps]
+        listings = listings.where('bedrooms >= ?', params[:beds]) if params[:beds]
+        listings = listings.where(district_id: params[:district]) unless params[:district] == '0'
         listings = Listing.available params[:check_in], params[:check_out], listings rescue nil if params[:check_in] && params[:check_out]
         listings = listings.send params[:sort]
         listings = Kaminari.paginate_array(listings).page(params[:page]).per 5

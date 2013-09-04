@@ -1,8 +1,9 @@
-MULTIPLE_VALUE_ATTRS = {
-  property_type: ['house', 'apartment']
-}
+MULTIPLE_VALUE_ATTRS =
+  property_type: ['house', 'townhouse', 'apartment']
 
-SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page']
+SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page', 'district', 'sleeps', 'beds', 'garden'
+                      'balcony', 'parking', 'smoking', 'pets', 'children', 'babies', 'toddlers', 'tv'
+                      'temp_control', 'pool', 'jacuzzi', 'washer']
 
 
 AppCtrl = ($scope, $http, $q, $compile) ->
@@ -83,6 +84,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.dates    = {}
   $scope.sort     = 'recommended'
   $scope.tab      = 'list'
+  $scope.district = '0'
   $scope.page     = $.url().param 'page'; $scope.page ||= '1'
   $scope.region   = { slug: $.url().attr('directory').split('/')[1] }
 
@@ -122,7 +124,6 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   fetch_listings = (reset_page = true) ->
     $scope.page = 1 if reset_page
     angular.element('#listings .overlay').css 'display', 'block'
-    angular.element.scrollTo '#results .right .top', 600, { easing: 'swing' }
     $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) ->
       angular.element('#results .right').css 'display', 'inline-block'
       angular.element('#listings .overlay').css 'display', 'none'
@@ -135,10 +136,12 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.next = ->
     $scope.page = parseInt($scope.page) + 1
     fetch_listings false
+    angular.element.scrollTo '#results .right .top', 600, { easing: 'swing' }
 
   $scope.prev = ->
     $scope.page = parseInt($scope.page) - 1
     fetch_listings false
+    angular.element.scrollTo '#results .right .top', 600, { easing: 'swing' }
 
   $scope.nextShow = -> $scope.size > $scope.page * 5
 
@@ -556,7 +559,10 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       if attrs.searchTab == 'map' && !scope.map
         $timeout(
           (->
-            angular.element('#results').css('margin', '0 0 0 30px')
+            angular.element('#results').css('margin', '80px 0 0 30px')
+            angular.element('#results .left').css('height', angular.element(window).height()).css('overflow-y', 'scroll')
+            angular.element('#city').css('display', 'none')
+            angular.element('footer').css('display', 'none')
             scope.map = new GMaps
               div: 'map'
               lat: scope.region.latitude
@@ -571,6 +577,10 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         )
       else if attrs.searchTab == 'list'
         angular.element('#results').css('margin', 'auto')
+        angular.element('#results .left').css('height', 'inherit').css('overflow', 'auto')
+        angular.element('#city').css('display', 'block')
+        angular.element('footer').css('display', 'block')
+        angular.element.scrollTo 325
         scope.map = null
   )
   .directive('tab', -> (scope, element, attrs) ->

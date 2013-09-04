@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130903215448) do
+ActiveRecord::Schema.define(version: 20130904013014) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,14 @@ ActiveRecord::Schema.define(version: 20130903215448) do
     t.string   "last4"
     t.string   "fingerprint"
     t.string   "card_type"
+  end
+
+  create_table "districts", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "region_id"
+    t.string   "slug"
   end
 
   create_table "feature_groups", force: true do |t|
@@ -113,6 +121,21 @@ ActiveRecord::Schema.define(version: 20130903215448) do
     t.integer  "baths"
     t.text     "unlisted_dates"
     t.string   "header_image"
+    t.integer  "district_id"
+    t.integer  "sleeps"
+    t.boolean  "garden"
+    t.boolean  "balcony"
+    t.integer  "parking"
+    t.boolean  "smoking"
+    t.boolean  "pets"
+    t.boolean  "children"
+    t.boolean  "babies"
+    t.boolean  "toddlers"
+    t.boolean  "tv"
+    t.boolean  "temp_control"
+    t.boolean  "pool"
+    t.boolean  "jacuzzi"
+    t.boolean  "washer"
   end
 
   add_index "listings", ["region_id"], name: "index_listings_on_region_id", using: :btree

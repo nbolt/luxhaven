@@ -5,6 +5,7 @@ class Region < ActiveRecord::Base
   mount_uploader :image, HeaderImageUploader
   
   has_many :addresses
+  has_many :districts
 
   validates :name, uniqueness: true
 end

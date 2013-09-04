@@ -327,7 +327,7 @@ footer
         margin-bottom: 21px
         border-bottom: thin solid grey
       .filter-category
-        margin-bottom: 100px
+        margin-bottom: 35px
         .title
           width: 100%
           text-transform: uppercase
@@ -351,11 +351,19 @@ footer
       > input
         margin-bottom: 10px
         color: darker-grey
+      .inline .container
+        display: inline-block
+        &:first-child
+          width: 90px
+        &:last-child
+          width: 145px
+          margin-left: 15px
   .right
     overflow: auto
     display: none
     vertical-align: top
     width: 695px
+    min-height: 300px
     #map
       position: absolute
       top: 0
@@ -524,6 +532,8 @@ footer
       border-radius: 3px
       &:focus
         outline: none
+      &.select2-default span
+        color: grey
       span
         color: darker-grey
         font: .9em proxima-nova
