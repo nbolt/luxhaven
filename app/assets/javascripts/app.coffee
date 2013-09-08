@@ -143,8 +143,18 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     else
       [false, '']
 
+  $scope.syncDates = (date) ->
+    check_in = moment(date).format  'X'
+    if !$scope.dates.check_out || (moment($scope.dates.check_out).subtract('days', 1) <= moment(parseInt(check_in)*1000))
+      check_in = new Date(Date.parse date)
+      check_out = new Date(check_in.setDate check_in.getDate() + 2)
+      $scope.dates.check_out = moment(check_out).format 'MM/DD/YYYY'
+
   urlAttrs = ->
     str = '?'
+    if $scope.dates.check_out
+      str += "check_in=#{moment($scope.dates.check_in).format('X')}&check_out=#{moment($scope.dates.check_out).format('X')}&"
+
     for attr in SINGLE_VALUE_ATTRS
       str += "#{attr}=#{$scope[attr]}&" if $scope[attr]
 
@@ -159,15 +169,14 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
 
   fetch_listings = (reset_page = true) ->
     $scope.page = 1 if reset_page
-    angular.element('#listings .overlay').css 'display', 'block'
+    angular.element('#results .right .overlay').css 'display', 'block'
     $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) ->
       angular.element('#results .right').css 'display', 'inline-block'
-      angular.element('#listings .overlay').css 'display', 'none'
+      angular.element('#results .right .overlay').css 'display', 'none'
       $scope.listings = rsp.listings
       $scope.size = rsp.size
       $scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 5
       angular.element('footer').css 'display', 'block'
-  fetch_listings()
 
   $scope.next = ->
     $scope.page = parseInt($scope.page) + 1
@@ -192,6 +201,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region.slug}" }
       if $scope.dates.check_out && moment($scope.dates.check_out).subtract('days', 1) <= moment(parseInt(check_in)*1000)
         $scope.dates.check_out = null
+      fetch_listings() unless !n.check_out && !o.check_out
     ), true
 
   $scope.$watch 'sort', (n, o) -> fetch_listings() unless o == n
@@ -212,8 +222,10 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
 
   dates = $cookieStore.get 'dates'
   if dates
-    $scope.dates.check_in  = new Date(parseInt(dates.check_in) * 1000)  if dates.check_in
-    $scope.dates.check_out = new Date(parseInt(dates.check_out) * 1000) if dates.check_out
+    $scope.dates.check_in  = moment(new Date(parseInt(dates.check_in) * 1000)).format 'MM/DD/YYYY'  if dates.check_in
+    $scope.dates.check_out = moment(new Date(parseInt(dates.check_out) * 1000)).format 'MM/DD/YYYY' if dates.check_out
+
+  fetch_listings()
 
 
 BookingCtrl = ($scope, $http, $timeout, $q) ->
@@ -353,8 +365,8 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
   $scope.dates  = {}
   dates = $cookieStore.get 'dates'
   if dates
-    $scope.dates.check_in  = new Date(parseInt(dates.check_in) * 1000)  if dates.check_in
-    $scope.dates.check_out = new Date(parseInt(dates.check_out) * 1000) if dates.check_out
+    $scope.dates.check_in  = moment(new Date(parseInt(dates.check_in) * 1000)).format 'MM/DD/YYYY'  if dates.check_in
+    $scope.dates.check_out = moment(new Date(parseInt(dates.check_out) * 1000)).format 'MM/DD/YYYY' if dates.check_out
 
   $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
 
@@ -643,7 +655,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
                       lat: listing.address.latitude
                       lng: listing.address.longitude
                       title: listing.title
-              ),500)
+              ), 500)
           )
         )
       else if attrs.searchTab == 'list'

@@ -305,6 +305,7 @@ footer
     padding-right: 30px
     border-right: thin solid grey
     #filters
+      width: 250px
       .tabs
         margin: 10px 0 20px
         text-align: center
@@ -365,6 +366,26 @@ footer
     vertical-align: top
     width: 695px
     min-height: 300px
+    #list
+      position: relative
+      .overlay
+        position: absolute
+        top: 0
+        bottom: 0
+        left: 0
+        right: 0
+        background-color: hsla(0,0%,100%,0.5)
+        display: none
+        z-index: 1
+        .loader
+          margin: 50px auto
+          width: 100px
+          height: 100px
+          display: none
+          i
+            border: 4px dashed green
+            width: 100px
+            height: 100px
     #map
       position: absolute
       top: 0
@@ -410,22 +431,6 @@ footer
               border-radius: 3px 3px 0 0
     #listings
       position: relative
-      .overlay
-        position: absolute
-        top: 0
-        bottom: 0
-        left: 0
-        right: 0
-        background-color: hsla(0, 0%, 0%, 0.35)
-        display: none
-        .loader
-          margin: 50px auto
-          width: 100px
-          height: 100px
-          i
-            border: 4px dashed green
-            width: 100px
-            height: 100px
       .listing
         height: 330px
         margin: 20px 30px 30px

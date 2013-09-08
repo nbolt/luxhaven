@@ -14,7 +14,6 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require angular
-//= require leaflet
 //= require moment.min
 //= require_tree .
 

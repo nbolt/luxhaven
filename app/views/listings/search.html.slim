@@ -15,8 +15,8 @@
           { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'district', select2bordered: '' }
         = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.slug]}),
           { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region.slug', select2bordered: '' }
-        = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '{beforeShowDay:checkInDate}',  :'ng:model' => 'dates.check_in'
-        = text_field_tag :check_out, nil, placeholder: 'Check Out', :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'dates.check_out'
+        = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '{beforeShowDay:checkInDate,onSelect:syncDates}',  :'ng:model' => 'dates.check_in', :'ui:date-format' => 'mm/dd/yy'
+        = text_field_tag :check_out, nil, placeholder: 'Check Out', :'ui:date' => '{beforeShowDay:checkOutDate}', :'ng:model' => 'dates.check_out', :'ui:date-format' => 'mm/dd/yy'
         .inline
           .container= select_tag :sleeps, options_for_select((1..9).to_a.unshift ''),
             { :'ui:select2' => '{minimumResultsForSearch:10,placeholder:"Sleeps"}', :'ng:model' => 'sleeps', select2bordered: '' }
@@ -93,18 +93,22 @@
             label for='children' Children (3 - 12)
     .right ng:switch='' on='tab'
       #map ng:switch-when='map'
-      div ng:switch-when='list'
+      #list ng:switch-when='list'
+        .overlay
+          .loader
+            i
         .top
           .sort
             .text Sort by
             = select_tag :sort, options_for_select([['Recommended', 'recommended'], ['Price', 'price']]),
               { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'sort', select2bordered: '' }
           .title
-            | {{ size }} places in Los Angeles
+            | {{ size }} 
+            span ng:switch='size'
+              span ng:switch-default='' places
+              span ng:switch-when='1' place
+            |  in Los Angeles
         #listings
-          .overlay
-            .loader
-              i
           a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
             .listing
               .picture ng:style="{'background-image': 'url(' + listing.search_image.url + ')'}"

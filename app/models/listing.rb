@@ -30,8 +30,8 @@ class Listing < ActiveRecord::Base
   end
 
   def self.available check_in, check_out, listings=Listing.all
-    check_in  = Date.parse check_in  if check_in.is_a?  String
-    check_out = Date.parse check_out if check_out.is_a? String
+    check_in  = Time.at check_in.to_i  if check_in.is_a?  String
+    check_out = Time.at check_out.to_i if check_out.is_a? String
 
     listings.select { |listing| !listing.conflicts?(check_in, check_out) }
   end

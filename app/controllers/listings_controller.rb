@@ -30,8 +30,8 @@ class ListingsController < ApplicationController
         listings = listings.where('sleeps >= ?', params[:sleeps]) if params[:sleeps]
         listings = listings.where('bedrooms >= ?', params[:beds]) if params[:beds]
         listings = listings.where(district_id: params[:district]) unless params[:district] == '0'
-        listings = Listing.available params[:check_in], params[:check_out], listings rescue nil if params[:check_in] && params[:check_out]
         listings = listings.send params[:sort]
+        listings = Listing.available params[:check_in], params[:check_out], listings if params[:check_in] && params[:check_out]
         listings = Kaminari.paginate_array(listings).page(params[:page]).per 5
         render json: { size: listings.size, listings: listings.as_json(include: [:bookings, :address]) }
       end
