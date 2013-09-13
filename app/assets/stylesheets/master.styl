@@ -301,6 +301,7 @@ footer
   transition: width .4s linear, background-color .4s linear
   .left
     width: 250px
+    height: 2171px
     display: inline-block
     padding-right: 30px
     border-right: thin solid grey
@@ -408,11 +409,13 @@ footer
           font-size: .8em
           display: inline-block
         .select2-container
-          width: 135px !important
+          width: 145px !important
+          text-transform: uppercase
+          font-size: .9em
           a
             background: none
             border: none
-            padding: 4px 0 3px 12px
+            padding: 7px 0 3px 12px
             border-radius: 3px
             &:focus
               outline: none
@@ -426,13 +429,15 @@ footer
               background: none
               top: 3px
               right: 2px
+            b
+              margin: 1px 0 0 -5px
           &.select2-dropdown-open
             a
               border-radius: 3px 3px 0 0
     #listings
       position: relative
       .listing
-        height: 330px
+        height: 385px
         margin: 20px 30px 30px
         border: thin solid #afafaf
         border-radius: 3px
@@ -440,54 +445,87 @@ footer
         .picture
           height: 230px
           background-color: white
+          position: relative
+          .overlay
+            position: absolute
+            top: 0
+            bottom: 0
+            right: 0
+            left: 0
+            background-color: hsla(0,0%,0%,0)
+            transition: background-color .4s
+            display: block
+            .typcn
+              color: white
+              font-size: 10em
+              width: 200px
+              margin: 25px auto
+              opacity: 0
+              transition: opacity .4s
+        &:hover
+          .overlay
+            background-color: hsla(0,0%,0%,0.6)
+            .typcn
+              opacity: 1
         .info-box
-          background-color: green
+          background-color: lighter-grey
           border-radius: 3px
           width: 137px
           height: 113px
           float: right
-          margin: -30px 20px 0 0
+          margin: 20px 20px 0 0
           box-sizing: border-box
           padding: 15px 0 0 15px
           font-family: proxima-nova
           .price
-            color: white
+            color: darker-grey
             font-size: 1.1em
+            font-weight: 600
             margin-bottom: 8px
             span
               font-weight: bold
           .rooms
             .room
-              color: #cbf5e6
+              color: dark-grey
               &.people .icon
-                background-image: url(/images/people-green.png)
+                background-image: url(/images/people-grey.png)
               &.bedrooms .icon
-                background-image: url(/images/bedrooms-green.png)
+                background-image: url(/images/bedrooms-grey.png)
               &.baths .icon
-                background-image: url(/images/baths-green.png)
+                background-image: url(/images/baths-grey.png)
         .title
-          color: darker-grey
+          color: green
           font: 1.6em proxima-nova
           font-weight: bold
-          margin: 25px 0 5px 20px
+          margin: 20px 0 2px 20px
         .neighborhood
           color: grey
           margin-left: 20px
           font: .8em proxima-nova
-          font-weight: bold
+          font-weight: 600
           text-transform: uppercase
-        &:hover
-          background-color: hsl(0, 0%, 96%)
+        .description
+          overflow: hidden
+          height: 50px
+          font-size: .9em
+          margin: 12px 0 0 20px
+          color: dark-grey
     .pagination
       height: 35px
       margin: 30px 0 20px
       .typcn
         font-size: 2em
-        margin: 0 25px
+        margin: 0 30px
+        background-color: grey
+        color: white
+        border-radius: 2px
         &.next
           float: right
+          padding: 0px 0px 4px 2px
+        &.prev
+          padding: 0px 2px 4px 0px
         &:hover
-          color: green
+          background-color: green
           cursor: pointer
 
 .rooms

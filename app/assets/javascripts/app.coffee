@@ -181,18 +181,18 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.next = ->
     $scope.page = parseInt($scope.page) + 1
     fetch_listings false
-    angular.element.scrollTo '#results .right .top', 600, { easing: 'swing' }
+    angular.element.scrollTo '#results .right .top', 400, { easing: 'swing' }
 
   $scope.prev = ->
     $scope.page = parseInt($scope.page) - 1
     fetch_listings false
-    angular.element.scrollTo '#results .right .top', 600, { easing: 'swing' }
+    angular.element.scrollTo '#results .right .top', 400, { easing: 'swing' }
 
   $scope.nextShow = -> $scope.size > $scope.page * 5
 
   $scope.prevShow = -> parseInt($scope.page) > 1
 
-  watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (n, o) -> fetch_listings() unless o == n
+  watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (n, o) -> fetch_listings() unless o == n || attr == 'page'
 
   $scope.$watch 'dates', ((n, o) ->
     unless o == n
@@ -411,9 +411,12 @@ ListingCtrl = ($scope, $http, $cookieStore) ->
     else
       [false, '']
 
-  $scope.list_view = ->
-
-  $scope.map_view = ->
+  $scope.syncDates = (date) ->
+    check_in = moment(date).format  'X'
+    if !$scope.dates.check_out || (moment($scope.dates.check_out).subtract('days', 1) <= moment(parseInt(check_in)*1000))
+      check_in = new Date(Date.parse date)
+      check_out = new Date(check_in.setDate check_in.getDate() + 2)
+      $scope.dates.check_out = moment(check_out).format 'MM/DD/YYYY'
 
   $scope.$watch 'dates', ((n, o) ->
     unless o == n
