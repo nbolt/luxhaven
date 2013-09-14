@@ -127,7 +127,12 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
 
   angular.element('footer').css('display', 'none')
 
-  $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
+  $http.get("/region/#{$scope.region.slug}").success (region) ->
+    $scope.region = region
+    image = new Image()
+    image.src = region.image.url
+    image.onload = ->
+      angular.element('#city').css('background', "url(#{region.image.url}) no-repeat center").css('opacity', '1')
 
   $scope.checkInDate = (date) ->
     if moment() > moment(date)
@@ -629,6 +634,16 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
       element.text moment(n).format('ddd, Do MMM YYYY')
   )
+  .directive('bgImage', ($timeout) -> (scope, element, attrs) ->
+    $timeout(
+      (->
+        image = new Image()
+        image.src = attrs.bgImage
+        image.onload = ->
+          element.css('background-image', "url(#{attrs.bgImage})").css('opacity', '1')
+      )
+    )
+  )
   .directive('paginate', ($compile) -> (scope, element) ->
     update_pagination = (n, o) ->
       unless o == n
@@ -715,18 +730,6 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         tags: _(scope.features).map (f) -> f.name
         initSelection: (e,c) -> c _(e.val().split(',')).map (f) -> { text: f, id: f }
   )
-  .directive('initRoomImages', -> (scope, element, attrs) ->
-    nums = _(scope.room.images).map (img, index) -> index
-    element.val nums
-  )
-  .directive('unslider', -> (scope, element) ->
-    element.unslider {
-      speed: 800
-      delay: 7500
-      dots: true
-      keys: true
-      fluid: true
-    })
   .directive('slider', -> (scope, element, attrs) ->
     minPrice = scope.minPrice
     maxPrice = scope.maxPrice

@@ -1,4 +1,4 @@
-#city.head-image style="background: url(#{region.image}) no-repeat center"
+#city.head-image
   .overlay-container
     .overlay
       .title= region.name
@@ -111,7 +111,7 @@
         #listings
           a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
             .listing
-              .picture ng:style="{'background-image': 'url(' + listing.search_image.url + ')'}"
+              .picture bg-image='{{ listing.search_image.url }}'
                 .overlay
                   .typcn.typcn-arrow-right
               .info-box
