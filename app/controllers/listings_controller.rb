@@ -32,7 +32,7 @@ class ListingsController < ApplicationController
         listings = listings.where(district_id: params[:district]) unless params[:district] == '0'
         listings = listings.send params[:sort]
         listings = Listing.available params[:check_in], params[:check_out], listings if params[:check_in] && params[:check_out]
-        paginated_listings = Kaminari.paginate_array(listings).page(params[:page]).per 5
+        paginated_listings = Kaminari.paginate_array(listings).page(params[:page]).per 1
         render json: { size: listings.size, listings: paginated_listings.as_json(include: [:bookings, :address, :paragraphs]) }
       end
     end

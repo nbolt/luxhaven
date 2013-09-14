@@ -511,22 +511,39 @@ footer
           margin: 12px 0 0 20px
           color: dark-grey
     .pagination
-      height: 35px
+      height: 40px
       margin: 30px 0 20px
+      overflow: auto
+      .pages
+        text-align: center
+        margin-top: 10px
+        span
+          color: green
+          margin: 0 5px
+          font-weight: 600
+          &.num:hover
+            cursor: pointer
+          &.current
+            color: darker-grey
       .typcn
         font-size: 2em
         margin: 0 30px
         background-color: grey
         color: white
         border-radius: 2px
+        width: 34px
+        opacity: 0
         &.next
           float: right
           padding: 0px 0px 4px 2px
         &.prev
+          float: left
           padding: 0px 2px 4px 0px
         &:hover
           background-color: green
           cursor: pointer
+        &.active
+          opacity: 1
 
 .rooms
   font-size: .9em
@@ -927,26 +944,19 @@ footer
 #listing-content
   width: 976px
   min-height: 500px
-  margin: auto
+  margin: 140px auto
   position: relative
   font-family: proxima-nova
-  .title-container
-    height: 125px
-    max-width: 700px
-    .title
-      color: darker-grey
-      font-size: 2em
-      padding-top: 15px
-      font-weight: bold
-    .neighborhood
-      color: grey
-      font-size: 1.25em
-      font-weight: 600
+  .right
+    float: right
+    width: 250px
     .price-container
-      float: right
-      margin-top: 20px
+      text-align: right
+      margin-top: 5px
       color: darker-grey
       font-weight: 600
+      transition: opacity .4s
+      height: 40px
       .from
         vertical-align: top
         margin: 4px 8px 0 0
@@ -957,33 +967,30 @@ footer
       .price
         display: inline-block
         font-size: 2em
-  #book
-    border-radius: 3px
-    position: absolute
-    right: 0
-    top: -55px
-    background-color: hsl(360, 2.5%, 92%)
-    width: 250px
-    .input
-      margin: auto
-      width: 90%
-      margin-bottom: 10px
-      input
-        width: 100%
+    #book
+      border-radius: 3px
+      background-color: hsl(360, 2.5%, 92%)
+      width: 250px
+      height: 195px
+      margin: 20px 0 25px
+      .input
+        margin: auto
+        width: 90%
+        margin-bottom: 10px
+        input
+          width: 100%
+          color: darker-grey
+      .button
+        margin: 15px auto
+        button
+          width: 100%
+          border-radius: 0
+      .title
+        text-shadow 1px 1px 4px white
+        padding: 10px 15px
+        font: .9em proxima-nova
         color: darker-grey
-    .button
-      margin: 15px auto
-      button
-        width: 100%
-        border-radius: 0
-    .title
-      text-shadow 1px 1px 4px white
-      padding: 10px 15px
-      font: .9em proxima-nova
-      color: darker-grey
-  .tabs
     .side-info
-      float: right
       width: 250px
       margin-top: 20px
       .contact-info
@@ -1034,10 +1041,27 @@ footer
           a
             color: green
             font-weight: 600
+    
+  .left
+    width: 675px
+    border-right: thin solid light-grey
+    padding-right: 25px
+    .title-container
+      height: 125px
+      max-width: 700px
+      .title
+        color: darker-grey
+        font-size: 2em
+        padding-top: 15px
+        font-weight: bold
+      .neighborhood
+        color: grey
+        font-size: 1.25em
+        font-weight: 600
+  .tabs
     .tab-content
       width: 675px
       padding: 12px 25px 40px 0
-      border-right: thin solid grey
       min-height: 540px
       .tab
         display: none
@@ -1147,7 +1171,6 @@ footer
       .bar
         width: 100%
         border-bottom: thin solid grey
-        margin-top: -1px
       a
         .tab
           display: inline-block
@@ -1157,13 +1180,10 @@ footer
           font-size: 1.1em
           margin-right: 5px
           font-weight: 600
-        &:hover .tab
-          color: darker-grey
         &.active .tab
-          border: thin solid grey
-          border-bottom: thin solid white
           font-weight: bold
-          color: darker-grey
+          color: white
+          background-color: green
 
 #manage-container
   width: 700px

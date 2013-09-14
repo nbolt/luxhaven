@@ -144,5 +144,6 @@
                 span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
               .description ng:bind='listing.search_description'
         .pagination
-          .next.typcn.typcn-chevron-right ng:click='next()' ng:show='nextShow()'
-          .prev.typcn.typcn-chevron-left ng:click='prev()' ng:show='prevShow()'
+          .next.typcn.typcn-chevron-right ng:click='next()' ng:class='nextShow()'
+          .prev.typcn.typcn-chevron-left ng:click='prev()' ng:class='prevShow()'
+          .pages paginate=''

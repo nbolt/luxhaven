@@ -5,6 +5,7 @@ SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page', 'district', 'sleep
                       'balcony', 'parking', 'smoking', 'pets', 'children', 'babies', 'toddlers', 'tv'
                       'temp_control', 'pool', 'jacuzzi', 'washer']
 
+PAGINATE_PER = 1
 
 AppCtrl = ($scope, $http, $q, $compile) ->
   $scope.signinContent = angular.element('#sign-in').html()
@@ -150,6 +151,8 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       check_out = new Date(check_in.setDate check_in.getDate() + 2)
       $scope.dates.check_out = moment(check_out).format 'MM/DD/YYYY'
 
+  $scope.nav = -> console.log 'sup'
+
   urlAttrs = ->
     str = '?'
     if $scope.dates.check_out
@@ -175,22 +178,20 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       angular.element('#results .right .overlay').css 'display', 'none'
       $scope.listings = rsp.listings
       $scope.size = rsp.size
-      $scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 5
+      #$scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 5
       angular.element('footer').css 'display', 'block'
 
-  $scope.next = ->
-    $scope.page = parseInt($scope.page) + 1
+  $scope.nav = (n) ->
+    $scope.page = n
     fetch_listings false
     angular.element.scrollTo '#results .right .top', 400, { easing: 'swing' }
 
-  $scope.prev = ->
-    $scope.page = parseInt($scope.page) - 1
-    fetch_listings false
-    angular.element.scrollTo '#results .right .top', 400, { easing: 'swing' }
+  $scope.next = -> $scope.nav parseInt($scope.page) + 1
+  $scope.prev = -> $scope.nav parseInt($scope.page) - 1
 
-  $scope.nextShow = -> $scope.size > $scope.page * 5
+  $scope.nextShow = -> $scope.size > $scope.page * PAGINATE_PER && 'active'
 
-  $scope.prevShow = -> parseInt($scope.page) > 1
+  $scope.prevShow = -> parseInt($scope.page) > 1 && 'active'
 
   watch = (attrs) -> _(attrs).each (attr) -> $scope.$watch attr, (n, o) -> fetch_listings() unless o == n || attr == 'page'
 
@@ -360,7 +361,7 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
       )
     )
 
-ListingCtrl = ($scope, $http, $cookieStore) ->
+ListingCtrl = ($scope, $http, $cookieStore, $timeout) ->
   $scope.region = { slug: $.url().attr('directory').split('/')[1] }
   $scope.dates  = {}
   dates = $cookieStore.get 'dates'
@@ -627,6 +628,22 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .directive('date', -> (scope, element, attrs) ->
     scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
       element.text moment(n).format('ddd, Do MMM YYYY')
+  )
+  .directive('paginate', ($compile) -> (scope, element) ->
+    update_pagination = (n, o) ->
+      unless o == n
+        element.html ''
+        pages = Math.ceil scope.size / PAGINATE_PER
+        for i in [1..pages]
+          active = i < 4 || i > (pages - 3) || (i >= scope.page && i < scope.page + 3) || (i <= scope.page && i > scope.page - 3)
+          if active
+            element.append $compile("<span class='num' ng:click='nav(#{i})'>#{i}</span>")(scope)
+            element.children().last().addClass 'current' if i == scope.page
+          else
+            element.append "<span>...</span>" unless element.children().last().text() == '...'
+
+    scope.$watch 'page', update_pagination
+    scope.$watch 'size', update_pagination
   )
   .directive('searchTab', ($timeout) -> (scope, element, attrs) ->
     element.click -> scope.$apply ->
