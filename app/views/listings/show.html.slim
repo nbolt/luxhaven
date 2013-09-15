@@ -47,18 +47,21 @@
           a href='javascript:void(0)'
             | Our service policy
   .left
-    .title ng:bind='listing.title'
-    .neighborhood
-      span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
-      span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
-      span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
+    .title-container
+      .title ng:bind='listing.title'
+      .neighborhood
+        span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
+        span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
+        span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
     #header-gallery.fotorama data-width='675' data-keyboard='true' data-swipe='false' data-arrows='false'
       - listing.images.each do |image|
         a href="#{image.image.url}"
       /img ng:repeat='image in listing.images | orderBy:"-created_at"' ng:src='{{image.image.url}}'
     .tabs
       nav#top-nav
-        a.active href='#description' onclick='return false' tab=''
+        a.active href='#summary' onclick='return false' tab=''
+          .tab Summary
+        a href='#description' onclick='return false' tab=''
           .tab Description
         a href='#features' onclick='return false' tab=''
           .tab Features
@@ -71,7 +74,8 @@
         a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
           .tab Local Area
       .tab-content
-        .tab#description.active
+        .tab#summary.active
+        .tab#description
           - listing.paragraphs.sort_by(&:order).each do |p|
             - if p.image
               .image style="#{p.image.version == 'full' && '' || p.image.align && 'float: ' + p.image.align + (p.image.align == 'left' && '; padding-right: 20px' || p.image.align == 'right' && '; padding-left: 20px')}"

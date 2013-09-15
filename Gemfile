@@ -11,9 +11,9 @@ group :assets do
   gem 'sass-rails'
   gem 'uglifier'
   gem 'angularjs-rails'
-  gem 'fotoramajs'
   gem 'jquery-rails'
   gem 'roots-rails'
+  gem 'fotoramajs'
 end
 
 group :development do

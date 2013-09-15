@@ -112,6 +112,11 @@ HomeCtrl = ($scope, $http, $window) ->
     .css('margin-top', angular.element($window).height())
     .css('display', 'block')
 
+  image = new Image()
+  image.src = '/images/home.jpg'
+  image.onload = ->
+    angular.element('#home').css('opacity', '1')
+
 
 SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.minPrice = null

@@ -234,6 +234,8 @@ footer
 
 #home
   background: url(/images/home.jpg) no-repeat
+  opacity: 0
+  transition: opacity .4s
   &.head-image
     background-size: cover !important
     z-index: 0
@@ -1054,6 +1056,7 @@ footer
     padding-right: 25px
     #header-gallery
       width: 675px
+      height: 455px
       .fotorama__arr
         background-color: hsla(0,0%,0%,0.6)
       .fotorama__arrs
@@ -1066,15 +1069,17 @@ footer
           background-position: 0 1px
         &.fotorama__arr--next .fotorama__arr__arr
           background-position: -29px 1px
-    .title
-      color: darker-grey
-      font-size: 2.25em
-      font-weight: bold
-    .neighborhood
-      color: grey
-      font-weight: 600
-      text-transform: uppercase
+    .title-container
+      height: 65px
       margin-bottom: 25px
+      .title
+        color: darker-grey
+        font-size: 2.25em
+        font-weight: bold
+      .neighborhood
+        color: grey
+        font-weight: 600
+        text-transform: uppercase
   .tabs
     .tab-content
       width: 675px
@@ -1193,15 +1198,13 @@ footer
       a
         .tab
           display: inline-block
-          padding: 7px 12px
-          font: 1em proxima-nova
+          padding: 6px 12px
           color: green
-          font-size: 1.1em
           margin-right: 5px
           font-weight: 600
           border-radius: 3px
         &.active .tab
-          font-weight: bold
+          font-weight: 600
           color: white
           background-color: green
 
