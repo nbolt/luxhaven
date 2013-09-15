@@ -5,7 +5,7 @@ SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page', 'district', 'sleep
                       'balcony', 'parking', 'smoking', 'pets', 'children', 'babies', 'toddlers', 'tv'
                       'temp_control', 'pool', 'jacuzzi', 'washer']
 
-PAGINATE_PER = 1
+PAGINATE_PER = 5
 
 AppCtrl = ($scope, $http, $q, $compile) ->
   $scope.signinContent = angular.element('#sign-in').html()

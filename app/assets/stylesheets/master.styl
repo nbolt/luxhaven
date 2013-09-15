@@ -440,7 +440,9 @@ footer
       position: relative
       .listing
         height: 385px
-        margin: 20px 30px 30px
+        width: 635px
+        display: inline-block
+        margin: 20px 0 30px 30px
         border: thin solid #afafaf
         border-radius: 3px
         background-color: white
@@ -948,7 +950,7 @@ footer
 #listing-content
   width: 976px
   min-height: 500px
-  margin: 140px auto
+  margin: 130px auto 0
   position: relative
   font-family: proxima-nova
   .right
@@ -1050,18 +1052,29 @@ footer
     width: 675px
     border-right: thin solid light-grey
     padding-right: 25px
-    .title-container
-      height: 125px
-      max-width: 700px
-      .title
-        color: darker-grey
-        font-size: 2em
-        padding-top: 15px
-        font-weight: bold
-      .neighborhood
-        color: grey
-        font-size: 1.25em
-        font-weight: 600
+    #header-gallery
+      width: 675px
+      .fotorama__arr
+        background-color: hsla(0,0%,0%,0.6)
+      .fotorama__arrs
+        .fotorama__arr__arr
+          height: 35px
+          width: 35px
+          background-color: hsla(0,0%,0%,0.6)
+          border-radius: 35px
+        &.fotorama__arr--prev .fotorama__arr__arr
+          background-position: 0 1px
+        &.fotorama__arr--next .fotorama__arr__arr
+          background-position: -29px 1px
+    .title
+      color: darker-grey
+      font-size: 2.25em
+      font-weight: bold
+    .neighborhood
+      color: grey
+      font-weight: 600
+      text-transform: uppercase
+      margin-bottom: 25px
   .tabs
     .tab-content
       width: 675px
@@ -1172,6 +1185,8 @@ footer
             width: 100%
     nav
       margin-top: 25px
+      padding-bottom: 20px
+      border-bottom: thin solid light-grey
       .bar
         width: 100%
         border-bottom: thin solid grey
@@ -1184,6 +1199,7 @@ footer
           font-size: 1.1em
           margin-right: 5px
           font-weight: 600
+          border-radius: 3px
         &.active .tab
           font-weight: bold
           color: white
