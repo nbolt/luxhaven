@@ -110,7 +110,7 @@ AppCtrl = ($scope, $http, $q, $compile) ->
 HomeCtrl = ($scope, $http, $window) ->
   angular.element('#content-below-container')
     .css('margin-top', angular.element($window).height())
-    .css('display', 'block')
+    #.css('display', 'block')
 
   image = new Image()
   image.src = '/images/home.jpg'
@@ -218,12 +218,11 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.$watch 'sort', (n, o) -> fetch_listings() unless o == n
 
   $scope.$watch 'listings', ->
-    left = angular.element('#results .left')
-    right = angular.element('#results .right')
-    height = parseInt left.css('height')
-    $timeout(
-      (-> left.css('height', right.height()) if right.height() > height),
-      10
+    $timeout(->
+      left = angular.element('#results .left')
+      right = angular.element('#results .right')
+      height = parseInt left.css('height')
+      left.css('height', right.height()) if right.height() > height
     )
 
   $scope.$watch 'region.slug', (n, o) -> window.location.href = "/#{$scope.region.slug}" unless o == n
@@ -275,6 +274,12 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
           password: $scope.password
           password_confirmation: $scope.password_confirmation
       }).success (rsp) -> auth_response rsp
+
+  $scope.toSignin = ->
+    angular.element('.right .content .step2').scope().user = {}
+
+  $scope.toSignup = ->
+    angular.element('.right .content .step2').scope().user = null
 
   auth_response = (rsp) ->
     if rsp.success
@@ -396,7 +401,7 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout) ->
     angular.element('#book-modal').bPopup bPopOpts
     angular.element('#book-modal .step').removeClass 'active'
     angular.element('#book-modal .step1').addClass 'active'
-    $http.get("/#{$scope.region.slug}/#{$scope.listing.slug}/pricing?check_in=#{$scope.dates.check_in}&check_out=#{$scope.dates.check_out}")
+    $http.get("/#{$scope.region.slug}/#{$scope.listing.slug}/pricing?check_in=#{moment($scope.dates.check_in).format('X')}&check_out=#{moment($scope.dates.check_out).format('X')}")
       .success (rsp) -> $scope.price_total = rsp.total
 
   $scope.bookModal = -> bookModal() if $scope.dates.check_out
@@ -443,6 +448,7 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout) ->
       angular.element('body').css('overflow', 'hidden')
     onClose: ->
       angular.element('body').css('overflow', 'auto')
+      angular.element('.auth-error').hide()
     modalColor: 'white'
     opacity: 0.65
 
@@ -650,7 +656,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     )
   )
   .directive('paginate', ($compile) -> (scope, element) ->
-    update_pagination = (n, o) ->
+    scope.update_pagination = (n, o) ->
       unless o == n
         element.html ''
         pages = Math.ceil scope.size / PAGINATE_PER
@@ -662,8 +668,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           else
             element.append "<span>...</span>" unless element.children().last().text() == '...'
 
-    scope.$watch 'page', update_pagination
-    scope.$watch 'size', update_pagination
+    scope.$watch 'page', scope.update_pagination
+    scope.$watch 'size', scope.update_pagination
   )
   .directive('searchTab', ($timeout) -> (scope, element, attrs) ->
     element.click -> scope.$apply ->
@@ -691,10 +697,11 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
                     lng: scope.region.longitude
                     zoom: 12
                   _(scope.listings).each (listing) ->
-                    scope.map.addMarker
-                      lat: listing.address.latitude
-                      lng: listing.address.longitude
-                      title: listing.title
+                    if listing.address.latitude
+                      scope.map.addMarker
+                        lat: listing.address.latitude
+                        lng: listing.address.longitude
+                        title: listing.title
               ), 500)
           )
         )
@@ -706,7 +713,16 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         angular.element('#city').fadeIn(400, ->
           angular.element('#city').css('position', 'relative')
           angular.element('#results').css('margin', 'auto')
-          scope.$apply -> scope.tab = attrs.searchTab)
+          scope.$apply ->
+            scope.tab = attrs.searchTab
+            $timeout(->
+              angular.element('.pages').scope().update_pagination(0,1)
+              left = angular.element('#results .left')
+              right = angular.element('#results .right')
+              height = parseInt left.css('height')
+              left.css('height', right.height()) if right.height() > height
+            )
+          )
         angular.element('footer').css('display', 'block')
         scope.map = null
   )

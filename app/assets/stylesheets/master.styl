@@ -26,8 +26,9 @@ lighter-grey = hsl(0, 0%, 95%)
 dark-grey    = hsl(0, 0%, 40%)
 darker-grey  = hsl(0, 0%, 30%)
 red          = hsl(360, 90%, 45%)
-green        = hsl(159, 64%, 47%)
-light-green  = hsla(159, 64%, 47%, 8%)
+//green      = hsl(159, 64%, 47%)
+green        = hsl(159, 69%, 44%)
+dark-green   = hsl(159, 81%, 25%)
 
 placeholder-color(color)
   ::-webkit-input-placeholder
@@ -59,7 +60,7 @@ button
     padding: 6px 14px
     border-radius: 3px
     font: .9em proxima-nova
-    hover-lighten: 3
+    hover-lighten: 2.5
 
 input
   border-radius: 3px
@@ -874,6 +875,32 @@ footer
           button
             margin: 28px 0 0 186px
         &.step2
+          form
+            width: 500px
+            margin: 60px auto
+            text-align: center
+            .input
+              width: 300px
+              margin: 9px auto
+              input
+                width: 100%
+                font-weight: 600
+                color: darker-grey
+          button
+            margin-top: 15px
+            border: thin solid dark-green
+            width: 300px
+          .message
+            margin-top: 25px
+            text-transform: uppercase
+            font-weight: 600
+            font-size: .9em
+            color: darker-grey
+            span
+              color: green
+              &:hover
+                cursor: pointer
+        &.step3
           .content
             .payment
               color: darker-grey

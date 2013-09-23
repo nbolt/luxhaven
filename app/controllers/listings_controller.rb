@@ -60,8 +60,8 @@ class ListingsController < ApplicationController
   def pricing
     booking = Booking.new
     booking.listing = listing
-    booking.check_in = params[:check_in]
-    booking.check_out = params[:check_out]
+    booking.check_in = Time.at params[:check_in].to_i
+    booking.check_out = Time.at params[:check_out].to_i
     render json: { total: number_with_delimiter(booking.price_total / 100) }
   end
 

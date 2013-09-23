@@ -6,6 +6,7 @@ class AccountController < ApplicationController
   def update
     unless current_user.stripe_recipient
       current_user.update_attribute :stripe_recipient,
+        # do we want to ask for ssn?
         Stripe::Recipient.create(name: current_user.name, email: current_user.email, type: 'individual', tax_id: params[:ssn]).id
     end
     recipient = Stripe::Recipient.retrieve current_user.stripe_recipient
