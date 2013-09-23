@@ -59,9 +59,9 @@
       /img ng:repeat='image in listing.images | orderBy:"-created_at"' ng:src='{{image.image.url}}'
     .tabs
       nav#top-nav
-        a.active href='#summary' onclick='return false' tab=''
-          .tab Summary
-        a href='#description' onclick='return false' tab=''
+        /a.active href='#summary' onclick='return false' tab=''
+        /  .tab Summary
+        a.active href='#description' onclick='return false' tab=''
           .tab Description
         a href='#features' onclick='return false' tab=''
           .tab Features
@@ -74,8 +74,8 @@
         a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
           .tab Local Area
       .tab-content
-        .tab#summary.active
-        .tab#description
+        .tab#summary
+        .tab#description.active
           - listing.paragraphs.sort_by(&:order).each do |p|
             - if p.image
               .image style="#{p.image.version == 'full' && '' || p.image.align && 'float: ' + p.image.align + (p.image.align == 'left' && '; padding-right: 20px' || p.image.align == 'right' && '; padding-left: 20px')}"
@@ -130,11 +130,12 @@
                   - room.features.each do |f|
                     .feature= f.name
         .tab#home-truths
-        .tab#local-area
-          .top
-            a target='_window' href="http://maps.google.com/maps?q=&layer=c&cbp=11,0,0,0,0&cbll=#{listing.address.latitude},#{listing.address.longitude}"
-              | Street View
-          #map
+        .tab#local-area local-area=''
+          span ng:click='toMap()' Map
+          span ng:click='toStreet()' Street View
+          div style='margin-top:15px' ng:switch='mapType'
+            #map  ng:switch-when='map'
+            #pano ng:switch-when='pano'
 
   #book-modal ng:controller='booking'
     .left

@@ -726,7 +726,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         angular.element('footer').css('display', 'block')
         scope.map = null
   )
-  .directive('tab', -> (scope, element, attrs) ->
+  .directive('tab', ($timeout) -> (scope, element, attrs) ->
     element.click ->
       element.parent().children('a').removeClass 'active'
       element.addClass 'active'
@@ -734,8 +734,36 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       tabContent.children('.tab').removeClass 'active'
       tabContent.children(attrs.href).addClass 'active'
       if attrs.href == '#local-area'
-        scope.map = L.map('map').setView [attrs.lat, attrs.lng], 15 unless scope.map
-        L.tileLayer.provider('OpenStreetMap.Mapnik').addTo scope.map
+        $timeout(-> angular.element(attrs.href).scope().toMap())
+  )
+  .directive('localArea', -> (scope, element, attrs) ->
+    scope.toMap = (e) ->
+      angular.element('#local-area span').removeClass 'active'
+      angular.element('#local-area span:first').addClass 'active'
+      scope.mapType = 'map'
+      address = scope.listing.address
+      GMaps.geocode
+        address: "#{address.neighborhood}, #{address.city}"
+        callback: (results, status) ->
+          latlng = results[0].geometry.location
+          new GMaps
+            div: 'map'
+            lat: latlng.lat()
+            lng: latlng.lng()
+            zoom: 15
+    scope.toStreet = ->
+      angular.element('#local-area span').removeClass 'active'
+      angular.element('#local-area span').eq(1).addClass 'active'
+      scope.mapType = 'pano'
+      address = scope.listing.address
+      GMaps.geocode
+        address: "#{address.neighborhood}, #{address.city}"
+        callback: (results, status) ->
+          latlng = results[0].geometry.location
+          GMaps.createPanorama
+            el: '#pano'
+            lat: latlng.lat()
+            lng: latlng.lng()
   )
   .directive('select2continuous', -> (scope, element) ->
     element.on 'select2-opening', ->
