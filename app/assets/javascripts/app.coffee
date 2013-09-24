@@ -526,7 +526,6 @@ ManageCtrl = ($scope, $http, $timeout) ->
       $scope.listing.paragraphs.push paragraph
 
   $scope.new_room = ->
-    console.log $scope.listing
     $http.post("/listing_management/#{$scope.listing.id}/new_room", { name: $scope.new_room_name })
       .success -> update_listing()
 
