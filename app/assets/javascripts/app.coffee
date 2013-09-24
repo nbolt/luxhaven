@@ -547,7 +547,10 @@ ManageCtrl = ($scope, $http, $timeout) ->
     reader = new FileReader()
     reader.onload = (e) -> xhr.sendAsBinary e.target.result
 
-    xhr.upload.addEventListener 'load', (-> update_listing();angular.element('.images input').val('')), false
+    xhr.upload.addEventListener 'load', (->
+      $timeout((-> update_listing()),3000)
+      angular.element('.images input').val('')
+    ), false
 
     reader.readAsBinaryString el.files[0]
 

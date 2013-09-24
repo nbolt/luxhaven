@@ -115,7 +115,7 @@
                       .feature= f.name
         .tab#gallery view=''
           - listing.images.reverse.each do |i|
-            a.view href='#{i.image.url}.jpg'
+            a.view href='#{i.image.url}'
               img src='#{i.image.large_thumb}'
         .tab#rooms
           - listing.rooms.each_with_index do |room, i|
