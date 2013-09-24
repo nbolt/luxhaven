@@ -53,7 +53,7 @@
         span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
         span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
         span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
-    #header-gallery.fotorama data-width='675' data-keyboard='true' data-swipe='false' data-arrows='false'
+    #header-gallery.fotorama data-width='675' data-height='455' data-keyboard='true' data-swipe='false' data-arrows='false'
       - listing.images.each do |image|
         a href="#{image.image.url}"
       /img ng:repeat='image in listing.images | orderBy:"-created_at"' ng:src='{{image.image.url}}'
@@ -113,15 +113,14 @@
                   .features
                     - features.each do |f|
                       .feature= f.name
-        .tab#gallery
-          .fotorama data-nav='thumbs' data-loop='true' data-keyboard='true'
-            - listing.images.each do |i|
-              a href='#{i.image}' data-caption='#{i.caption}'
-                img src='#{i.image.thumb}'
+        .tab#gallery view=''
+          - listing.images.reverse.each do |i|
+            a.view href='#{i.image.url}.jpg'
+              img src='#{i.image.large_thumb}'
         .tab#rooms
-          - listing.rooms.each do |room|
-            .room
-              .image
+          - listing.rooms.each_with_index do |room, i|
+            .room view-room="#{i}"
+              .image ng:click="views[#{i}].view.open();views[#{i}].view.show(views[#{i}].images[0])"
                 img src='#{room.images.first && room.images.first.image.large_thumb.url}'
                 .num #{room.images.count}
               .info
@@ -131,8 +130,10 @@
                     .feature= f.name
         .tab#home-truths
         .tab#local-area local-area=''
-          span ng:click='toMap()' Map
-          span ng:click='toStreet()' Street View
+          .links
+            span ng:click='toMap()' Map
+            span ng:click='toStreet()' Street View
+          .neighborhood ng:bind="listing.address.neighborhood + ', ' + listing.address.city"
           div style='margin-top:15px' ng:switch='mapType'
             #map  ng:switch-when='map'
             #pano ng:switch-when='pano'

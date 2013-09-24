@@ -1108,6 +1108,7 @@ footer
         font-weight: 600
         text-transform: uppercase
   .tabs
+    margin-top: 40px
     .tab-content
       width: 675px
       padding: 12px 25px 40px 0
@@ -1183,6 +1184,9 @@ footer
               width: 125px
               height: 125px
               cursor: pointer
+              img
+                width: 125px
+                height: 125px
               .num
                 background: hsl(16, 85%, 57%) url(/images/camera.png) no-repeat
                 background-position: 70% 45%
@@ -1204,6 +1208,13 @@ footer
               .features
                 .feature
                   display: inline-block
+        &#gallery
+          a.view
+            margin-right: 8px
+            &:nth-child(4n)
+              margin-right: 0
+            img
+              margin-bottom: 4px
         &#local-area
           .top
             height: 25px
@@ -1215,16 +1226,21 @@ footer
           #map, #pano
             height: 400px
             width: 100%
-          span
-            color: green
-            margin-right: 10px
-            padding: 5px 10px
-            border-radius: 3px
-            &:hover
-              cursor: pointer
-            &.active
-              color: white
-              background-color: green
+          .neighborhood
+            font-weight: 600
+            color: darker-grey
+          .links
+            float: right
+            span
+              color: green
+              margin-right: 10px
+              padding: 5px 10px
+              border-radius: 3px
+              &:hover
+                cursor: pointer
+              &.active
+                color: white
+                background-color: green
     nav
       margin-top: 25px
       padding-bottom: 20px
@@ -1344,8 +1360,8 @@ footer
           width: 450px
       .images
         .image
-          width: 125px
-          height: 125px
+          width: 160px
+          height: 160px
           display: inline-block
           margin: 0 10px 10px 0
           position: relative

@@ -376,9 +376,10 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
       )
     )
 
-ListingCtrl = ($scope, $http, $cookieStore, $timeout) ->
-  $scope.region = { slug: $.url().attr('directory').split('/')[1] }
-  $scope.dates  = {}
+ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
+  $scope.region   = { slug: $.url().attr('directory').split('/')[1] }
+  $scope.dates    = {}
+  $scope.listingQ = $q.defer()
   dates = $cookieStore.get 'dates'
   if dates
     $scope.dates.check_in  = moment(new Date(parseInt(dates.check_in) * 1000)).format 'MM/DD/YYYY'  if dates.check_in
@@ -396,6 +397,7 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout) ->
         analytics.track 'listing:viewed',
           note: "#{$scope.region.slug}/#{listing.slug}"
     $scope.listing = listing
+    $scope.listingQ.resolve()
 
   bookModal = ->
     angular.element('#book-modal').bPopup bPopOpts
@@ -655,6 +657,19 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       )
     )
   )
+  .directive('view', -> (scope, element) ->
+    new View element.find 'a.view'
+  )
+  .directive('viewRoom', -> (scope, element, attrs) ->
+    scope.views = {}
+    scope.listingQ.promise.then ->
+      images = scope.listing.rooms[parseInt attrs.viewRoom].images
+      if images
+        images = _(images).map (i) -> i.image.url
+        scope.views[attrs.viewRoom] =
+          images: images
+          view: new View images
+  )
   .directive('paginate', ($compile) -> (scope, element) ->
     scope.update_pagination = (n, o) ->
       unless o == n
@@ -738,8 +753,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   )
   .directive('localArea', -> (scope, element, attrs) ->
     scope.toMap = (e) ->
-      angular.element('#local-area span').removeClass 'active'
-      angular.element('#local-area span:first').addClass 'active'
+      angular.element('#local-area .links span').removeClass 'active'
+      angular.element('#local-area .links span:first').addClass 'active'
       scope.mapType = 'map'
       address = scope.listing.address
       GMaps.geocode
@@ -752,8 +767,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
             lng: latlng.lng()
             zoom: 15
     scope.toStreet = ->
-      angular.element('#local-area span').removeClass 'active'
-      angular.element('#local-area span').eq(1).addClass 'active'
+      angular.element('#local-area .links span').removeClass 'active'
+      angular.element('#local-area .links span:last').addClass 'active'
       scope.mapType = 'pano'
       address = scope.listing.address
       GMaps.geocode
