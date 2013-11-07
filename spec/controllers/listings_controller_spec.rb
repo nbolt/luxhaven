@@ -24,8 +24,8 @@ describe ListingsController do
       it 'books successfully' do
         stub(controller).current_user { User.new(email: 'test@email.com') }
         post :book, {
-          check_in: Date.today,
-          check_out: Date.today + 7.days,
+          check_in: '01/01/2014',
+          check_out: '01/07/2014',
           city: 'los-angeles',
           listing_slug: 'test',
           card: {
