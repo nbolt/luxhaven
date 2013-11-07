@@ -14,4 +14,4 @@ machine:
   environment:
     RAILS_ENV: development
     STRIPE_API_KEY: sk_test_CD1Nt7HWaB65fDfUOzud5JqH
-    COVERALLS_REPO_TOKEN: o0umb4JWjsiO1u3IsVoEkJsZop22bEhSh
+    COVERALLS_REPO_TOKEN: 7XnRGRQkolNV8ZCXaOAiPxPGN69or0046
