@@ -69,8 +69,8 @@ class ListingsController < ApplicationController
     booking = Booking.new
     booking.listing = listing
     booking.user = current_user
-    booking.check_in = params[:check_in]
-    booking.check_out = params[:check_out]
+    booking.check_in = Date.strptime params[:check_in], '%m/%d/%Y'
+    booking.check_out = Date.strptime params[:check_out], '%m/%d/%Y'
     if params[:card][0..2] == 'cus'
       booking.customer_id = params[:card]
     else

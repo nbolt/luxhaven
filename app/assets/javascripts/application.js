@@ -39,10 +39,10 @@ if ((is_chrome)&&(is_safari)) {is_safari=false;}
 
 if (!is_firefox) {
   XMLHttpRequest.prototype.sendAsBinary = function(datastr) {
-  var ui8a = new Uint8Array(datastr.length);
-  for (var i = 0; i < datastr.length; i++) {
-    ui8a[i] = (datastr.charCodeAt(i) & 0xff);
+    var ui8a = new Uint8Array(datastr.length);
+    for (var i = 0; i < datastr.length; i++) {
+      ui8a[i] = (datastr.charCodeAt(i) & 0xff);
+    }
+    this.send(ui8a);
   }
-  this.send(ui8a);
-}
 }

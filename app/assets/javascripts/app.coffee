@@ -7,7 +7,7 @@ SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page', 'district', 'sleep
 
 PAGINATE_PER = 5
 
-AppCtrl = ($scope, $http, $q, $compile) ->
+AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
   $scope.signinContent = angular.element('#sign-in').html()
   $scope.signupContent = angular.element('#sign-up').html()
   $scope.forgotContent = angular.element('#forgot').html()
@@ -51,11 +51,13 @@ AppCtrl = ($scope, $http, $q, $compile) ->
     angular.element('#modal').removeClass('sign-in').removeClass('sign-up').addClass('forgot')
 
   $scope.logIn = ->
+    angular.element('#modal button').addClass('disabled')
     $http.post('/signin', { email: $scope.email, password: $scope.password }).success (rsp) ->
       auth_response rsp
 
   $scope.signUp = ->
     if $scope.firstname && $scope.lastname && $scope.email && $scope.password && $scope.password_confirmation
+      angular.element('#modal button').addClass('disabled')
       $http.post('/signup', {
         user:
           email: $scope.email
@@ -73,6 +75,7 @@ AppCtrl = ($scope, $http, $q, $compile) ->
       angular.element('meta[name=csrf-token]').attr 'content', rsp.token
 
   auth_response = (rsp) ->
+    angular.element('#modal button').removeClass('disabled')
     if rsp.success
       angular.element('#modal .auth-error').text('')
       angular.element('#modal').bPopup().close()
@@ -110,7 +113,7 @@ AppCtrl = ($scope, $http, $q, $compile) ->
 HomeCtrl = ($scope, $http, $window) ->
   angular.element('#content-below-container')
     .css('margin-top', angular.element($window).height())
-    #.css('display', 'block')
+    .css('display', 'block')
 
   image = new Image()
   image.src = '/images/home.jpg'
@@ -335,8 +338,8 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
   $scope.book = ->
     defer = $q.defer()
     
-    disable = -> angular.element('#book-modal').find('button').prop('disabled', true)
-    enable  = -> angular.element('#book-modal').find('button').prop('disabled', false)
+    disable = -> angular.element('#book-modal').find('button').prop('disabled', true).addClass 'disabled'
+    enable  = -> angular.element('#book-modal').find('button').prop('disabled', false).removeClass 'disabled'
 
     post = (card) ->
       $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
@@ -443,6 +446,28 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
         check_out = moment($scope.dates.check_out).format 'X' if $scope.dates.check_out
       $cookieStore.put 'dates', { check_in: check_in, check_out: check_out }, { path: "/#{$scope.region.slug}" }
       $scope.dates.check_out = null unless $scope.checkOutDate($scope.dates.check_out)[0]
+      price = angular.element('#listing-content .right .price-container')
+      if $scope.dates.check_in && $scope.dates.check_out
+        new_price = null
+        $http.get("/#{$scope.region.slug}/#{$scope.listing.slug}/pricing?check_in=#{moment($scope.dates.check_in).format('X')}&check_out=#{moment($scope.dates.check_out).format('X')}")
+          .success (rsp) -> new_price = rsp.total
+        price.animate {opacity:0}, 400
+        int = setInterval((->
+          if price.css('opacity') == '0' && new_price
+            price.animate {opacity:1}, 400
+            price.children('.from').text 'Subtotal'
+            price.children('.price').text '$' + new_price
+            clearInterval int
+        ),50)
+      else
+        price.animate {opacity:0}, 400
+        int = setInterval((->
+          if price.css('opacity') == '0'
+            price.animate {opacity:1}, 400
+            price.children('.from').text 'From'
+            price.children('.price').text('$' + $scope.listing.price_per_night / 100)
+            clearInterval int
+        ),50)
     ), true
 
   bPopOpts =
@@ -548,7 +573,7 @@ ManageCtrl = ($scope, $http, $timeout) ->
     reader.onload = (e) -> xhr.sendAsBinary e.target.result
 
     xhr.upload.addEventListener 'load', (->
-      $timeout((-> update_listing()),3000)
+      $timeout((-> update_listing()),2000)
       angular.element('.images input').val('')
     ), false
 
@@ -677,13 +702,14 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       unless o == n
         element.html ''
         pages = Math.ceil scope.size / PAGINATE_PER
-        for i in [1..pages]
-          active = i < 4 || i > (pages - 3) || (i >= scope.page && i < scope.page + 3) || (i <= scope.page && i > scope.page - 3)
-          if active
-            element.append $compile("<span class='num' ng:click='nav(#{i})'>#{i}</span>")(scope)
-            element.children().last().addClass 'current' if i == scope.page
-          else
-            element.append "<span>...</span>" unless element.children().last().text() == '...'
+        unless pages == 0
+          for i in [1..pages]
+            active = i < 4 || i > (pages - 3) || (i >= scope.page && i < scope.page + 3) || (i <= scope.page && i > scope.page - 3)
+            if active
+              element.append $compile("<span class='num' ng:click='nav(#{i})'>#{i}</span>")(scope)
+              element.children().last().addClass 'current' if i == scope.page
+            else
+              element.append "<span>...</span>" unless element.children().last().text() == '...'
 
     scope.$watch 'page', scope.update_pagination
     scope.$watch 'size', scope.update_pagination
@@ -858,5 +884,134 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         maxPrice = newPrice
 
   )
+  .directive 'calendar', ->
+    link: (scope, element) ->
+      days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+      _month_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+      
+      gen_cal = (cal, month, year) ->
+        calendar = $('#availability table').eq(cal)
+        calendar.find('thead th.month').attr('month', month)
+        calendar.find('thead th.month').attr('year', year)
+        first_day = new Date(year, month, 1).getDay()
+        month_name = months[month]
+        month_days = _month_days[month]
+        month_days =
+          if month == 1 && (year % 4 == 0 && year % 100 != 0 || year % 400 == 0)
+            29
+          else
+            month_days
+        num_rows =
+          if month_days + first_day > 35
+            6
+          else if first_day == 0 && month_days == 28
+            4
+          else
+            5
+
+        calendar.find('tbody').remove()
+        calendar.find('thead').after('<tbody></tbody>')
+        calendar.find('.month_header th.month').text(month_name + ' ' + year)
+
+        current_day = 0
+        for row in [1..num_rows]
+          calendar.find('tbody').append('<tr class="week">')
+          for day, i in days
+            day = (current_day + 1) + '-' + month + '-' + year
+            html = '<td ' +
+              (if row == 1 && i < first_day || current_day >= month_days
+                'class="day">'
+              else
+                ++current_day
+                'class="active day day' + current_day + '">' + current_day) + '</td>'
+            calendar.find('tbody').append html
+          calendar.find('tbody').append '</tr>'
+
+        disable_bookings = ->
+          _(scope.listing.bookings).each (booking) ->
+            range = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()), new Date(booking.check_out.year(),booking.check_out.month(),booking.check_out.date()-1))
+            iterator = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()), new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()+1))
+            range.by iterator, (moment) ->
+              angular.element('calendar table:eq(' + cal + ') .day' + moment.date()).addClass('active').css('background-color', 'grey') if moment.month() == month && moment.year() == year
+
+        if scope.listing
+          disable_bookings()
+        else
+          scope.listingQ.promise.then -> disable_bookings()
+
+      gen_cals = (dir) ->
+        if dir is 'prev'
+          scope.month = scope.month == 0 && 11 || scope.month-1
+          scope.year = scope.month == 11 && scope.year-1 || scope.year
+        else if dir is 'next'
+          scope.month = if scope.month == 11 then 0 else scope.month+1
+          scope.year = scope.month == 0 && scope.year+1 || scope.year
+        else
+          scope.month = moment().month()
+          scope.year = moment().year()
+        gen_cal(0, scope.month, scope.year)
+        next_month = scope.month < 11 && scope.month+1 || 0
+        next_year = next_month == 0 && scope.year+1 || scope.year
+        gen_cal(1, next_month, next_year)
+        next_month = next_month < 11 && next_month+1 || 0
+        next_year = next_month == 0 && next_year+1 || next_year
+        gen_cal(2, next_month, next_year)
+        next_month = next_month < 11 && next_month+1 || 0
+        next_year = next_month == 0 && next_year+1 || next_year
+        gen_cal(3, next_month, next_year)
+
+      gen_cals()
+
+      element.find('.arrow.prev').click -> gen_cals 'prev'
+      element.find('.arrow.next').click -> gen_cals 'next'
+
+    restrict: 'E'
+    template: "
+      <table>
+        <thead>
+          <tr class='month_header'>
+            <th class='arrow prev'><</th>
+            <th class='month' colspan='5'></th>
+            <th class='arrow next'>></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <table>
+        <thead>
+          <tr class='month_header'>
+            <th class='arrow prev'><</th>
+            <th class='month' colspan='5'></th>
+            <th class='arrow next'>></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <table>
+        <thead>
+          <tr class='month_header'>
+            <th class='arrow prev'><</th>
+            <th class='month' colspan='5'></th>
+            <th class='arrow next'>></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <table>
+        <thead>
+          <tr class='month_header'>
+            <th class='arrow prev'><</th>
+            <th class='month' colspan='5'></th>
+            <th class='arrow next'>></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    "
 
 angular.element(document).on 'ready page:load', -> angular.bootstrap(document, ['luxhaven'])
