@@ -40,6 +40,13 @@ placeholder-color(color)
   :-ms-input-placeholder
     color: color
 
+unselectable()
+  -moz-user-select: -moz-none
+  -khtml-user-select: none
+  -webkit-user-select: none
+  -o-user-select: none
+  user-select: none
+
 dragging()
   *
     cursor: -webkit-grabbing !important
@@ -1121,6 +1128,37 @@ footer
         margin: 5px 5px
         &.active
           display: block
+        &#availability
+          calendar
+            .table
+              height: 280px
+              width: 308px
+              display: inline-block
+              margin-top: 35px
+              unselectable()
+              &:nth-child(odd)
+                margin-right: 45px
+              table
+                width: 100%
+                border: thin solid hsl(210, 20%, 90%)
+                thead
+                  background-color: hsl(210, 20%, 90%)
+                  th
+                    font-weight: 400
+                    text-transform: uppercase
+                    padding: 8px
+                  .arrow
+                    cursor: pointer
+                    font-weight: 400
+                tbody
+                  td
+                    padding: 10px 0
+                    text-align: center
+                    &.booked
+                      background-color: grey !important
+                    &:hover
+                      background-color: green
+                      cursor: pointer
         &#description
           p
             color: darker-grey

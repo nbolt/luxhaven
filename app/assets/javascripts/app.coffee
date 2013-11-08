@@ -933,7 +933,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
             range = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()), new Date(booking.check_out.year(),booking.check_out.month(),booking.check_out.date()-1))
             iterator = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()), new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()+1))
             range.by iterator, (moment) ->
-              angular.element('calendar table:eq(' + cal + ') .day' + moment.date()).addClass('active').css('background-color', 'grey') if moment.month() == month && moment.year() == year
+              angular.element('calendar table:eq(' + cal + ') .day' + moment.date()).addClass('booked') if moment.month() == month && moment.year() == year
 
         if scope.listing
           disable_bookings()
@@ -966,52 +966,58 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       element.find('.arrow.prev').click -> gen_cals 'prev'
       element.find('.arrow.next').click -> gen_cals 'next'
 
+      #element.find('td.day').click ->
+
     restrict: 'E'
     template: "
-      <table>
-        <thead>
-          <tr class='month_header'>
-            <th class='arrow prev'><</th>
-            <th class='month' colspan='5'></th>
-            <th class='arrow next'>></th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-      <table>
-        <thead>
-          <tr class='month_header'>
-            <th class='arrow prev'><</th>
-            <th class='month' colspan='5'></th>
-            <th class='arrow next'>></th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-      <table>
-        <thead>
-          <tr class='month_header'>
-            <th class='arrow prev'><</th>
-            <th class='month' colspan='5'></th>
-            <th class='arrow next'>></th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-      <table>
-        <thead>
-          <tr class='month_header'>
-            <th class='arrow prev'><</th>
-            <th class='month' colspan='5'></th>
-            <th class='arrow next'>></th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
+      <div class='table'>
+        <table>
+          <thead>
+            <tr class='month_header'>
+              <th class='arrow prev'><</th>
+              <th class='month' colspan='5'></th>
+              <th class='arrow next'>></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class='table'>
+        <table>
+          <thead>
+            <tr class='month_header'>
+              <th class='arrow prev'><</th>
+              <th class='month' colspan='5'></th>
+              <th class='arrow next'>></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class='table'>
+        <table>
+          <thead>
+            <tr class='month_header'>
+              <th class='arrow prev'><</th>
+              <th class='month' colspan='5'></th>
+              <th class='arrow next'>></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class='table'>
+        <table>
+          <thead>
+            <tr class='month_header'>
+              <th class='arrow prev'><</th>
+              <th class='month' colspan='5'></th>
+              <th class='arrow next'>></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     "
 
 angular.element(document).on 'ready page:load', -> angular.bootstrap(document, ['luxhaven'])
