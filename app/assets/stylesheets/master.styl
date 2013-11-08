@@ -1154,11 +1154,19 @@ footer
                   td
                     padding: 10px 0
                     text-align: center
+                    width: 47px
+                    height: 39px
+                    box-sizing: border-box
+                    &.inactive
+                      color: light-grey
+                      &:hover
+                        cursor: pointer
                     &.booked
                       background-color: grey !important
-                    &:hover
-                      background-color: green
-                      cursor: pointer
+                    &.active
+                      &:hover, &.booking
+                        background-color: green
+                        cursor: pointer
         &#description
           p
             color: darker-grey

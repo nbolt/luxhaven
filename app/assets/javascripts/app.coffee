@@ -889,6 +889,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
       months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
       _month_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+      booked = []
       
       gen_cal = (cal, month, year) ->
         calendar = $('#availability table').eq(cal)
@@ -897,34 +898,29 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         first_day = new Date(year, month, 1).getDay()
         month_name = months[month]
         month_days = _month_days[month]
-        month_days =
-          if month == 1 && (year % 4 == 0 && year % 100 != 0 || year % 400 == 0)
-            29
-          else
-            month_days
-        num_rows =
-          if month_days + first_day > 35
-            6
-          else if first_day == 0 && month_days == 28
-            4
-          else
-            5
+        month_days = if month == 1 && (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) then 29 else month_days
+        prev_month_days = if month == 0 then _month_days[11] else _month_days[month-1]
+        prev_month_days = if month == 2 && (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) then 29 else prev_month_days
+        num_rows = if month_days + first_day > 35 then 6 else if first_day == 0 && month_days == 28 then 4 else 5
 
         calendar.find('tbody').remove()
         calendar.find('thead').after('<tbody></tbody>')
         calendar.find('.month_header th.month').text(month_name + ' ' + year)
 
         current_day = 0
-        for row in [1..num_rows]
+        for row in [1..6]
           calendar.find('tbody').append('<tr class="week">')
           for day, i in days
             day = (current_day + 1) + '-' + month + '-' + year
             html = '<td ' +
-              (if row == 1 && i < first_day || current_day >= month_days
-                'class="day">'
-              else
+              (if row == 1 && i < first_day
+                'class="inactive day">' + (prev_month_days - ((first_day-1) - i))
+               else if current_day >= month_days
                 ++current_day
-                'class="active day day' + current_day + '">' + current_day) + '</td>'
+                'class="inactive day">' + (current_day - month_days)
+               else
+                 ++current_day
+                 'class="active day day' + current_day + ' month' + month + '">' + current_day) + '</td>'
             calendar.find('tbody').append html
           calendar.find('tbody').append '</tr>'
 
@@ -933,7 +929,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
             range = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()), new Date(booking.check_out.year(),booking.check_out.month(),booking.check_out.date()-1))
             iterator = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()), new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()+1))
             range.by iterator, (moment) ->
-              angular.element('calendar table:eq(' + cal + ') .day' + moment.date()).addClass('booked') if moment.month() == month && moment.year() == year
+              if moment.month() == month && moment.year() == year
+                booked.push [moment.month(), moment.date(), moment.year()]
+                angular.element('calendar table:eq(' + cal + ') .day' + moment.date()).addClass('booked')
 
         if scope.listing
           disable_bookings()
@@ -941,6 +939,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           scope.listingQ.promise.then -> disable_bookings()
 
       gen_cals = (dir) ->
+        booked = []
         if dir is 'prev'
           scope.month = scope.month == 0 && 11 || scope.month-1
           scope.year = scope.month == 11 && scope.year-1 || scope.year
@@ -960,13 +959,65 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         next_month = next_month < 11 && next_month+1 || 0
         next_year = next_month == 0 && next_year+1 || next_year
         gen_cal(3, next_month, next_year)
+        element.find('td.day').bind 'click.selecting', selecting
+        
+      selecting = ->
+        element.find('td.day').unbind 'click.selecting'
+        cal = angular.element(@).parent().parent()
+        month1 = cal.find('.month_header').children('.month')
+        scope.check_in = [parseInt(month1.attr('month')), parseInt(angular.element(@).text()), parseInt(month1.attr('year'))]
+        element.find('td.day').bind 'click.selected', ->
+          angular.element('td.day').removeClass 'booking'
+          element.find('td.day').unbind 'click.selected'
+          element.find('td.day').unbind 'mouseenter.selecting'
+          element.find('td.day').bind 'click.selecting', selecting
+          if valid(scope.check_in, scope.check_out)
+            check_in  = scope.check_in
+            check_out = scope.check_out
+            check_in_date  = new Date(check_in[2], check_in[0], check_in[1])
+            check_out_date = new Date(check_out[2], check_out[0], check_out[1])
+            check_in[0] = check_in[0] + 1
+            check_out[0] = check_out[0] + 1
+            if check_in_date > check_out_date then tmp = check_in; check_in = check_out; check_out = tmp
+            scope.dates.check_in  = check_in.join '/'
+            scope.dates.check_out = check_out.join '/'
+            scope.check_in  = null
+            scope.check_out = null
+            scope.bookModal()
+        element.find('td.day').bind 'mouseenter.selecting', ->
+          month2 = angular.element(@).parent().parent().find('.month_header').children('.month')
+          scope.check_out = [parseInt(month2.attr('month')), parseInt(angular.element(@).text()), parseInt(month2.attr('year'))]
+          angular.element('td.day').removeClass 'booking'
+          if valid(scope.check_in, scope.check_out)
+            check_in_date  = new Date(scope.check_in[2], scope.check_in[0], scope.check_in[1])
+            check_out_date = new Date(scope.check_out[2], scope.check_out[0], scope.check_out[1])
+            idate = new Date(scope.check_in[2], scope.check_in[0], scope.check_in[1]); idate.setDate(idate.getDate()+1)
+            range = moment().range check_in_date, check_out_date
+            iterator = moment().range check_in_date, idate
+            range.by iterator, (moment) ->
+              angular.element('calendar td.day' + moment.date() + '.month' + moment.month()).addClass 'booking'
+          else
+            cal.find('td.day' + scope.check_in[1]).addClass 'booking'
 
       gen_cals()
 
       element.find('.arrow.prev').click -> gen_cals 'prev'
       element.find('.arrow.next').click -> gen_cals 'next'
 
-      #element.find('td.day').click ->
+      valid = (check_in, check_out) ->
+        check_in_date  = new Date(check_in[2], check_in[0], check_in[1])
+        check_out_date = new Date(check_out[2], check_out[0], check_out[1])
+        if check_in_date > check_out_date
+          tmp = check_in; check_in = check_out; check_out = tmp
+          tmp = check_in_date; check_in_date = check_out_date; check_out_date = tmp
+        _valid = true
+        _valid = false if check_out[1] - check_in[1] == 1 && check_out[0] == check_in[0] || check_out[1] - check_in[1] == 0 && check_out[0] == check_in[0]
+        _valid = false if check_in[1] == _month_days[check_in[0]] && check_out[1] == 1 && (check_out[0] == check_in[0] + 1 || check_in[0] == 11 && check_out[0] == 0)
+        range = moment().range check_in_date, check_out_date
+        for d in booked
+          date = new Date(d[2], d[0], d[1])
+          _valid = false if range.contains date
+        return _valid
 
     restrict: 'E'
     template: "
