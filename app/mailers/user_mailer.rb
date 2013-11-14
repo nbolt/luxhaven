@@ -5,7 +5,7 @@ class UserMailer < ActionMailer::Base
 
   def booked booking
     @booking = booking
-    mail(subject: 'Your LuxHaven Booking', to: booking.user.email, from: 'hello@luxhaven.co')
+    mail(subject: 'Your Luxhaven Booking', to: booking.user.email, from: 'hello@luxhaven.co')
   end
 
   def forgot user
@@ -16,7 +16,7 @@ class UserMailer < ActionMailer::Base
       break unless User.where(reset_password_token: token).first
     end
     user.update_attribute :reset_password_token, token
-    mail(subject: 'LuxHaven - Reset Your Password', to: user.email, from: 'hello@luxhaven.co')
+    mail(subject: 'Luxhaven - Reset Your Password', to: user.email, from: 'hello@luxhaven.co')
   end
 
 end

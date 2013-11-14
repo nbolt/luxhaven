@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.0.0'
 
-gem 'rails'
+gem 'rails', '~> 4.0.1'
 gem 'puma'
 
 group :assets do
@@ -12,7 +12,7 @@ group :assets do
   gem 'uglifier'
   gem 'angularjs-rails'
   gem 'jquery-rails'
-  gem 'roots-rails'
+  gem 'axis-rails'
   gem 'fotoramajs'
 end
 
@@ -35,9 +35,9 @@ gem 'coveralls', require: false, group: :test
 gem 'rspec-rails', group: [:development, :test]
 
 gem 'sorcery',       github: 'NoamB/sorcery', branch: 'master'
-gem 'friendly_id',   github: 'FriendlyId/friendly_id', branch: 'master'
+gem 'friendly_id' #,   github: 'FriendlyId/friendly_id', branch: 'master'
 
-gem 'stylus', '~> 1.0.0.beta'
+gem 'stylus', '~> 1.0.0beta'
 
 gem 'rmagick'
 gem 'sentry-raven'

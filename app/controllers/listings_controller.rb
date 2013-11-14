@@ -14,6 +14,7 @@ class ListingsController < ApplicationController
     expires_in 1.hour, public: true
 
     response.headers['Vary'] = 'Accept'
+    request.format = 'json' if env['HTTP_ACCEPT'].match /application\/json/
     respond_to do |format|
       format.html
       format.json do
@@ -33,13 +34,18 @@ class ListingsController < ApplicationController
         listings = listings.send params[:sort]
         listings = Listing.available params[:check_in], params[:check_out], listings if params[:check_in] && params[:check_out]
         paginated_listings = Kaminari.paginate_array(listings).page(params[:page]).per 5
-        render json: { size: listings.size, listings: paginated_listings.as_json(include: [:bookings, :address, :paragraphs]) }
+        render json: {
+          size: listings.size,
+          listings: paginated_listings.as_json(include: [:bookings, :address, :paragraphs]),
+          all_listings: listings.as_json(include: [:bookings, :address, :paragraphs])
+        }
       end
     end
   end
 
   def show
     response.headers['Vary'] = 'Accept'
+    request.format = 'json' if env['HTTP_ACCEPT'].match /application\/json/
     respond_to do |format|
       format.html
       format.json do

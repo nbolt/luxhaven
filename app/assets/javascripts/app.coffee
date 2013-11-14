@@ -7,6 +7,13 @@ SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page', 'district', 'sleep
 
 PAGINATE_PER = 5
 
+String.prototype.hash = ->
+  s = this
+  s.split('').reduce(
+    ((a,b) -> a=((a<<5)-a)+b.charCodeAt(0);a&a),
+    0
+  )
+
 AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
   $scope.signinContent = angular.element('#sign-in').html()
   $scope.signupContent = angular.element('#sign-up').html()
@@ -27,7 +34,7 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
       $scope.auth.reject()
 
   $scope.signInModal = (callback) ->
-    angular.element('#modal').bPopup {
+    angular.element('#modal').bPopup
       onOpen:  ->
         angular.element('body').css('overflow', 'hidden')
         $scope.toSignin()
@@ -36,7 +43,8 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
         callback() if callback
       modalColor: 'white'
       opacity: 0.65
-    }
+
+    null
 
   $scope.toSignup = ->
     angular.element('#modal').html $compile($scope.signupContent)($scope)
@@ -191,7 +199,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       angular.element('#results .right .overlay').css 'display', 'none'
       $scope.listings = rsp.listings
       $scope.size = rsp.size
-      #$scope.pages = _.toArray _($scope.listings).groupBy (v,i) -> Math.floor i / 5
+      $scope.all_listings = rsp.all_listings
       angular.element('footer').css 'display', 'block'
 
   $scope.nav = (n) ->
@@ -664,11 +672,11 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('manage',   ManageCtrl)
   .controller('account',  AccountCtrl)
   .config ($httpProvider) ->
-    $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr('content')
-  .service('$cookieStore', ->
-    @get = (name) -> $.cookie name
-    @put = (name, value, options) -> $.cookie name, value, options
-    @remove = (name) -> $.removeCookie name
+    $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr 'content'
+  .factory('$cookieStore', ->
+    get: -> (name) -> $.cookie name
+    put: -> (name, value, options) -> $.cookie name, value, options
+    remove: -> (name) -> $.removeCookie name
   )
   .directive('date', -> (scope, element, attrs) ->
     scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
@@ -715,6 +723,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     scope.$watch 'size', scope.update_pagination
   )
   .directive('searchTab', ($timeout) -> (scope, element, attrs) ->
+    scope.overlays = {}
     element.click -> scope.$apply ->
       angular.element('.tabs .tab').removeClass 'active'
       element.addClass 'active'
@@ -739,12 +748,59 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
                     lat: scope.region.latitude
                     lng: scope.region.longitude
                     zoom: 12
-                  _(scope.listings).each (listing) ->
+                  _(scope.all_listings).each (listing) ->
                     if listing.address.latitude
                       scope.map.addMarker
                         lat: listing.address.latitude
                         lng: listing.address.longitude
                         title: listing.title
+                        icon: '/images/house-marker.png'
+                        mouseover: (e) ->
+                          hash = e.latLng.toUrlValue().hash()
+                          o = scope.map.drawOverlay
+                            lat: e.latLng.lat()
+                            lng: e.latLng.lng()
+                            layer: 'floatPane'
+                            content: "
+                              <div class='map-overlay hash#{hash}'>
+                                <div class='content'>
+                                  <div class='padding'>
+                                    <div class='image'><img src=\"#{listing.search_image.url}\" width=\"230\"></div>
+                                    <div class='name-price'>
+                                      <div class='name'>
+                                        <div class='title'>#{listing.title}</div>
+                                        <div class='neighborhood'>#{listing.address.neighborhood}, #{listing.address.city}</div>
+                                      </div>
+                                      <div class='price'>
+                                        <div class='from'>From</div>
+                                        <div class='amount'>$#{listing.price_per_night / 100}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class='info'>
+                                    <div class='people room' ng:switch='listing.accomodates_to'>
+                                      <div class='icon'></div>
+                                      <div class='text'>#{listing.accomodates_to}</div>
+                                    </div>
+                                    <div class='bedrooms room'>
+                                      <div class='icon'></div>
+                                      <div class='text'>#{listing.bedrooms}</div>
+                                    </div>
+                                    <div class='baths room' ng:switch='listing.baths'>
+                                      <div class='icon'></div>
+                                      <div class='text'>#{listing.baths}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            "
+                          setTimeout(
+                            (->
+                              angular.element(".map-overlay.hash#{hash}").fadeIn()
+                              angular.element(".map-overlay.hash#{hash}").mouseleave -> angular.element(@).fadeOut 400, -> scope.map.removeOverlay o
+                            ),
+                            50
+                          )
               ), 500)
           )
         )
@@ -1071,4 +1127,4 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       </div>
     "
 
-angular.element(document).on 'ready page:load', -> angular.bootstrap(document, ['luxhaven'])
+angular.element(document).on 'ready page:load', -> angular.bootstrap('body', ['luxhaven'])

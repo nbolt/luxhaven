@@ -1,4 +1,4 @@
-@import url('http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps|Roboto+Slab')
+//@import url('http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps|Roboto+Slab')
 
 @keyframes spin
   0%
@@ -408,6 +408,106 @@ footer
       bottom: 0
       right: 0
       left: 311px
+      padding-bottom: 30px
+      .map-overlay
+        width: 240px
+        height: 260px
+        cursor: pointer
+        display: none
+        position: absolute
+        top: -255px
+        left: -121px
+        .content
+          background-color: white
+          height: 208px
+          width: 240px
+          border-radius: 3px
+          border: thin solid grey
+          position: relative
+          &::after, &::before
+            top: 100%
+            left: 50%
+            border: solid transparent
+            content: ''
+            height: 0
+            width: 0
+            position: absolute
+            pointer-events: none
+          &::after
+            border-color: rgba(255,255,255,0)
+            border-top-color: white
+            border-width: 11px
+            margin-left: -11px
+          &::before
+            border-color: rgba(255,255,255,0)
+            border-top-color: grey
+            border-width: 12px
+            margin-left: -12px
+          .padding
+            padding: 5px
+            width: 230px
+            .name-price
+              margin: 3px 0
+              .name
+                width: 152px
+                height: 68px
+                display: inline-block
+                vertical-align: top
+                .title
+                  color: green
+                  font: 1.4em proxima-nova
+                  font-weight: 600
+                  margin: 2px 0 4px
+                .neighborhood
+                  color: hsl(0, 0%, 60%)
+                  text-transform: uppercase
+                  font-family: proxima-nova
+                  font-weight: 600
+              .price
+                background-color: green
+                padding: 9px 11px
+                color: white
+                display: inline-block
+                width: 65px
+                border-radius: 3px
+                box-sizing: border-box
+                margin-left: 8px
+                .from
+                  font: 0.9em proxima-nova
+                  text-transform: uppercase
+                .amount
+                  font: 1.3em proxima-nova
+                  font-weight: 600
+          .info
+            background-color: lighter-grey
+            height: 35px
+            width: 234px
+            margin: auto
+            border-bottom-left-radius: 3px
+            border-bottom-right-radius: 3px
+            padding: 11px 0
+            box-sizing: border-box
+            text-align: center
+            .room
+              color: dark-grey
+              display: inline-block
+              margin: 0 9px
+              .icon
+                width: 24px
+                height: 12px
+                display: inline-block
+              .text
+                display: inline-block
+                font-family: proxima-nova
+                font-size: 1.1em
+                margin-left: 2px
+                vertical-align: top
+              &.people .icon
+                background-image: url(/images/people-grey.png)
+              &.bedrooms .icon
+                background-image: url(/images/bedrooms-grey.png)
+              &.baths .icon
+                background-image: url(/images/baths-grey.png)
     .top
       margin: 0 29px
       padding: 19px 0 20px
