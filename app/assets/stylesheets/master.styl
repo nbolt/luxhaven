@@ -25,10 +25,12 @@ light-grey   = hsl(0, 0%, 85%)
 lighter-grey = hsl(0, 0%, 95%)
 dark-grey    = hsl(0, 0%, 40%)
 darker-grey  = hsl(0, 0%, 30%)
-red          = hsl(360, 90%, 45%)
-//green      = hsl(159, 64%, 47%)
+red          = hsl(8, 76%, 54%)
 green        = hsl(159, 69%, 44%)
 dark-green   = hsl(159, 81%, 25%)
+yellow       = hsl(47, 89%, 58%)
+//red        = hsl(360, 90%, 45%)
+//green      = hsl(159, 64%, 47%)
 
 placeholder-color(color)
   ::-webkit-input-placeholder
@@ -54,6 +56,20 @@ dragging()
 
 .dragging
   dragging()
+
+typcn()
+  font-family: 'typicons'
+  font-style: normal
+  font-weight: normal
+  speak: none
+  display: inline-block
+  width: 1em
+  height: 1em
+  font-size: 1em
+  text-align: center
+  -webkit-font-smoothing: antialiased
+  font-smoothing: antialiased
+  text-rendering: optimizeLegibility
 
 a
   text-decoration: none
@@ -113,49 +129,75 @@ body
   background-color: white
   .luxhaven
     overflow: auto
-    margin: 40px auto
+    margin: 35px auto
+  .title
+    margin-bottom: 20px
+    color: darker-grey
+    text-align: center
   .top-message
     width: 310px
     margin: 0 auto 25px
     font-size: .9em
     color: darker-grey
+    text-align: center
+  .forgot
+    color: grey
+    font-size: .8em
+    text-decoration: underline
+    margin: 5px 0 15px 50px
+    display: inline-block
+    cursor: pointer
   .message
     text-align: center
-    margin-top: 12px
+    margin-top: 22px
     font: .9em proxima-nova
+    font-weight: 600
+    height: 60px
+    border-top: thin solid grey
     a
-      color: hsl(0, 0%, 65%)
-      &:hover
+      color: dark-grey
+      margin-top: 20px
+      display: inline-block
+      text-transform: uppercase
+      span
         color: green
+      &:hover
         cursor: pointer
-      &:first-child
-        float: left
-        margin-left: 20px
-      &:last-child
-        float: right
-        margin-right: 20px
   &.sign-up, &.forgot
     .message a
       float: none
-  .auth-error-container
-    height: 19px
-    margin-top: 16px
-    .auth-error
-      display: none
-      text-align: center
-      color: red
-      font: 1em proxima-nova
-      &.green
-        color: green
-      &.small
-        font-size: .9em
+  .auth-rsp
+    display: none
+    text-align: center
+    color: white
+    font: 1em proxima-nova
+    border-radius: 3px
+    position: absolute
+    width: 405px
+    bottom: -60px
+    box-sizing: border-box
+    background-color: red
+    padding: 14px
+    &.success
+      background-color: green
+    &.error
+      background-color: red
+    &.small
+      font-size: .9em
   form
-    button
-      width: 100%
-      border-radius: 0
-      margin-top: 15px
-      padding: 10px
-      font-size: 1em
+    font-family: proxima-nova
+    .button
+      width: 300px
+      margin: auto
+      button
+        width: 100%
+        border-radius: 3px
+        margin-top: 15px
+        padding: 10px
+        font-size: 1em
+        border: thin solid dark-green
+        text-transform: uppercase
+        text-shadow: 1px 1px 1px dark-green
     .input
       width: 310px
       margin: 10px auto
@@ -163,13 +205,31 @@ body
       input
         color: hsl(0, 0%, 55%)
         width: 100%
-  &.sign-in
+    .check
+      width: 300px
+      margin: 15px auto 10px
+      font-size: .8em
+      color: hsl(0, 0%, 60%)
+      font-family: proxima-nova
+      input
+        vertical-align: top
+        margin: 1px 5px 0 0
+    .tos
+      text-align: center
+      color: dark-grey
+      font-weight: 600
+      font-size: .8em
+      width: 300px
+      margin: 15px auto
+      a
+        color: green
+  &.sign-ins
     height: 325px
-  &.sign-up
+  &.sign-ups
     height: 460px
-  &.forgot
+  &.forgots
     height: 335px
-  &#reset
+  &#resets
     height: 305px
 
 .luxhaven
@@ -243,6 +303,122 @@ footer
   #content-below
     height: 300px
 
+#enquiry
+  width: 600px
+  .auth-rsp
+    width: 100%
+  .top
+    .control
+      margin: 2px 0 -14px
+  .bottom
+    border-top: thin solid light-grey
+  .content
+    width: 515px
+    margin: 35px auto
+    .section-title
+      color: darker-grey
+      font-weight: 600
+      font-family: proxima-nova
+    .check
+      margin: 16px 2px
+      input
+        vertical-align: top
+        margin-top: 3px
+      label
+        margin-left: 5px
+        color: dark-grey
+        font-family: proxima-nova
+        font-size: .95em
+        color: hsl(0, 0%, 50%)
+    .group
+      margin: 25px 0
+      .input:first-child
+        margin-right: 25px
+      &.grey
+        background-color: hsl(60, 12%, 95%)
+        padding: 15px
+        input
+          box-shadow: none
+          display: inline-block
+          width: 23px
+          vertical-align: top
+          margin-top: 1px
+        label
+          color: darker-grey
+          &:first-of-type
+            margin-right: 20px
+      button
+        padding: 15px 25px
+        font-size: 1.2em
+        vertical-align: top
+      .text-container
+        display: inline-block
+        margin-left: 18px
+        .text
+          color: darker-grey
+          font-family: proxima-nova
+          margin-top: 5px
+    .input
+      display: inline-block
+      &.half
+        width: 245px
+      &.full
+        width: 100%
+      &.quarter.select
+        input
+          width: 140px
+        .select2-container
+          width: 80px !important
+          margin-right: 25px
+        .input-title
+          margin-bottom: -15px
+      &.quarter.multiple
+        width: 245px
+        .input-title
+          display: inline-block
+          width: 120px
+        input
+          width: 122px
+        .input-title, input
+          width: 110px
+          &:first-of-type
+            margin-right: 25px
+      &.sixth
+        input
+          width: 65px
+          margin-right: 15px
+      span.link
+        color: green
+        &:hover
+          cursor: pointer
+      .input-title
+        color: grey
+        text-transform: uppercase
+        font: .9em proxima-nova
+        font-weight: 600
+        padding-bottom: 10px
+      input
+        color: darker-grey
+        box-shadow: 0px 1px 5px hsla(0, 0%, 0%, 0.1)
+        display: inline-block
+        width: 100%
+      textarea
+        border: thin solid light-grey
+        width: 100%
+        box-shadow: 0px 1px 5px hsla(0, 0%, 0%, 0.1)
+        outline: none
+        color: darker-grey
+        padding: 8px 12px
+        resize: none
+        font-family: proxima-nova
+  .select2-container
+    width: 100% !important
+    margin: 15px 0
+    box-shadow: 1px 1px 5px hsla(0, 0%, 0%, 0.1)
+    a
+      span
+        font-weight: 600
+
 #home
   background: url(/images/home.jpg) no-repeat
   opacity: 0
@@ -315,10 +491,9 @@ footer
   margin: auto
   transition: width .4s linear, background-color .4s linear
   .left
-    width: 250px
+    width: 280px
     height: 2171px
     display: inline-block
-    padding-right: 30px
     border-right: thin solid grey
     #filters
       width: 250px
@@ -329,13 +504,17 @@ footer
           color: green
           font-weight: 600
           display: inline-block
-          margin-right: 15px
           cursor: pointer
+          padding: 6px 12px
+          text-align: center
           &.active
             color: white
             background-color: green
-            padding: 7px 10px
             border-radius: 3px
+          &:first-child
+            float: left
+          &:last-child
+            float: right
       > .title
         text-transform: uppercase
         font: .95em proxima-nova
@@ -402,24 +581,59 @@ footer
             border: 4px dashed green
             width: 100px
             height: 100px
+      .enquiry
+        background-color: hsl(60, 12%, 95%)
+        font: 1.2em proxima-nova
+        font-weight: 600
+        color: dark-grey
+        padding: 25px
+        margin: 40px 30px
+        box-sizing: border-box
+        height: 100px
+        .text
+          display: inline-block
+          margin-top: 13px
+        button
+          float: right
+          border-radius: 1px
+          padding: 15px
     #map
       position: absolute
       top: 0
       bottom: 0
       right: 0
-      left: 311px
+      left: 306px
       padding-bottom: 30px
       .map-overlay
         width: 240px
-        height: 260px
+        height: 300px
         cursor: pointer
         display: none
         position: absolute
-        top: -255px
+        top: -300px
         left: -121px
+        .fotorama__arr
+          background: white
+          &.fotorama__arr--prev
+            margin-left: 8px
+            &::after
+              content: '\e044'
+              color: green
+              font-size: 2.7em !important
+              typcn()
+          &.fotorama__arr--next
+            margin-right: 8px
+            &::after
+              content: '\e046'
+              color: green
+              font-size: 2.7em !important
+              margin-left: 2px
+              typcn()
+          &.fotorama__arr--disabled
+            opacity: 0.7 !important
         .content
           background-color: white
-          height: 208px
+          height: 252px
           width: 240px
           border-radius: 3px
           border: thin solid grey
@@ -449,10 +663,11 @@ footer
             .name-price
               margin: 3px 0
               .name
-                width: 152px
+                width: 150px
                 height: 68px
                 display: inline-block
                 vertical-align: top
+                margin-left: 2px
                 .title
                   color: green
                   font: 1.4em proxima-nova
@@ -559,6 +774,9 @@ footer
         border: thin solid #afafaf
         border-radius: 3px
         background-color: white
+        .bottom
+          height: 155px
+          overflow: auto
         .picture
           height: 230px
           background-color: white
@@ -582,10 +800,12 @@ footer
               opacity: 0
               transition: opacity .4s
         &:hover
-          .overlay
-            background-color: hsla(0,0%,0%,0.6)
-            .typcn
-              opacity: 1
+          .bottom
+            background-color: hsl(0, 0%, 98%)
+          //.overlay
+          //  background-color: hsla(0,0%,0%,0.6)
+          //  .typcn
+          //    opacity: 1
         .info-box
           background-color: lighter-grey
           border-radius: 3px
@@ -807,14 +1027,13 @@ footer
       opacity: .4
       transition: background .5s, opacity .5s
       &.active
-        background: #fff
+        background: white
         opacity: 1
     
 #book-modal
   display: none
   background-color: white
   width: 1000px
-  height: 630px
   border: thin solid light-grey
   border-radius: 3px
   box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1)
@@ -828,9 +1047,26 @@ footer
     i
       width: 32px
       height: 32px
-  .left
+  .bottom
+    height: 150px
+    border-top: thin solid light-grey
+    .left, .right
+      display: inline-block
+      vertical-align: top
+      padding: 20px
+      box-sizing: border-box
+    .left
+      width: 300px
+      p
+        width: 250px
+    .right
+      p
+        width: 325px
+    p
+      color: grey
+  > .left
     width: 300px
-    height: 630px
+    height: 700px
     border-right: thin solid light-grey
     float: left
     box-sizing: border-box
@@ -873,9 +1109,10 @@ footer
         span
           color: darker-grey
           font-weight: bold
-  .right
+  > .right
     margin-left: 300px
     font-family: proxima-nova
+    height: 700px
     .top
       height: 75px
       border-bottom: thin solid light-grey
@@ -916,6 +1153,8 @@ footer
           .text
             color: green
     > .content
+      overflow: auto
+      height: 675px
       .step
         display: none
         button
@@ -932,11 +1171,32 @@ footer
           .text
             float: left
           .price
-            font-weight: bold
+            font-weight: 600
             float: right
+        > .tabs
+          display: inline-block
+          vertical-align: top
+          width: 200px
+          padding: 25px
+          height: 575px
+          border-right: thin solid light-grey
+          margin-right: 25px
+          .tab
+            padding: 9px 12px
+            color: black
+            font-weight: 600
+            font-size: 1.1em
+            border-radius: 3px
+            margin-bottom: 8px
+            &:hover
+              cursor: pointer
+            &:hover, &.active
+              background-color: green
+              color: white
         > .content
           width: 400px
-          margin: 50px auto
+          margin: 25px auto
+          display: inline-block
         &.active
           display: block
         &.step1
@@ -1012,24 +1272,54 @@ footer
                 cursor: pointer
         &.step3
           .content
+            .or
+              border: thin solid dark-grey
+              height: 0
+              margin: 40px 0
+              position: relative
+              &::after
+                content: 'or'
+                text-transform: uppercase
+                background-color: dark-grey
+                color: white
+                font: .75em proxima-nova
+                width: 28px
+                height: 28px
+                position: absolute
+                top: -14px
+                left: 186px
+                box-sizing: border-box
+                padding: 7px 0 0 6px
+                rounded()
             .payment
               color: darker-grey
-              .card
-                margin: 10px 0 0 20px
-                .text
-                  display: inline-block
-                  vertical-align: top
-                  margin-top: 2px
-                input
-                  margin: 7px 10px 0 1px
-                  display: inline-block
-                  vertical-align: top
-                img
-                  margin-left: 10px
+              .cards
+                background-color: lighter-grey
+                border: thin solid grey
+                border-radius: 3px
+                .card
+                  padding: 12px 20px
+                  .text
+                    display: inline-block
+                    vertical-align: top
+                    margin-top: 2px
+                    font-size: 1.2em
+                    font-weight: 800
+                  input
+                    margin: 7px 10px 0 1px
+                    display: inline-block
+                    vertical-align: top
+                  img
+                    float: right
+                  &:hover, &.chosen
+                    background-color: green
+                    color: white
+                    cursor: pointer
+                    .text
+                      font-weight: 600
               .card-entry
                 border: thin solid light-grey
                 border-radius: 3px
-                margin-top: 25px
                 .title
                   margin-top: 20px
                   background-color: lighter-grey
@@ -1065,14 +1355,15 @@ footer
               font-size: 1.1em
               margin-top: 25px
             .error
-              color: red
-              display: none
-              margin: 26px 0 0 15px
-              vertical-align: top
-              transition: opacity .5s
+              color: white
+              background-color: red
+              transition: opacity .4s
               opacity: 0
-              width: 260px
-        &.step3
+              width: 100%
+              margin: 22px 0
+              padding: 14px
+              border-radius: 3px
+        &.step4
           .title
             color: darker-grey
             font-size: 2em
@@ -1226,9 +1517,57 @@ footer
       .tab
         display: none
         margin: 5px 5px
+        overflow: auto
         &.active
           display: block
         &#availability
+          ul.legend
+            float: right
+            padding: 0
+            margin: 16px 0 0 0
+            li
+              display: inline-block
+              margin-left: 16px
+              &:first-child
+                margin-left: 0
+              .color
+                width: 11px
+                height: 11px
+                display: inline-block
+                vertical-align: middle
+                &.white
+                  border: thin solid grey
+                &.yellow
+                  border: thin solid yellow
+                  background-color: yellow
+                &.grey
+                  border: thin solid grey
+                  background-color: grey
+              .meaning
+                display: inline-block
+                text-transform: uppercase
+                color: dark-grey
+                vertical-align: middle
+                margin-left: 7px
+                font-size: .9em
+          .title
+            font-weight: 600
+            font-size: 1.1em
+            color: darker-grey
+            margin-top: 17px
+            unselectable()
+            .months
+              text-align: center
+              display: inline-block
+              width: 285px
+              margin: auto
+            .arrow
+              font-weight: 800
+              cursor: pointer
+              &.prev
+                margin-right: 8px
+              &.next
+                margin-left: 8px
           calendar
             .table
               height: 280px
@@ -1367,6 +1706,7 @@ footer
         &#local-area
           .top
             height: 25px
+            margin-top: 8px
             a
               float: right
               color: green
@@ -1425,16 +1765,16 @@ footer
       margin: 0 20px
   #listing-form
     font-family: proxima-nova
+    textarea
+      width: 450px
+      height: 150px
+      border: thin solid light-grey
     .submit
       button
         margin-top: 25px
     .paragraph
       height: 175px
       width: 900px
-      textarea
-        width: 450px
-        height: 150px
-        border: thin solid light-grey
       .right
         float: right
         button

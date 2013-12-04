@@ -27,7 +27,7 @@ class SearchImageUploader < CarrierWave::Uploader::Base
   # end
 
   # Process files as they are uploaded:
-  process :resize_to_fill => [635, 230]
+  process :resize_to_fill => [635, 360]
   #
   # def scale(width, height)
   #   # do something
@@ -37,6 +37,16 @@ class SearchImageUploader < CarrierWave::Uploader::Base
   # version :thumb do
   #   process :scale => [50, 50]
   # end
+
+  version :banner do
+    process :resize_to_fill => [635, 230]
+    process :convert => 'jpg'
+  end
+
+  version :map do
+    process :resize_to_fill => [230, 130]
+    process :convert => 'jpg'
+  end
 
   # Add a white list of extensions which are allowed to be uploaded.
   # For images you might use something like this:

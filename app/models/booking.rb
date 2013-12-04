@@ -7,7 +7,7 @@ class Booking < ActiveRecord::Base
   scope :charged, -> { where(payment_status: 'charged') }
 
   def conflicts
-    errors.add :booking, 'Conflicts with another booking' if listing.conflicts? check_in, check_out
+    errors.add :booking, 'These booking dates conflict with another booking' if listing.conflicts? check_in, check_out
   end
 
   def price_total
@@ -37,7 +37,7 @@ class Booking < ActiveRecord::Base
         customer: customer_id
       )
       update_attributes payment_status: 'charged', stripe_charge_id: charge.id
-      UserMailer.booked(self).deliver!
+      SendMail.new.async.perform UserMailer.booked(self)
       return charge
     rescue Stripe::CardError => err
       return err

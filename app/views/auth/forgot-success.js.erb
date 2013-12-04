@@ -1,7 +1,8 @@
-auth_error = $('#modal .auth-error')
+angular.element('#modal button').removeClass('disabled')
+auth_error = $('#modal .auth-rsp')
 
 display_error = function(){
-  auth_error.addClass('green')
+  auth_error.addClass('success')
   auth_error.text("We've sent you an email with further instructions.")
   auth_error.fadeIn()
 }

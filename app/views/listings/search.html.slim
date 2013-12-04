@@ -10,9 +10,10 @@
         .title Explore Results
         .tabs
           .tab.active search-tab='list' List
-          .tab search-tab='map' Map
-        = select_tag :district_id, options_for_select(region.districts.map{|r|[r.name, r.id]}.unshift ['All neighborhoods', 0]),
-          { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'district', select2bordered: '' }
+          .tab search-tab='map' style='margin-left:10px' Map
+          .tab search-tab='guide' City Guide
+        /= select_tag :district_id, options_for_select(region.districts.map{|r|[r.name, r.id]}.unshift ['All neighborhoods', 0]),
+        /  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'district', select2bordered: '' }
         = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.slug]}),
           { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'region.slug', select2bordered: '' }
         = text_field_tag :check_in,  nil, placeholder: 'Check In',  :'ui:date' => '{beforeShowDay:checkInDate,onSelect:syncDates}',  :'ng:model' => 'dates.check_in', :'ui:date-format' => 'mm/dd/yy'
@@ -93,6 +94,7 @@
             label for='children' Children (3 - 12)
     .right ng:switch='' on='tab'
       #map ng:switch-when='map'
+      #city-guide ng:switch-when='guide'
       #list ng:switch-when='list'
         .overlay
           .loader
@@ -114,36 +116,105 @@
               .picture bg-image='{{ listing.search_image.url }}'
                 .overlay
                   .typcn.typcn-arrow-right
-              .info-box
-                .price
-                  | From 
-                  span ${{ listing.price_per_night / 100 }}
-                .rooms.portrait
-                  .people.room ng:switch='listing.accomodates_to'
-                    .icon
-                    .text ng:switch-when='1'
-                      | 1 person
-                    .text ng:switch-default=''
-                      | {{ listing.accomodates_from }} - {{ listing.accomodates_to }} people
-                  .bedrooms.room ng:switch='listing.bedrooms'
-                    .icon
-                    .text ng:switch-when='1'
-                      | 1 bedroom
-                    .text ng:switch-default=''
-                      | {{ listing.bedrooms }} bedrooms
-                  .baths.room ng:switch='listing.baths'
-                    .icon
-                    .text ng:switch-when='1'
-                      | 1 bath
-                    .text ng:switch-default=''
-                      | {{ listing.baths }} baths
-              .title ng:bind="listing.title"
-              .neighborhood
-                span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
-                span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
-                span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
-              .description ng:bind='listing.search_description'
+              .bottom
+                .info-box
+                  .price
+                    | From 
+                    span ${{ listing.price_per_night / 100 }}
+                  .rooms.portrait
+                    .people.room ng:switch='listing.accomodates_to'
+                      .icon
+                      .text ng:switch-when='1'
+                        | 1 person
+                      .text ng:switch-default=''
+                        | {{ listing.accomodates_from }} - {{ listing.accomodates_to }} people
+                    .bedrooms.room ng:switch='listing.bedrooms'
+                      .icon
+                      .text ng:switch-when='1'
+                        | 1 bedroom
+                      .text ng:switch-default=''
+                        | {{ listing.bedrooms }} bedrooms
+                    .baths.room ng:switch='listing.baths'
+                      .icon
+                      .text ng:switch-when='1'
+                        | 1 bath
+                      .text ng:switch-default=''
+                        | {{ listing.baths }} baths
+                .title ng:bind="listing.title"
+                .neighborhood
+                  span ng:bind="listing.address.neighborhood + ', ' + listing.address.city"
+                .description ng:bind='listing.search_description'
         .pagination
           .next.typcn.typcn-chevron-right ng:click='next()' ng:class='nextShow()'
           .prev.typcn.typcn-chevron-left ng:click='prev()' ng:class='prevShow()'
           .pages paginate=''
+        .enquiry
+          .text Can't find what you're looking for?
+          button.green ng:click='enquiry()' Make an enquiry
+
+#enquiry.modal.select2-bordered ng:controller='enquiry'
+  .auth-rsp.success
+  .top.section
+    .content
+      .section-title How can we help you?
+      .control= select_tag :enquiry, options_for_select([["I'd like to make a booking", 'booking']]),
+            { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'enquiry.type', select2bordered: '' }
+  .bottom.section
+    .content
+      .section-title The more information you fill in the better we'll be able to help you.
+      ng:switch on='enquiry.type'
+        div ng:switch-when='booking'
+          .group
+            .input.half
+              .input-title Check in date
+              = text_field_tag :check_in, nil, :'ui:date' => '', :'ng:model' => 'enquiry.check_in', :'ui:date-format' => 'mm/dd/yy', :'ui:date-format' => 'mm/dd/yy'
+            .input.half
+              .input-title Check out date
+              = text_field_tag :check_out, nil, :'ui:date' => '', :'ng:model' => 'enquiry.check_out', :'ui:date-format' => 'mm/dd/yy'
+            .check
+              = check_box_tag :flexible, 0, nil, :'ng:model' => 'enquiry.flexible'
+              label for='flexible' Dates are flexible
+          .group
+            .input.half
+              .input-title Location
+              = text_field_tag :location, nil, :'ng:model' => 'enquiry.location'
+            .input.quarter.select
+              .input-title Approximate Budget (per night)
+              = select_tag :currency, options_for_select([["USD", 'usd']]),
+                { :'ui:select2' => '{minimumResultsForSearch:5}', :'ng:model' => 'enquiry.currency', select2bordered: '' }
+              = text_field_tag :budget, nil, :'ng:model' => 'enquiry.budget'
+          .group
+            .input.quarter.multiple
+              .input-title Bedrooms
+              .input-title Adults
+              = text_field_tag :bedrooms, nil, :'ng:model' => 'enquiry.bedrooms'
+              = text_field_tag :adults, nil, :'ng:model' => 'enquiry.adults'
+            .input.sixth ng:switch='enquiry.with_children'
+              span.link ng:click='enquiry.with_children = true' ng:switch-when='false' Travelling with children?
+              div ng:switch-when='true'
+                .input-title Children
+                = text_field_tag :adults, nil, :'ng:model' => 'enquiry.babies', placeholder: '0 - 1'
+                = text_field_tag :adults, nil, :'ng:model' => 'enquiry.toddlers', placeholder: '1 - 3'
+                = text_field_tag :adults, nil, :'ng:model' => 'enquiry.children', placeholder: '3 - 12'
+          .group
+            .input.full
+              .input-title Message
+              textarea rows='5' ng:model='enquiry.message'
+          .group
+            .input.half
+              .input-title Phone number
+              = text_field_tag :phone, nil, :'ng:model' => 'enquiry.phone', placeholder: '+44 987 654 3210'
+            .input.half
+              .input-title Email
+              = text_field_tag :email, nil, :'ng:model' => 'enquiry.email'
+          .group.grey
+            .input.full
+              = radio_button_tag :contact_type, :email, false, :'ng:model' => 'enquiry.contact_type'
+              label for='email' Email me
+              = radio_button_tag :contact_type, :call,  false, :'ng:model' => 'enquiry.contact_type'
+              label for='call' Call me
+          .group
+            button.green ng:click='enquire()' Send Enquiry
+            .text-container
+              .text +1 424 242 8362
+              .text support@luxhaven.com

@@ -29,7 +29,7 @@ class AuthController < ApplicationController
   def forgot    
     user = User.where(email: params[:email]).first
     if user
-      UserMailer.forgot(user).deliver!
+      SendMail.new.async.perform UserMailer.forgot(user)
       render 'forgot-success'
     else
       render 'forgot-failure'

@@ -12,8 +12,7 @@
     .side-info
       .contact-info
         .contact
-          a href='mailto:avnish@luxhaven.co'
-            | Email us
+          a ng:click='enquire()' Enquire about this property
           .icon style='background-image:url(/images/mail.png)'
         .contact
           .text +1 424 242 8362
@@ -50,9 +49,7 @@
     .title-container
       .title ng:bind='listing.title'
       .neighborhood ng:show='listing'
-        span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
-        span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
-        span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
+        span ng:bind="listing.address.neighborhood + ', ' + listing.address.city"
     #header-gallery.fotorama data-width='675' data-height='455' data-keyboard='true' data-swipe='false' data-arrows='false'
       - listing.images.each do |image|
         a href="#{image.image.url}"
@@ -128,12 +125,30 @@
                   - room.features.each do |f|
                     .feature= f.name
         .tab#availability
+          ul.legend
+            li
+              .color.white
+              .meaning Available
+            li
+              .color.yellow
+              .meaning Enquire
+            li
+              .color.grey
+              .meaning Unavailable
+          .title
+            span.arrow.prev <
+            .months
+              span.month
+              |  - 
+              span.month
+            span.arrow.next >
           calendar
         .tab#local-area local-area=''
-          .links
-            span ng:click='toMap()' Map
-            span ng:click='toStreet()' Street View
-          .neighborhood ng:bind="listing.address.neighborhood + ', ' + listing.address.city"
+          .top
+            .links
+              span ng:click='toMap()' Map
+              span ng:click='toStreet()' Street View
+            .neighborhood ng:bind="listing.address.neighborhood + ', ' + listing.address.city"
           div style='margin-top:15px' ng:switch='mapType'
             #map  ng:switch-when='map'
             #pano ng:switch-when='pano'
@@ -143,9 +158,7 @@
       img ng:src='{{ listing.search_image.url }}'
       .title ng:bind='listing.title'
       .neighborhood
-        span ng:bind="listing.address.neighborhood + ', ' + listing.address.city" ng:show='listing.address.neighborhood'
-        span ng:bind="listing.address.city + ', ' + listing.address.county" ng:show='listing.address.county && !listing.address.neighborhood'
-        span ng:bind="listing.address.city + ', ' + listing.address.state" ng:show='!listing.address.county && !listing.address.neighborhood'
+        span ng:bind="listing.address.neighborhood + ', ' + listing.address.city"
       .rooms.portrait
         .people.room ng:switch='listing.accomodates_to'
           .icon
@@ -263,41 +276,42 @@
                 | Already registered? 
                 span ng:click='toSignin()' Log in
         .step.step3
-          .content
-            .total
-              .text Total
-              .price ${{ price_total }}
-            .payment
-              .card ng:repeat='card in user.cards'
-                input type='radio' name='card' value='{{card.stripe_id}}' ng:model='$parent.card' ng:checked='$parent.card == card.stripe_id'
-                .text
-                  | **** **** **** {{ card.last4 }}
-                img ng:src='/images/{{card.card_type}}.jpg'
-              .card
-                input type='radio' name='card' value='new_card' ng:model='card'
-                .text New Card
-              .card-entry ng:show='new_card()'
-                .title
-                  = image_tag '/images/unknown.jpg'
-                  .text Payment Details
-                .card-details
-                  form
-                    .field.card-number
-                      .label Card Number
-                      input data-stripe='number' ui:mask='9999 9999 9999 9999' ng:model='entry_card.number'
-                    .field.expiry
-                      .label Expiry Date
-                      input data-stripe='expiry' ui:mask='99/99' ng:model='entry_card.expiry' placeholder='MM/YY'
-                    .field.cvc
-                      .label CV Code
-                      input data-stripe='cvc' ng:model='entry_card.cvc' placeholder='123'
-            button.green ng:click='book()'
-              | Pay now
-            .error
-            .loader
-              i
+          .tabs
+            .tab.active payment-tab='debit' ng:class='tab_active("debit")' Credit/Debit Card
+            .tab payment-tab='saved' ng:class='tab_active("saved")' Saved Cards
+            .tab payment-tab='transfer' ng:class='tab_active("transfer")' Phone/Bank Transfer
+          .content ng:switch='tab'
+            .tab#debit ng:switch-when='debit'
+              .new.payment
+                .card-entry
+                  .title
+                    = image_tag '/images/unknown.jpg'
+                    .text Payment Details
+                  .card-details
+                    form
+                      .field.card-number
+                        .label Card Number
+                        input data-stripe='number' ui:mask='9999 9999 9999 9999' ng:model='entry_card.number'
+                      .field.expiry
+                        .label Expiry Date
+                        input data-stripe='expiry' ui:mask='99/99' ng:model='entry_card.expiry' placeholder='MM/YY'
+                      .field.cvc
+                        .label CV Code
+                        input data-stripe='cvc' ng:model='entry_card.cvc' placeholder='123'
+                button.green ng:click='book(false)' Pay now
+            .tab#saved ng:switch-when='saved'
+              .existing.payment ng:show='existing_cards()'
+                .cards
+                  .card ng:repeat='card in user.cards' ng:click='choose_card(card)' ng:class='card_active(card)'
+                    .text
+                      | **** **** **** {{ card.last4 }}
+                    img ng:src='/images/{{card.card_type}}.jpg'
+                button.green ng:click='book(true)' Pay now via existing card
+            .tab#transfer ng:switch-when='transfer'
+            .error-container
+              .error
         .step.step4
-          .content
+          .content style='display:block'
             .title Thank you for your booking!
             .total
               .text Total
@@ -308,6 +322,9 @@
               p
                 | Your booking ID: 
                 span ng:bind='stripe_id'
-            button.green ng:click='close()'
-              | Close
-              
+            button.green ng:click='close()' Close
+    .bottom
+      .left
+        p All payments made online are securely processed.
+      .right
+        p Provided you book more than seven days before the start of your stay, you can cancel your booking within 24 hours and we will refund you 100%.

@@ -29,6 +29,9 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
         name: "#{$scope.user.firstname} #{$scope.user.lastname}"
         email: $scope.user.email
         stripe_recipient: $scope.user.stripe_recipient
+      Raven.setUser
+        email: $scope.user.email
+        id: $scope.user.id
     else
       $scope.signedIn = false
       $scope.auth.reject()
@@ -43,6 +46,8 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
         callback() if callback
       modalColor: 'white'
       opacity: 0.65
+      position: ['auto', -1]
+      transition: 'slideDown'
 
     null
 
@@ -85,7 +90,7 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
   auth_response = (rsp) ->
     angular.element('#modal button').removeClass('disabled')
     if rsp.success
-      angular.element('#modal .auth-error').text('')
+      angular.element('#modal .auth-rsp').text('')
       angular.element('#modal').bPopup().close()
       $scope.signedIn = true
       $scope.user = rsp.user
@@ -94,8 +99,15 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
       $scope.lastname = null
       $scope.password = null
       $scope.password_confirmation = null
+      analytics.identify $scope.user.id,
+        name: "#{$scope.user.firstname} #{$scope.user.lastname}"
+        email: $scope.user.email
+        stripe_recipient: $scope.user.stripe_recipient
+      Raven.setUser
+        email: $scope.user.email
+        id: $scope.user.id
     else
-      auth_error = angular.element('#modal .auth-error')
+      auth_error = angular.element('#modal .auth-rsp')
       if auth_error.css('display') == 'none'
         auth_error.text rsp.error_message
         auth_error.fadeIn()
@@ -108,14 +120,17 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
   if reset_token
     $http.get("/check_reset_token?token=#{reset_token}").success (rsp) ->
       if rsp.success
-        angular.element('#reset.modal').bPopup {
-          onOpen:  ->
-            angular.element('body').css('overflow', 'hidden')
-          onClose: ->
-            angular.element('body').css('overflow', 'auto')
-          modalColor: 'white'
-          opacity: 0.65
-        }
+        $timeout((->
+          angular.element('#reset.modal').bPopup
+            onOpen:  ->
+              angular.element('body').css('overflow', 'hidden')
+            onClose: ->
+              angular.element('body').css('overflow', 'auto')
+            modalColor: 'white'
+            opacity: 0.65
+            position: ['auto', -1]
+            transition: 'slideDown')
+        ,600)
 
 
 HomeCtrl = ($scope, $http, $window) ->
@@ -128,6 +143,18 @@ HomeCtrl = ($scope, $http, $window) ->
   image.onload = ->
     angular.element('#home').css('opacity', '1')
 
+EnquiryCtrl = ($scope, $http) ->
+  $scope.enquiry  = { type: 'booking', check_in: '10/19/1990', currency: 'usd', with_children: false }
+
+  $scope.enquire = ->
+    angular.element('#enquiry button').addClass 'disabled'
+    $http.post('/enquire', { enquiry: $scope.enquiry }).success ->
+      angular.element('#enquiry .auth-rsp').text "You're enquiry has been sent! You'll hear from a representative shortly."
+      angular.element('#enquiry .auth-rsp').fadeIn()
+      setTimeout((->
+        angular.element('#enquiry').bPopup().close()
+        angular.element('#enquiry button').removeClass 'disabled'
+      ),5000)
 
 SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.minPrice = null
@@ -137,6 +164,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.dates    = {}
   $scope.sort     = 'recommended'
   $scope.tab      = 'list'
+  $scope.ptab     = 'list'
   $scope.district = '0'
   $scope.page     = $.url().param 'page'; $scope.page ||= '1'
   $scope.region   = { slug: $.url().attr('directory').split('/')[1] }
@@ -149,6 +177,10 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     image.src = region.image.url
     image.onload = ->
       angular.element('#city').css('background', "url(#{region.image.url}) no-repeat center").css('opacity', '1')
+
+  $scope.enquiry = ->
+    angular.element.scrollTo 1775, 400, { easing: 'swing' }
+    angular.element('#enquiry').bPopup bPopOpts; null
 
   $scope.checkInDate = (date) ->
     if moment() > moment(date)
@@ -248,8 +280,15 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
 
   fetch_listings()
 
+  bPopOpts =
+    modalColor: 'white'
+    opacity: 0.65
+    follow: [true, false]
+    position: ['auto', 1800]
+
 
 BookingCtrl = ($scope, $http, $timeout, $q) ->
+  $scope.tab = 'debit'
   $scope.booking =
     guests: '1'
     arrival: { hour: '0', minute: '00' }
@@ -257,19 +296,22 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
     purpose: 'Leisure'
     where: 'Search engine'
 
-  $scope.auth.promise.then(
-    (-> $scope.card = $scope.user.cards[0] && $scope.user.cards[0].stripe_id || 'new_card'),
-    (-> $scope.card = 'new_card')
-  )
+  $scope.existing_cards = -> $scope.user && !!$scope.user.cards[0]
 
-  $scope.new_card = -> $scope.card == 'new_card'
+  $scope.choose_card = (card) -> $scope.card = card.stripe_id
+
+  $scope.card_active = (card) -> card.stripe_id == $scope.card && 'chosen' || ''
+
+  $scope.tab_active = (tab) -> $scope.tab == tab && 'active' || ''
 
   $scope.step = (step) ->
     angular.element('#book-modal .step').removeClass 'active'
     angular.element("#book-modal .step#{step}").addClass 'active'
+    null
 
   $scope.close = ->
     angular.element('#book-modal').bPopup().close()
+    null
 
   $scope.logIn = ->
     $http.post('/signin', { email: $scope.email, password: $scope.password }).success (rsp) ->
@@ -288,9 +330,11 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
 
   $scope.toSignin = ->
     angular.element('.right .content .step2').scope().user = {}
+    null
 
   $scope.toSignup = ->
     angular.element('.right .content .step2').scope().user = null
+    null
 
   auth_response = (rsp) ->
     if rsp.success
@@ -310,44 +354,26 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
           auth_error.text rsp.error_message
           auth_error.fadeIn()
 
-  error = (message) ->
-    loader = angular.element('#book-modal .loader')
-    error_element = angular.element('#book-modal .error')
-    if loader.css('opacity') == '1'
-      loader.css 'opacity', 0
-      $timeout(
-        (->
-          error_element.css 'display', 'inline-block'
-          error_element.css 'opacity', 1
-          error_element.text message
-        ), 500
-      )
-    else
-      error_element.css 'display', 'inline-block'
-      error_element.css 'opacity', 1
-      error_element.text message
+  disable = -> angular.element('#book-modal').find('button').prop('disabled', true).addClass 'disabled'
+  enable  = -> angular.element('#book-modal').find('button').prop('disabled', false).removeClass 'disabled'
 
-  loading = (promise) ->
-    loader = angular.element('#book-modal .loader')
+  error = (message) ->
+    enable()
     error_element = angular.element('#book-modal .error')
-    if error_element.css('display') == 'inline-block'
+    if error_element.css('opacity') == '1'
       error_element.css 'opacity', 0
       $timeout(
         (->
-          error_element.css 'display', 'none'
-          loader.css 'opacity', 1
-          $timeout (-> promise.resolve()), 600
-        ), 500
+          error_element.text message
+          error_element.css 'opacity', 1
+        ), 600
       )
     else
-      loader.css 'opacity', 1
-      $timeout (-> promise.resolve()), 600
+      error_element.text message
+      error_element.css 'opacity', 1
 
-  $scope.book = ->
+  $scope.book = (existing) ->
     defer = $q.defer()
-    
-    disable = -> angular.element('#book-modal').find('button').prop('disabled', true).addClass 'disabled'
-    enable  = -> angular.element('#book-modal').find('button').prop('disabled', false).removeClass 'disabled'
 
     post = (card) ->
       $http.post("/#{$scope.region.slug}/#{$scope.listing.slug}/book", {
@@ -356,6 +382,7 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
         card: card
       }).success (rsp) ->
         if rsp.success
+          enable()
           angular.element('#book-modal .loader').css 'opacity', 0
           angular.element('#book-modal .step').removeClass 'active'
           angular.element('#book-modal .step4').addClass 'active'
@@ -366,26 +393,27 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
         else
           error rsp.error
 
-    loading defer
+    disable()
 
-    defer.promise.then(
-      (->
-        if $scope.card == 'new_card'
-          Stripe.createToken {
-            number: angular.element('#book-modal form input[data-stripe=number]').val()
-            cvc: angular.element('#book-modal form input[data-stripe=cvc]').val()
-            exp_month: angular.element('#book-modal form input[data-stripe=expiry]').val().split('/')[0]
-            exp_year: angular.element('#book-modal form input[data-stripe=expiry]').val().split('/')[1]
-          }, (_, rsp) ->
-            if rsp.error
-              error rsp.error.message
-              enable()
-            else
-              post rsp.id
+    if existing
+      if $scope.card
+        post $scope.card
+      else
+        if $scope.user.cards.length == 1
+          post $scope.user.cards[0].stripe_id
         else
-          post $scope.card
-      )
-    )
+          enable()
+    else
+      Stripe.createToken {
+        number: angular.element('#book-modal form input[data-stripe=number]').val()
+        cvc: angular.element('#book-modal form input[data-stripe=cvc]').val()
+        exp_month: angular.element('#book-modal form input[data-stripe=expiry]').val().split('/')[0]
+        exp_year: angular.element('#book-modal form input[data-stripe=expiry]').val().split('/')[1]
+      }, (_, rsp) ->
+        if rsp.error
+          error rsp.error.message
+        else
+          post rsp.id
 
 ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
   $scope.region   = { slug: $.url().attr('directory').split('/')[1] }
@@ -479,13 +507,9 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
     ), true
 
   bPopOpts =
-    onOpen:  ->
-      angular.element('body').css('overflow', 'hidden')
-    onClose: ->
-      angular.element('body').css('overflow', 'auto')
-      angular.element('.auth-error').hide()
     modalColor: 'white'
     opacity: 0.65
+    follow: [true, false]
 
 AccountCtrl = ($scope, $http, $timeout) ->
 
@@ -495,7 +519,7 @@ AccountCtrl = ($scope, $http, $timeout) ->
 ManageCtrl = ($scope, $http, $timeout) ->
   $scope.listing_updates = {}
 
-  $http.get('/features').success (features) ->$scope.features = features
+  $http.get('/features').success (features) -> $scope.features = features
   $scope.update_info = ->
     $http(
       method: 'PATCH'
@@ -511,6 +535,9 @@ ManageCtrl = ($scope, $http, $timeout) ->
   $scope.$watch 'url', (n, o) ->
     if o != n && $scope.url
       $http.get($scope.url).success (listing) ->
+        console.log listing.search_description
+        console.log angular.element('section.search textarea')
+        angular.element('.section.search textarea').val listing.search_description
         for attr, value of listing
           if typeof(value) == 'object'
             for a, v of value
@@ -671,6 +698,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('booking',  BookingCtrl)
   .controller('manage',   ManageCtrl)
   .controller('account',  AccountCtrl)
+  .controller('enquiry',  EnquiryCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr 'content'
   .factory('$cookieStore', ->
@@ -694,6 +722,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   )
   .directive('view', -> (scope, element) ->
     new View element.find 'a.view'
+  )
+  .directive('paymentTab', -> (scope, element, attrs) ->
+    element.click -> scope.$apply -> scope.tab = attrs.paymentTab
   )
   .directive('viewRoom', -> (scope, element, attrs) ->
     scope.views = {}
@@ -724,16 +755,28 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   )
   .directive('searchTab', ($timeout) -> (scope, element, attrs) ->
     scope.overlays = {}
-    element.click -> scope.$apply ->
+    element.click ->
       angular.element('.tabs .tab').removeClass 'active'
       element.addClass 'active'
-      if attrs.searchTab == 'map' && !scope.map
-        scope.tab = attrs.searchTab
+      if attrs.searchTab != 'map' && scope.ptab == 'map'
+        angular.element('#map').hide()
+        angular.element('#results').css('width', '976px')
+        angular.element('#results .left').css('height', 'inherit').css('overflow', 'auto')
+        angular.element('#results .left').css('margin-left', 'inherit')
+        angular.element('#results').animate({'margin-top': '325'},400,'linear') if scope.ptab is 'map'
+        angular.element('#city').fadeIn(400, ->
+          angular.element('#city').css('position', 'relative')
+          angular.element('#results').css('margin', 'auto')
+          scope.$apply -> scope.tab = attrs.searchTab
+        )
+      if attrs.searchTab == 'map'
+        scope.$apply -> scope.tab = attrs.searchTab
         $timeout(
           (->
-            angular.element('#results').css('width', '95%').css('background-color', 'white')
+            angular.element('#results').css('width', '100%').css('background-color', 'white')
             angular.element('#results').css('margin-top', '245px')
             angular.element('#results').animate({'margin-top': '80'},400,'linear')
+            angular.element('#results .left').animate({'margin-left': '25'},400,'linear')
             angular.element('#results .left')
               .css('height', angular.element(window).height() - 80).css('overflow-y', 'scroll')
             angular.element('#city')
@@ -765,7 +808,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
                               <div class='map-overlay hash#{hash}'>
                                 <div class='content'>
                                   <div class='padding'>
-                                    <div class='image'><img src=\"#{listing.search_image.url}\" width=\"230\"></div>
+                                    <div class='fotorama' data-width='230' data-height='130' data-keyboard='false' data-swipe='false' data-arrows='true' data-nav='false'>
+                                      #{_(listing.images).map((i) -> "<a href='#{i.image.map.url}.jpg'></a>").join('')}
+                                    </div>
                                     <div class='name-price'>
                                       <div class='name'>
                                         <div class='title'>#{listing.title}</div>
@@ -798,6 +843,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
                             (->
                               angular.element(".map-overlay.hash#{hash}").fadeIn()
                               angular.element(".map-overlay.hash#{hash}").mouseleave -> angular.element(@).fadeOut 400, -> scope.map.removeOverlay o
+                              angular.element(".map-overlay.hash#{hash} .fotorama").fotorama()
                             ),
                             50
                           )
@@ -805,25 +851,22 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           )
         )
       else if attrs.searchTab == 'list'
-        angular.element('#map').hide()
-        angular.element('#results').css('width', '976px')
-        angular.element('#results .left').css('height', 'inherit').css('overflow', 'auto')
-        angular.element('#results').animate({'margin-top': '325'},400,'linear')
-        angular.element('#city').fadeIn(400, ->
-          angular.element('#city').css('position', 'relative')
-          angular.element('#results').css('margin', 'auto')
-          scope.$apply ->
-            scope.tab = attrs.searchTab
-            $timeout(->
-              angular.element('.pages').scope().update_pagination(0,1)
-              left = angular.element('#results .left')
-              right = angular.element('#results .right')
-              height = parseInt left.css('height')
-              left.css('height', right.height()) if right.height() > height
-            )
-          )
+        scope.$apply -> scope.tab = attrs.searchTab if scope.ptab == 'guide'
+        interval = setInterval((->
+          if angular.element('.pages').scope()
+            clearInterval interval
+            angular.element('.pages').scope().update_pagination(0,1)
+            left = angular.element('#results .left')
+            right = angular.element('#results .right')
+            height = parseInt left.css('height')
+            left.css('height', right.height()) if right.height() > height
+          ),50
+        )
         angular.element('footer').css('display', 'block')
         scope.map = null
+      else if attrs.searchTab == 'guide'
+        scope.$apply -> scope.tab = attrs.searchTab if scope.ptab == 'list'
+      scope.ptab = attrs.searchTab
   )
   .directive('tab', ($timeout) -> (scope, element, attrs) ->
     element.click ->
@@ -835,34 +878,55 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       if attrs.href == '#local-area'
         $timeout(-> angular.element(attrs.href).scope().toMap())
   )
-  .directive('localArea', -> (scope, element, attrs) ->
-    scope.toMap = (e) ->
-      angular.element('#local-area .links span').removeClass 'active'
-      angular.element('#local-area .links span:first').addClass 'active'
-      scope.mapType = 'map'
+  .directive('localArea', ($timeout) -> (scope, element, attrs) ->
+    scope.listingQ.promise.then ->
       address = scope.listing.address
       GMaps.geocode
-        address: "#{address.neighborhood}, #{address.city}"
+        address: "#{address.street1} #{address.city} #{address.state} #{address.zip}"
         callback: (results, status) ->
-          latlng = results[0].geometry.location
-          new GMaps
+          latLng = results[0].geometry.location
+
+          u = Math.random(); v = Math.random()
+          w = 0.0035 * Math.sqrt(u)
+          t = 2 * Math.PI * v
+          x = (w * Math.cos(t)) / Math.cos(latLng.lat())
+          y = w * Math.sin(t)
+
+          lng = x + latLng.lng()
+          lat = y + latLng.lat()
+          latlng = new google.maps.LatLng lat, lng
+
+          webService = new google.maps.StreetViewService()
+          webService.getPanoramaByLocation latlng, 1000, (pano) -> scope.latLng = pano.location.latLng
+
+      scope.toMap = (e) ->
+        angular.element('#local-area .links span').removeClass 'active'
+        angular.element('#local-area .links span:first').addClass 'active'
+        scope.mapType = 'map'
+        $timeout(->
+          map = new GMaps
             div: 'map'
-            lat: latlng.lat()
-            lng: latlng.lng()
+            lat: scope.latLng.lat()
+            lng: scope.latLng.lng()
             zoom: 15
-    scope.toStreet = ->
-      angular.element('#local-area .links span').removeClass 'active'
-      angular.element('#local-area .links span:last').addClass 'active'
-      scope.mapType = 'pano'
-      address = scope.listing.address
-      GMaps.geocode
-        address: "#{address.neighborhood}, #{address.city}"
-        callback: (results, status) ->
-          latlng = results[0].geometry.location
+          map.drawCircle
+            center: scope.latLng
+            radius: 400
+            fillColor: 'hsl(159, 69%, 44%)'
+            strokeColor: 'hsl(159, 69%, 44%)'
+            strokeWeight: 1
+        )
+
+      scope.toStreet = ->
+        angular.element('#local-area .links span').removeClass 'active'
+        angular.element('#local-area .links span:last').addClass 'active'
+        scope.mapType = 'pano'
+        $timeout(->
           GMaps.createPanorama
             el: '#pano'
-            lat: latlng.lat()
-            lng: latlng.lng()
+            lat: scope.latLng.lat()
+            lng: scope.latLng.lng()
+        )
   )
   .directive('select2continuous', -> (scope, element) ->
     element.on 'select2-opening', ->
@@ -1005,6 +1069,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         else
           scope.month = moment().month()
           scope.year = moment().year()
+        angular.element('#availability .title .month:first').text "#{months[scope.month]} #{scope.year}"
         gen_cal(0, scope.month, scope.year)
         next_month = scope.month < 11 && scope.month+1 || 0
         next_year = next_month == 0 && scope.year+1 || scope.year
@@ -1015,6 +1080,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         next_month = next_month < 11 && next_month+1 || 0
         next_year = next_month == 0 && next_year+1 || next_year
         gen_cal(3, next_month, next_year)
+        angular.element('#availability .title .month:last').text "#{months[next_month]} #{next_year}"
         element.find('td.day').bind 'click.selecting', selecting
         
       selecting = ->
@@ -1057,8 +1123,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
 
       gen_cals()
 
-      element.find('.arrow.prev').click -> gen_cals 'prev'
-      element.find('.arrow.next').click -> gen_cals 'next'
+      element.parent().find('.arrow.prev').click -> gen_cals 'prev'
+      element.parent().find('.arrow.next').click -> gen_cals 'next'
 
       valid = (check_in, check_out) ->
         check_in_date  = new Date(check_in[2], check_in[0], check_in[1])
@@ -1081,9 +1147,16 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         <table>
           <thead>
             <tr class='month_header'>
-              <th class='arrow prev'><</th>
-              <th class='month' colspan='5'></th>
-              <th class='arrow next'>></th>
+              <th class='month' colspan='7'></th>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class='table'>
+        <table>
+          <thead>
+            <tr class='month_header'>
+              <th class='month' colspan='7'></th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -1093,9 +1166,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         <table>
           <thead>
             <tr class='month_header'>
-              <th class='arrow prev'><</th>
-              <th class='month' colspan='5'></th>
-              <th class='arrow next'>></th>
+              <th class='month' colspan='7'></th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -1105,21 +1176,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         <table>
           <thead>
             <tr class='month_header'>
-              <th class='arrow prev'><</th>
-              <th class='month' colspan='5'></th>
-              <th class='arrow next'>></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class='table'>
-        <table>
-          <thead>
-            <tr class='month_header'>
-              <th class='arrow prev'><</th>
-              <th class='month' colspan='5'></th>
-              <th class='arrow next'>></th>
+              <th class='month' colspan='7'></th>
             </tr>
           </thead>
           <tbody></tbody>

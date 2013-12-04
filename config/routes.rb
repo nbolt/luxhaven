@@ -1,6 +1,7 @@
 Luxhaven::Application.routes.draw do
 
   post '/stripe-event' => 'stripe#event'
+  post '/enquire' => 'application#enquire'
 
   post '/forgot' => 'auth#forgot'
   post '/reset' => 'auth#reset'

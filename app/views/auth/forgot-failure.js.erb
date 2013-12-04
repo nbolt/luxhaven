@@ -1,4 +1,5 @@
-auth_error = $('#modal .auth-error')
+angular.element('#modal button').removeClass('disabled')
+auth_error = $('#modal .auth-rsp')
 
 display_error = function(){
   auth_error.text("That email is not registered with us")

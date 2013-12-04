@@ -12,4 +12,9 @@ class ApplicationController < ActionController::Base
   def jregion
     render json: region.as_json
   end
+
+  def enquire
+    SendMail.new.async.perform UserMailer.enquire(current_user, params[:enquiry])
+    render nothing: true
+  end
 end

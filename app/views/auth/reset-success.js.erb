@@ -1,7 +1,8 @@
-auth_error = $('#reset.modal .auth-error')
+angular.element('#reset.modal button').removeClass('disabled')
+auth_error = $('#reset.modal .auth-rsp')
 
 display_error = function(){
-  auth_error.addClass('green').addClass('small')
+  auth_error.addClass('success').addClass('small')
   auth_error.text("Your new password has been set, and we've signed you in.")
   auth_error.fadeIn()
 }

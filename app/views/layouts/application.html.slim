@@ -14,6 +14,7 @@ html
     = stylesheet_link_tag 'css_imports'
     = stylesheet_link_tag 'fotorama'
     = javascript_include_tag 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false'
+    = javascript_include_tag '//d3nslu0hdya83q.cloudfront.net/dist/1.0/raven.min.js'
     = javascript_include_tag :application, 'data-turbolinks-track' => true
     = javascript_include_tag 'https://js.stripe.com/v2/'
     script onload='try{Typekit.load()}catch(e){}' src='//use.typekit.com/sau2fxq.js'
@@ -40,19 +41,20 @@ html
   body ng:controller='app'
     #modal.modal
     #reset.modal
+      .auth-rsp
       .luxhaven
           a
             .logo
               img src='/images/logo-small.png' width='25'
-            .name LuxHaven
+            .name Luxhaven
       = form_tag '/reset', remote: true, autocomplete: 'off' do
-        .top-message Set a new password.
+        .title Set a new password.
         = hidden_field_tag :token, params[:reset_token]
         .input= password_field_tag :password, nil, placeholder: 'Password', required: true
-        .auth-error-container
-          .auth-error
-        button.green Reset Password
+        .button
+          button.green style='margin-bottom:22px' onclick="angular.element('#reset.modal button').addClass('disabled')" Reset Password
     #forgot.modal
+      .auth-rsp
       .luxhaven
           a
             .logo
@@ -61,44 +63,59 @@ html
       = form_tag '/forgot', remote: true, autocomplete: 'off' do
         .top-message Enter the email associated with your account, and we'll email you a link to reset your password.
         .input= email_field_tag :email, nil, placeholder: 'Email', required: true
-        .auth-error-container
-          .auth-error
-        button.green Send Email
-        .message
-          a ng:click='toSignin()'
-            | Return to login
+        .button
+          button.green onclick="angular.element('#modal button').addClass('disabled')" Send Email
+      .message
+        a ng:click='toSignin()'
+          | Return to 
+          span login
     #sign-in.modal
+      .auth-rsp
       .luxhaven
           a
             .logo
               img src='/images/logo-small.png' width='25'
             .name Luxhaven
+      .title Log in
       form autocomplete='off'
         .input= email_field_tag :email, nil, placeholder: 'Email', 'ng:model' => 'email'
         .input= password_field_tag :password, nil, placeholder: 'Password', 'ng:model' => 'password'
-        .auth-error-container
-          .auth-error
-        button.green ng:click='logIn()' Log in
-        .message
-          a ng:click='toForgot()' Forgot your password?
-          a ng:click='toSignup()' Not registered? Sign up
+        a.forgot ng:click='toForgot()' Forgot your password?
+        .button
+          button.green ng:click='logIn()' Login
+      .message
+        a ng:click='toSignup()'
+          | Not registered? 
+          span Sign up
     #sign-up.modal
+      .auth-rsp
       .luxhaven
           a
             .logo
               img src='/images/logo-small.png' width='25'
             .name Luxhaven
+      .title Sign up
       form autocomplete='off'
         .input= text_field_tag :firstname, nil, placeholder: 'First Name', 'ng:model' => 'firstname'
         .input= text_field_tag :lastname, nil, placeholder: 'Last Name', 'ng:model' => 'lastname'
         .input= email_field_tag :email, nil, placeholder: 'Email', 'ng:model' => 'email'
         .input= password_field_tag :password, nil, placeholder: 'Password', 'ng:model' => 'password'
         .input= password_field_tag :password_confirmation, nil, placeholder: 'Confirm Password', 'ng:model' => 'password_confirmation'
-        .auth-error-container
-          .auth-error
-        button.green ng:click='signUp()' Sign Up
-        .message
-          a ng:click='toSignin()' Already registered? Log in
+        .check
+          = check_box_tag :news, 0, nil
+          label for='news' Keep me updated with news, special offers, discounts and promotions.
+        .button
+          button.green ng:click='signUp()' Sign Up
+        .tos
+          | By clicking "sign up", you confirm that you accept the 
+          a href='/terms-of-use' target='_blank' terms of use
+          |  and 
+          a href='/privacy' target='_blank' privacy policy
+          | .
+      .message
+        a ng:click='toSignin()'
+          | Already registered? 
+          span Login
     header
       .pad
         nav.luxhaven

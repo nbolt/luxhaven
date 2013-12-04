@@ -35,7 +35,7 @@
         .label State
         .control-container.select2-bordered
           .control= select_tag :state, options_for_select(STATES.map{|s|[s[1], s[0]]}),
-            { :'ui:select2' => '', :'ng:model' => 'lising_updates.address.state', select2bordered: '' }
+            { :'ui:select2' => '', :'ng:model' => 'listing_updates.address.state', select2bordered: '' }
       .field
         .label Zip
         .control-container
@@ -52,9 +52,79 @@
         .label Price per night
         .control-container
           .control= text_field_tag :price_per_night, nil, 'ng:model' => 'listing_updates.price_per_night'
+      .field
+        .label Accommodates from
+        .control-container
+          .control= text_field_tag :accomodates_from, nil, 'ng:model' => 'listing_updates.accomodates_from'
+      .field
+        .label Accommodates to
+        .control-container
+          .control= text_field_tag :accomodates_to, nil, 'ng:model' => 'listing_updates.accomodates_to'
       .submit
         button.green ng:click='update_info()' Update
         .rsp Updated
+    .section
+      .filter-category
+        .title Property Type
+        .filter
+          = radio_button_tag :property_type, :house, false, :'ng:model' => 'listing_updates.property_type', :'ng:checked' => 'listing.property_type == "house"'
+          label for='house' House
+        .filter
+          = radio_button_tag :property_type, :townhouse, false, :'ng:model' => 'listing_updates.property_type',  :'ng:checked' => 'listing.property_type == "townhouse"'
+          label for='townhouse' Townhouse
+        .filter
+          = radio_button_tag :property_type, :apartment, false, :'ng:model' => 'listing_updates.property_type', :'ng:checked' => 'listing.property_type == "apartment"'
+          label for='apartment' Apartment
+      .filter-category
+        .title Property Features
+        .filter
+          = check_box_tag :garden, 0, nil, :'ng:model' => 'listing_updates.garden', :'ng:checked' => 'listing.garden'
+          label for='garden' Garden
+        .filter
+          = check_box_tag :balcony, 0, nil, :'ng:model' => 'listing_updates.balcony', :'ng:checked' => 'listing.balcony'
+          label for='balcony' Balcony / Terrace
+        .filter
+          = check_box_tag :parking, 0, nil, :'ng:model' => 'listing_updates.parking', :'ng:checked' => 'listing.parking'
+          label for='parking' Parking
+      .filter-category
+        .title Amenities
+        .filter
+          = check_box_tag :tv, 0, nil, :'ng:model' => 'listing_updates.tv', :'ng:checked' => 'listing.tv'
+          label for='tv' Cable / Satellite TV
+        .filter
+          = check_box_tag :temp_control, 0, nil, :'ng:model' => 'listing_updates.temp_control', :'ng:checked' => 'listing.temp_control'
+          label for='temp_control' Central AC / Heating
+        .filter
+          = check_box_tag :pool, 0, nil, :'ng:model' => 'listing_updates.pool', :'ng:checked' => 'listing.pool'
+          label for='pool' Pool
+        .filter
+          = check_box_tag :jacuzzi, 0, nil, :'ng:model' => 'listing_updates.jacuzzi', :'ng:checked' => 'listing.jacuzzi'
+          label for='jacuzzi' Jacuzzi
+        .filter
+          = check_box_tag :washer, 0, nil, :'ng:model' => 'listing_updates.washer', :'ng:checked' => 'listing.washer'
+          label for='washer' Washer / Dryer
+      .filter-category
+        .title Accessibility
+        .filter
+          = check_box_tag :smoking, 0, nil, :'ng:model' => 'listing_updates.smoking', :'ng:checked' => 'listing.smoking'
+          label for='smoking' Smoking
+        .filter
+          = check_box_tag :pets, 0, nil, :'ng:model' => 'listing_updates.pets', :'ng:checked' => 'listing.pets'
+          label for='pets' Pets
+      .filter-category
+        .title Family
+        .filter
+          = check_box_tag :babies, 0, nil, :'ng:model' => 'listing_updates.babies', :'ng:checked' => 'listing.babies'
+          label for='babies' Babies (0 - 1)
+        .filter
+          = check_box_tag :toddlers, 0, nil, :'ng:model' => 'listing_updates.toddlers', :'ng:checked' => 'listing.toddlers'
+          label for='toddlers' Toddlers (1 - 3)
+        .filter
+          = check_box_tag :children, 0, nil, :'ng:model' => 'listing_updates.children', :'ng:checked' => 'listing.children'
+          label for='children' Children (3 - 12)
+    .section.search
+      .title Search Description
+      textarea ng:model='listing_updates.search_description' ng:bind='listing.search_description'
     .section
       .title Description
       .paragraphs

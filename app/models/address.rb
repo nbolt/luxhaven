@@ -8,12 +8,4 @@ class Address < ActiveRecord::Base
   def full_address
     "#{street1} #{city} #{state} #{zip}"
   end
-
-  def display_neighborhood
-    if neighborhood
-      "#{neighborhood}, #{city}"
-    else
-      "#{city}, #{county}"
-    end
-  end
 end
