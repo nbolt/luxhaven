@@ -197,7 +197,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
       [false, '']
 
   $scope.syncDates = (date) ->
-    check_in = moment(date).format  'X'
+    check_in = moment(date).format 'X'
     if !$scope.dates.check_out || (moment($scope.dates.check_out).subtract('days', 1) <= moment(parseInt(check_in)*1000))
       check_in = new Date(Date.parse date)
       check_out = new Date(check_in.setDate check_in.getDate() + 2)
@@ -486,7 +486,7 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
 
   $scope.syncDates = (date) ->
     check_in = moment(date).format  'X'
-    if !$scope.dates.check_out || (moment($scope.dates.check_out).subtract('days', 1) <= moment(parseInt(check_in)*1000))
+    unless $scope.checkOutDate($scope.dates.check_out)[0]
       check_in = new Date(Date.parse date)
       check_out = new Date(check_in.setDate check_in.getDate() + 2)
       $scope.dates.check_out = moment(check_out).format 'MM/DD/YYYY'
@@ -551,8 +551,6 @@ ManageCtrl = ($scope, $http, $timeout) ->
   $scope.$watch 'url', (n, o) ->
     if o != n && $scope.url
       $http.get($scope.url).success (listing) ->
-        console.log listing.search_description
-        console.log angular.element('section.search textarea')
         angular.element('.section.search textarea').val listing.search_description
         for attr, value of listing
           if typeof(value) == 'object'
@@ -1118,8 +1116,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
             check_in[0] = check_in[0] + 1
             check_out[0] = check_out[0] + 1
             if check_in_date > check_out_date then tmp = check_in; check_in = check_out; check_out = tmp
-            scope.dates.check_in  = check_in.join '/'
-            scope.dates.check_out = check_out.join '/'
+            scope.$apply ->
+              scope.dates.check_in  = check_in.join '/'
+              scope.dates.check_out = check_out.join '/'
             scope.check_in  = null
             scope.check_out = null
             scope.bookModal()
