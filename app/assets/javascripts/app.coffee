@@ -8,8 +8,7 @@ SINGLE_VALUE_ATTRS = ['maxPrice', 'minPrice', 'sort', 'page', 'district', 'sleep
 PAGINATE_PER = 5
 
 String.prototype.hash = ->
-  s = this
-  s.split('').reduce(
+  this.split('').reduce(
     ((a,b) -> a=((a<<5)-a)+b.charCodeAt(0);a&a),
     0
   )
@@ -448,12 +447,29 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
   $scope.bookModal = -> bookModal() if $scope.dates.check_out
 
   $scope.checkInDate = (date) ->
+    angular.element('span.ui-state')
     if $scope.listing && date
-      valid = (_($scope.listing.bookings).every (booking) ->
+      valid = (date) ->
+        (_($scope.listing.bookings).every (booking) ->
           booking.check_out   <= moment(date) ||
           booking.check_in    >  moment(date).add 'days', 1
         ) && moment()         <  moment(date)
-      valid && [true, ''] || [false, '']
+      if valid(date)
+        [true, '']
+      else
+        d1 = new Date(date.getTime())
+        d1.setDate(d1.getDate()-1)
+        d2 = new Date(date.getTime())
+        d2.setDate(d2.getDate()-2)
+        if valid(d1) || valid(d2)
+          tFunc = (date) ->
+            $timeout(->
+              angular.element('#ui-datepicker-div span.ui-state-default').filter(
+                (-> angular.element(@).text() is date.getDate().toString())
+              ).each -> angular.element(@).parent().removeClass 'ui-state-disabled'
+            )
+          tFunc(new Date(date.getTime()))
+        [false, '']
     else
       [false, '']
 
@@ -1046,17 +1062,18 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
 
         disable_bookings = ->
           _(scope.listing.bookings).each (booking) ->
-            range = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()), new Date(booking.check_out.year(),booking.check_out.month(),booking.check_out.date()-1))
+            range = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()+1), new Date(booking.check_out.year(),booking.check_out.month(),booking.check_out.date()-1))
             iterator = moment().range(new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()), new Date(booking.check_in.year(),booking.check_in.month(),booking.check_in.date()+1))
-            range.by iterator, (moment) ->
-              if moment.month() == month && moment.year() == year
-                booked.push [moment.month(), moment.date(), moment.year()]
-                angular.element('calendar table:eq(' + cal + ') .day' + moment.date()).addClass('booked')
+            range.by iterator, (m) ->
+              if m.month() == month && m.year() == year
+                booked.push [m.month(), m.date(), m.year()]
+                angular.element('calendar table:eq(' + cal + ') .day' + m.date()).addClass('booked')
+                prev1 = moment new Date(m.year(),m.month(),m.date()-1)
+                prev2 = moment new Date(m.year(),m.month(),m.date()-2)
+                if m.date() != 1 && _(booked).find((b) -> JSON.stringify(b) == JSON.stringify([prev2.month(), prev2.date(), prev2.year()]))
+                  angular.element('calendar table:eq(' + cal + ') .day' + prev1.date()).addClass('booked')
 
-        if scope.listing
-          disable_bookings()
-        else
-          scope.listingQ.promise.then -> disable_bookings()
+        scope.listingQ.promise.then -> disable_bookings()
 
       gen_cals = (dir) ->
         booked = []

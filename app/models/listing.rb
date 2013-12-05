@@ -15,7 +15,7 @@ class Listing < ActiveRecord::Base
   belongs_to :region
   belongs_to :district
   has_and_belongs_to_many :features
-  has_many :bookings, dependent: :destroy
+  has_many :bookings, -> { order(:check_in) }, dependent: :destroy
   has_many :images, dependent: :destroy
   has_many :paragraphs, dependent: :destroy
   has_many :rooms, dependent: :destroy
