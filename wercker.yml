@@ -18,5 +18,5 @@ deploy:
 after-steps:
     - hipchat-notify:
         token: c57e972e3a3a0e7d767ce820d15d06
-        room-id: development
+        room-id: 124831
         from-name: wercker
