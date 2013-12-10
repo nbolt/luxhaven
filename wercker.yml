@@ -1,16 +1,16 @@
 box: wercker/ruby
 
 services:
-  - wercker/postgresql
+    - wercker/postgresql
 
 build:
-  steps:
-    - bundle-install
-    - rails-database-yml
+    steps:
+        - bundle-install
+        - rails-database-yml
 
 deploy:
-  steps:
-    - heroku-deploy
-    - script:
-      name: Migrate database
-      code: heroku run rake db:migrate --app $TARGET_NAME
+    steps:
+        - heroku-deploy
+        - script:
+            name: Migrate database
+            code: heroku run rake db:migrate --app $TARGET_NAME
