@@ -16,10 +16,8 @@ build:
 
 deploy:
     steps:
-        - add-ssh-key:
-            keyname: heroku
         - heroku-deploy:
-            key-name: heroku
+            key-name: HEROKU_KEY
         - script:
             name: db:migrate
             code: heroku run rake db:migrate --app $TARGET_NAME
