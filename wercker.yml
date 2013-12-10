@@ -16,6 +16,8 @@ build:
 
 deploy:
     steps:
+        - add-ssh-key:
+            keyname: heroku
         - heroku-deploy:
             key-name: heroku
         - script:
