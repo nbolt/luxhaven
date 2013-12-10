@@ -8,15 +8,22 @@ build:
         - bundle-install
         - rails-database-yml
 
+    after-steps:
+        - hipchat-notify:
+            token: c57e972e3a3a0e7d767ce820d15d06
+            room-id: 124831
+            from-name: wercker
+
 deploy:
     steps:
-        - heroku-deploy
+        - heroku-deploy:
+            key-name: heroku
         - script:
             name: db:migrate
             code: heroku run rake db:migrate --app $TARGET_NAME
 
-after-steps:
-    - hipchat-notify:
-        token: c57e972e3a3a0e7d767ce820d15d06
-        room-id: 124831
-        from-name: wercker
+    after-steps:
+        - hipchat-notify:
+            token: c57e972e3a3a0e7d767ce820d15d06
+            room-id: 124831
+            from-name: wercker
