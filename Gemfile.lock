@@ -8,6 +8,13 @@ GIT
       oauth (~> 0.4.4)
       oauth2 (>= 0.8.0, < 1.0.0)
 
+GIT
+  remote: git://github.com/rmagick/rmagick.git
+  revision: 79e1708c7f6792a3a90cb8cb3ffaeb74c58e092e
+  branch: master
+  specs:
+    rmagick (2.13.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -180,7 +187,6 @@ GEM
     ref (1.0.5)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    rmagick (2.13.2)
     rr (1.1.2)
     rspec-core (2.14.7)
     rspec-expectations (2.14.4)
@@ -287,7 +293,7 @@ DEPENDENCIES
   rack-ssl
   rails (~> 4.0.1)
   rails_12factor
-  rmagick
+  rmagick!
   rr
   rspec-rails
   sass-rails

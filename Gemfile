@@ -35,11 +35,11 @@ gem 'coveralls', require: false, group: :test
 gem 'rspec-rails', group: [:development, :test]
 
 gem 'sorcery',       github: 'NoamB/sorcery', branch: 'master'
-gem 'friendly_id' #,   github: 'FriendlyId/friendly_id', branch: 'master'
+gem 'rmagick',       github: 'rmagick/rmagick', branch: 'master'
 
 gem 'stylus', '~> 1.0.0beta'
 
-gem 'rmagick'
+gem 'friendly_id'
 gem 'sentry-raven'
 gem 'jbuilder'
 gem 'bcrypt-ruby'
