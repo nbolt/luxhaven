@@ -13,6 +13,7 @@ build:
             token: c57e972e3a3a0e7d767ce820d15d06
             room-id: 124831
             from-name: wercker
+            on: failure
         - fhirzall/email-notify:
             from: support@luxhaven.com
             to: chris@luxhaven.com
@@ -34,6 +35,7 @@ deploy:
             token: c57e972e3a3a0e7d767ce820d15d06
             room-id: 124831
             from-name: wercker
+            on: failure
         - fhirzall/email-notify:
             from: support@luxhaven.com
             to: chris@luxhaven.com

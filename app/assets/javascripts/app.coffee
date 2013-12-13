@@ -155,6 +155,7 @@ EnquiryCtrl = ($scope, $http) ->
         angular.element('#enquiry button').removeClass 'disabled'
       ),5000)
 
+
 SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   $scope.minPrice = null
   $scope.maxPrice = null
@@ -284,6 +285,155 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     opacity: 0.65
     follow: [true, false]
     position: ['auto', 1800]
+
+  $scope.transition = (to) ->
+    angular.element('#filters .tabs .tab').removeClass 'active'
+    angular.element("#filters .tabs .tab[search-tab=#{to}]") .addClass 'active'
+    switch to
+      when 'map'
+        $scope.tab = to
+        toMap()
+      when 'list'
+        toList()
+        switch $scope.tab
+          when 'guide'
+            toListFromGuide(to)
+          when 'map'
+            fromMap(to)
+      when 'guide'
+        toGuide(to)
+        switch $scope.tab
+          #when 'list'
+          when 'map'
+            fromMap(to)
+    null
+
+  toGuide = (to) ->
+    angular.element('#results').css 'opacity', 0
+    $timeout(
+      (->
+        $scope.$apply -> $scope.tab = to
+        angular.element('#results .left').hide()
+        angular.element('#results').css 'opacity', 1
+      ), 600
+    )
+
+  toList = ->
+    interval = setInterval((->
+      if angular.element('.pages').scope()
+        clearInterval interval
+        angular.element('.pages').scope().update_pagination(0,1)
+        left = angular.element('#results .left')
+        right = angular.element('#results .right')
+        height = parseInt left.css('height')
+        left.css('height', right.height()) if right.height() > height
+      ), 50
+    )
+    angular.element('footer').css('display', 'block')
+    $scope.map = null
+
+  toListFromGuide = (to) ->
+    angular.element('#results').css 'opacity', 0
+    $timeout(
+      (->
+        $scope.tab = to
+        angular.element('#results').css 'opacity', 1
+        angular.element('#results .left').show()
+      ), 600
+    )
+
+  fromMap = (to) ->
+    angular.element('#map').hide()
+    angular.element('#results .right').css 'opacity', 0
+    angular.element('#results').css('width', '976px')
+    angular.element('#results .left').css('height', 'inherit').css('overflow', 'auto')
+    angular.element('#results .left').css('margin-left', 'inherit')
+    angular.element('#results').animate({'margin-top': '325'},400,'linear')
+    angular.element('#city').fadeIn(400, ->
+      $scope.$apply -> $scope.tab = to
+      angular.element('#results .right').css 'opacity', 1
+      angular.element('#city').css('position', 'relative')
+      angular.element('#results').css('margin', 'auto')
+    )
+
+  toMap = ->
+    angular.element('#results').css('width', '100%').css('background-color', 'white')
+    angular.element('#results').css('margin-top', '245px')
+    angular.element('#results').animate({'margin-top': '80'},400,'linear')
+    angular.element('#results .left').animate({'margin-left': '25'},400,'linear')
+    angular.element('#results .left')
+      .css('height', angular.element(window).height() - 80).css('overflow-y', 'scroll')
+    angular.element('#city')
+      .css('position', 'absolute').css('right', '0').css('left', '0')
+      .fadeOut 400
+    angular.element('footer').css('display', 'none')
+    angular.element.scrollTo 0, 400, { easing: 'swing' }
+    $timeout(
+      (->
+        angular.element('#results .left').show()
+        angular.element('#results').css 'opacity', 1
+        $scope.map = new GMaps
+          div: 'map'
+          lat: $scope.region.latitude
+          lng: $scope.region.longitude
+          zoom: 12
+        _($scope.all_listings).each (listing) ->
+          if listing.address.latitude
+            $scope.map.addMarker
+              lat: listing.address.latitude
+              lng: listing.address.longitude
+              title: listing.title
+              icon: '/images/house-marker.png'
+              mouseover: (e) ->
+                hash = e.latLng.toUrlValue().hash()
+                o = $scope.map.drawOverlay
+                  lat: e.latLng.lat()
+                  lng: e.latLng.lng()
+                  layer: 'floatPane'
+                  content: "
+                    <div class='map-overlay hash#{hash}'>
+                      <div class='content'>
+                        <div class='padding'>
+                          <div class='fotorama' data-width='230' data-height='130' data-keyboard='false' data-swipe='false' data-arrows='true' data-nav='false'>
+                            #{_(listing.images).map((i) -> "<a href='#{i.image.map.url}.jpg'></a>").join('')}
+                          </div>
+                          <div class='name-price'>
+                            <div class='name'>
+                              <div class='title'>#{listing.title}</div>
+                              <div class='neighborhood'>#{listing.address.neighborhood}, #{listing.address.city}</div>
+                            </div>
+                            <div class='price'>
+                              <div class='from'>From</div>
+                              <div class='amount'>$#{listing.price_per_night / 100}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class='info'>
+                          <div class='people room' ng:switch='listing.accomodates_to'>
+                            <div class='icon'></div>
+                            <div class='text'>#{listing.accomodates_to}</div>
+                          </div>
+                          <div class='bedrooms room'>
+                            <div class='icon'></div>
+                            <div class='text'>#{listing.bedrooms}</div>
+                          </div>
+                          <div class='baths room' ng:switch='listing.baths'>
+                            <div class='icon'></div>
+                            <div class='text'>#{listing.baths}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  "
+                setTimeout(
+                  (->
+                    angular.element(".map-overlay.hash#{hash}").fadeIn()
+                    angular.element(".map-overlay.hash#{hash}").mouseleave -> angular.element(@).fadeOut 400, -> $scope.map.removeOverlay o
+                    angular.element(".map-overlay.hash#{hash} .fotorama").fotorama()
+                  ), 50
+                )
+      ), 500
+    )
 
 
 BookingCtrl = ($scope, $http, $timeout, $q) ->
@@ -766,121 +916,6 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
 
     scope.$watch 'page', scope.update_pagination
     scope.$watch 'size', scope.update_pagination
-  )
-  .directive('searchTab', ($timeout) -> (scope, element, attrs) ->
-    scope.overlays = {}
-    element.click ->
-      angular.element('.tabs .tab').removeClass 'active'
-      element.addClass 'active'
-      if attrs.searchTab != 'map' && scope.ptab == 'map'
-        angular.element('#map').hide()
-        angular.element('#results').css('width', '976px')
-        angular.element('#results .left').css('height', 'inherit').css('overflow', 'auto')
-        angular.element('#results .left').css('margin-left', 'inherit')
-        angular.element('#results').animate({'margin-top': '325'},400,'linear') if scope.ptab is 'map'
-        angular.element('#city').fadeIn(400, ->
-          angular.element('#city').css('position', 'relative')
-          angular.element('#results').css('margin', 'auto')
-          scope.$apply -> scope.tab = attrs.searchTab
-        )
-      if attrs.searchTab == 'map'
-        scope.$apply -> scope.tab = attrs.searchTab
-        $timeout(
-          (->
-            angular.element('#results').css('width', '100%').css('background-color', 'white')
-            angular.element('#results').css('margin-top', '245px')
-            angular.element('#results').animate({'margin-top': '80'},400,'linear')
-            angular.element('#results .left').animate({'margin-left': '25'},400,'linear')
-            angular.element('#results .left')
-              .css('height', angular.element(window).height() - 80).css('overflow-y', 'scroll')
-            angular.element('#city')
-              .css('position', 'absolute').css('right', '0').css('left', '0')
-              .fadeOut 400
-            angular.element('footer').css('display', 'none')
-            angular.element.scrollTo 0, 400, { easing: 'swing' }
-            $timeout(
-              (-> 
-                  scope.map = new GMaps
-                    div: 'map'
-                    lat: scope.region.latitude
-                    lng: scope.region.longitude
-                    zoom: 12
-                  _(scope.all_listings).each (listing) ->
-                    if listing.address.latitude
-                      scope.map.addMarker
-                        lat: listing.address.latitude
-                        lng: listing.address.longitude
-                        title: listing.title
-                        icon: '/images/house-marker.png'
-                        mouseover: (e) ->
-                          hash = e.latLng.toUrlValue().hash()
-                          o = scope.map.drawOverlay
-                            lat: e.latLng.lat()
-                            lng: e.latLng.lng()
-                            layer: 'floatPane'
-                            content: "
-                              <div class='map-overlay hash#{hash}'>
-                                <div class='content'>
-                                  <div class='padding'>
-                                    <div class='fotorama' data-width='230' data-height='130' data-keyboard='false' data-swipe='false' data-arrows='true' data-nav='false'>
-                                      #{_(listing.images).map((i) -> "<a href='#{i.image.map.url}.jpg'></a>").join('')}
-                                    </div>
-                                    <div class='name-price'>
-                                      <div class='name'>
-                                        <div class='title'>#{listing.title}</div>
-                                        <div class='neighborhood'>#{listing.address.neighborhood}, #{listing.address.city}</div>
-                                      </div>
-                                      <div class='price'>
-                                        <div class='from'>From</div>
-                                        <div class='amount'>$#{listing.price_per_night / 100}</div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class='info'>
-                                    <div class='people room' ng:switch='listing.accomodates_to'>
-                                      <div class='icon'></div>
-                                      <div class='text'>#{listing.accomodates_to}</div>
-                                    </div>
-                                    <div class='bedrooms room'>
-                                      <div class='icon'></div>
-                                      <div class='text'>#{listing.bedrooms}</div>
-                                    </div>
-                                    <div class='baths room' ng:switch='listing.baths'>
-                                      <div class='icon'></div>
-                                      <div class='text'>#{listing.baths}</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            "
-                          setTimeout(
-                            (->
-                              angular.element(".map-overlay.hash#{hash}").fadeIn()
-                              angular.element(".map-overlay.hash#{hash}").mouseleave -> angular.element(@).fadeOut 400, -> scope.map.removeOverlay o
-                              angular.element(".map-overlay.hash#{hash} .fotorama").fotorama()
-                            ),
-                            50
-                          )
-              ), 500)
-          )
-        )
-      else if attrs.searchTab == 'list'
-        scope.$apply -> scope.tab = attrs.searchTab if scope.ptab == 'guide'
-        interval = setInterval((->
-          if angular.element('.pages').scope()
-            clearInterval interval
-            angular.element('.pages').scope().update_pagination(0,1)
-            left = angular.element('#results .left')
-            right = angular.element('#results .right')
-            height = parseInt left.css('height')
-            left.css('height', right.height()) if right.height() > height
-          ),50
-        )
-        angular.element('footer').css('display', 'block')
-        scope.map = null
-      else if attrs.searchTab == 'guide'
-        scope.$apply -> scope.tab = attrs.searchTab if scope.ptab == 'list'
-      scope.ptab = attrs.searchTab
   )
   .directive('tab', ($timeout) -> (scope, element, attrs) ->
     element.click ->
