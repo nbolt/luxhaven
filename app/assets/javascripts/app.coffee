@@ -310,6 +310,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
 
   toGuide = (to) ->
     angular.element('#results').css 'opacity', 0
+    angular.element('#results .right').css 'width', 976
     $timeout(
       (->
         $scope.$apply -> $scope.tab = to
@@ -337,6 +338,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
     $timeout(
       (->
         $scope.tab = to
+        angular.element('#results .right').css 'width', 695
         angular.element('#results').css 'opacity', 1
         angular.element('#results .left').show()
       ), 600

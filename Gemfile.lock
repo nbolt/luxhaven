@@ -46,6 +46,8 @@ GEM
       faraday (>= 0.8, < 0.10)
       faraday_middleware (>= 0.8, < 0.10)
       multi_json (~> 1.0)
+    angular_rails_csrf (1.0.1)
+      rails (>= 3, < 5)
     angularjs-rails (1.2.3)
     arel (4.0.1)
     atomic (1.1.14)
@@ -269,6 +271,7 @@ PLATFORMS
 
 DEPENDENCIES
   analytics-ruby
+  angular_rails_csrf
   angularjs-rails
   axis-rails
   bcrypt-ruby
