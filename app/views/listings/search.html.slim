@@ -133,7 +133,7 @@
             span ng:switch='size'
               span ng:switch-default='' places
               span ng:switch-when='1' place
-            |  in Los Angeles
+            |  in {{ region.name }}
         #listings
           a ng:href="/#{region.slug}/{{listing.slug}}" ng:repeat='listing in listings'
             .listing
