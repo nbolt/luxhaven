@@ -37,7 +37,7 @@ class ListingsController < ApplicationController
         render json: {
           size: listings.size,
           listings: paginated_listings.as_json(include: [:bookings, :address, :paragraphs, :images]),
-          all_listings: listings.as_json(include: [:bookings, :address, :paragraphs, :images])
+          all_listings: listings.as_json(include: [:bookings, :address, :paragraphs, :images]) # how should this be refactored?
         }
       end
     end
@@ -89,7 +89,7 @@ class ListingsController < ApplicationController
         fingerprint: customer.active_card.fingerprint
       })
       card.save
-      current_user.cards.sort_by(&:created_at).first.destroy if current_user.cards.count > 3
+      current_user.cards.sort_by(&:created_at).first.destroy if current_user.cards.count > 4
     end
     if booking.save
       rsp = booking.book!
@@ -105,7 +105,7 @@ class ListingsController < ApplicationController
     end
   end
 
-  def update
+  def update # move to listings_management?
     JSON.parse(request.body.read)['listing_updates'].each do |attr, value|
       if value.class == Hash
         case attr
@@ -122,7 +122,7 @@ class ListingsController < ApplicationController
     render json: { url: "http://#{request.domain}:#{request.port}/#{listing.slugs}" }
   end
 
-  def create
+  def create # move to listings_management?
     listing = Listing.new(title: 'New Listing')
     listing.address = Address.create
     listing.address.region = Region.first

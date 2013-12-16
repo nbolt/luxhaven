@@ -12,7 +12,6 @@ class Listing < ActiveRecord::Base
   mount_uploader :header_image, HeaderImageUploader
 
   belongs_to :user
-  belongs_to :region
   belongs_to :district
   has_and_belongs_to_many :features
   has_many :bookings, -> { order(:check_in) }, dependent: :destroy
