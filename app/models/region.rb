@@ -1,4 +1,5 @@
-class Region < ActiveRecord::Base
+class Region < ActiveRecord::Base 
+
   extend FriendlyId
   friendly_id :name, use: :slugged
 
@@ -6,6 +7,7 @@ class Region < ActiveRecord::Base
   
   has_many :addresses
   has_many :districts
+  has_many :venues
 
   validates :name, uniqueness: true
 end
