@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   end
 
   def jregion
-    render json: region.as_json
+    render json: region.to_json(include: {venues: {include: :address}})
   end
 
   def enquire

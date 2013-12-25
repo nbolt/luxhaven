@@ -119,6 +119,27 @@
             | are available, but not practical for everyday use. At the airport, just outside of baggage claim, free 
             | shuttle buses to the car rental counters come every minute. Parking and valets are prevalent throughout 
             | the city&mdash;just keep a close eye on the parking signs!
+          #venues venues=''            
+            #tabs
+              .tab.active venue-type='attractions' 
+                .text Attractions
+              .tab venue-type='cafes'
+                .text Cafes &#38; Restaurants
+              .tab venue-type='nightlife'
+                .text Nightlife
+              .tab venue-type='shopping'
+                .text Shopping   
+            #venue-details-container
+              #venue-details ng:switch='tab'
+                .venue#attractions ng:switch-when='attractions'
+                  .p ng:bind='region.attractions_description'
+                .venue#cafes ng:switch-when='cafes'
+                  .p ng:bind='region.cafes_description'
+                .venue#nightlifes ng:switch-when='nightlife'
+                  .p ng:bind='region.nightlife_description'  
+                .venue#shopping ng:switch-when='shopping'
+                  .p ng:bind='region.shopping_description'   
+              #venue-map   
       #list ng:switch-when='list'
         .overlay
           .loader

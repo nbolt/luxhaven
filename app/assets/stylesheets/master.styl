@@ -564,7 +564,7 @@ footer
     opacity: 1
     #city-guide
       font-family: proxima-nova
-      .tab
+      > .tab
         padding: 6px 14px 6px 8px
         margin-top: 15px
         .typcn
@@ -573,22 +573,58 @@ footer
       .description
         #guide-map
           float: right
-      .h1
+      > .h1
         font-size: 1.4em
         width: 580px
         margin-top: 30px
         color: darker-grey
         span
           font-weight: 600
-      .h2
+      > .h2
         font-size: 1.1em
         font-weight: 600
         margin-top: 50px
         color: darker-grey
-      .h3
+      > .h3
         width: 630px
         margin-top: 20px
         color: dark-grey
+      #venues
+        border-radius: 3px
+        #tabs
+          margin-bottom: -1px
+          .tab
+            padding: 15px
+            display: inline-block
+            box-sizing: border-box
+            .text
+              font-size: 1.3em
+              text-align: center
+            &.active
+              border: 1px #222 solid
+              border-bottom: 1px #FFF solid 
+              border-radius: 3px  
+        #venue-details-container
+          padding: 15px
+          border: 1px #222 solid 
+          border-radius: 3px        
+          #venue-details
+            position: relative
+            display: inline-block
+            vertical-align: top
+            width: 275px
+            margin-right: 40px
+            .p
+              font-size: 1em
+            .h2
+              font-size: 1em   
+              font-weight: bold
+          #venue-map
+            height: 470px
+            width: 620px
+            position: relative
+            display: inline-block
+            vertical-align: top
     #list
       position: relative
       .overlay

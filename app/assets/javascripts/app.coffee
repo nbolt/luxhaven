@@ -1035,6 +1035,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     addEventListener 'mousemove', (e) ->
       if scope.knobOne
         if e.x >= 158 && e.x <= knobTwo.offset().left - 7
+          console.log e
           knobOne.css 'left', e.x - 158 + 'px'
         else if e.x < 158
           knobOne.css 'left', 0
@@ -1055,6 +1056,41 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         maxPrice = newPrice
 
   )
+
+  .directive('venues', -> (scope, element) ->
+    scope.tab = 'attractions'
+
+    element.find('#tabs .tab').click ->
+      angular.element('#tabs .tab').removeClass 'active'
+      angular.element(this).addClass 'active'
+      scope.map.removeMarkers()
+      el = this 
+      scope.$apply -> scope.tab = angular.element(el).attr 'venue-type'
+
+      filtered = _.filter(scope.region.venues, (v) -> v.venue_type == scope.tab) 
+      _(filtered).each (venue) ->
+        scope.map.addMarker
+          lat: venue.address.latitude
+          lng: venue.address.longitude
+          title: venue.title
+          icon: '/images/house-marker.png'  
+
+
+    scope.map = new GMaps
+      div: 'venue-map'
+      lat: scope.region.latitude
+      lng: scope.region.longitude
+      zoom: 12
+ 
+    filtered = _.filter(scope.region.venues, (v) -> v.venue_type == scope.tab) 
+    _(filtered).each (venue) ->
+      scope.map.addMarker
+        lat: venue.address.latitude
+        lng: venue.address.longitude
+        title: venue.title
+        icon: '/images/house-marker.png' 
+  )
+
   .directive 'calendar', ->
     link: (scope, element) ->
       days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']

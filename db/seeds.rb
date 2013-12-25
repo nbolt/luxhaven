@@ -16,6 +16,8 @@ u1 = User.create(
 	password_confirmation: "123"
 )
 
+
+
 l1 = Listing.new(
 	price_per_night: 43600,
 	property_type: "house",
@@ -29,13 +31,12 @@ l1 = Listing.new(
 )
 
 l1.user = u1
-l1.region = la
 
 a1 = Address.new(
     street1: "4643 This Street",
     city: "Los Angeles",
     state: "CA",
-    zip: "90024I",
+    zip: "90024",
     neighborhood: "Westwood"
 )
 
@@ -50,5 +51,34 @@ i1.save
 
 l1.update_attribute :remote_search_image_url, "http://www.worldpropertychannel.com/news-assets/denver-lofts-apartments-residential.jpg"    
 
+l2 = Listing.new(
+	price_per_night: 90600,
+	property_type: "apartment",
+	title: "nice place",
+	accomodates_from: 1,
+	accomodates_to: 4,
+	bedrooms: 1,
+	baths: 1,
+	washer: true,
+	search_description: "really nice place"
+)
 
+l2.user = u1
+
+a2 = Address.new(
+	street1: "1234 New Street",
+	city: "Tokyo",
+	neighborhood: "Akibahara"
+)
+
+a2.region = tokyo
+l2.address = a2
+a2.save
+l2.save
+
+i2 = l2.images.build
+i2.remote_image_url = "http://www.viahouse.com/wp-content/uploads/2010/10/Simple-and-Minimalist-Apartment-Plans-in-Tokyo.jpg"
+i2.save 
+
+l2.update_attribute :remote_search_image_url, "http://www.viahouse.com/wp-content/uploads/2010/10/Simple-and-Minimalist-Apartment-Plans-in-Tokyo.jpg"
 
