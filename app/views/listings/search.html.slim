@@ -101,38 +101,32 @@
         .description
           #guide-map
             img src='http://maps.google.com/staticmap?size=280x160&format=png8&center=34.0522342,-118.2436849&zoom=3&markers=34.0522342,-118.2436849,&key=AIzaSyCinAIU9lsTJk58PzpudC2gaygEd7rV3Mk'
-          .h1
-            | A land of endless summers, flashy cars, and movie stars, 
-            span Los Angeles 
-            | is anything but ordinary.
-          .h3
-            | Home to the beating heart of the world's movie industry, Los Angeles has a reputation for fast cars 
-            | and superficial socialities. But look below the surface, and this urban jungle offers just about 
-            | any experience you can imagine. From eclectic Venice Beach, to the hidden mansions of Hollywood 
-            | Hills, and everything in between, Los Angeles is a universe unto itself, all set against a sunny, 
-            | palm-fringed backdrop.
-          .h2 Getting around LA
-          .h3
-            | Spread out across one of the largest metro areas in the world, Los Angeles is made for driving&mdash;
-            | preferably in a European sports car or classic Cadillac. We recommend renting a vehicle, rather than 
-            | trying to navigate the mix of subways and buses that make up the public transportation system. Taxis 
-            | are available, but not practical for everyday use. At the airport, just outside of baggage claim, free 
-            | shuttle buses to the car rental counters come every minute. Parking and valets are prevalent throughout 
-            | the city&mdash;just keep a close eye on the parking signs!
+          .h1 ng:bind='region.tagline' cap-region=''
+          .h3 ng:bind='region.description'
+          .h2 Getting around {{ region.abbr }}
+          .h3 ng:bind-html='region.getting_around'
           #venues venues=''            
             #tabs
-              .tab.active venue-type='attractions' 
+              .tab.active venue-type='attractions'
+                .icon.attractions
                 .text Attractions
               .tab venue-type='cafes'
+                .icon.cafes
                 .text Cafes &#38; Restaurants
               .tab venue-type='nightlife'
+                .icon.nightlife
                 .text Nightlife
               .tab venue-type='shopping'
-                .text Shopping   
+                .icon.shopping
+                .text Shopping
             #venue-details-container
               #venue-details ng:switch='tab'
                 .venue#attractions ng:switch-when='attractions'
                   .p ng:bind='region.attractions_description'
+                  .highlighted-venues
+                    .highlighted-venue ng:repeat='v in region.highlights'
+                      .name ng:bind='v.venue.name'
+                      .description ng:bind='v.venue.description'
                 .venue#cafes ng:switch-when='cafes'
                   .p ng:bind='region.cafes_description'
                 .venue#nightlifes ng:switch-when='nightlife'

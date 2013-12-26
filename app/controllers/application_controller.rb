@@ -10,7 +10,16 @@ class ApplicationController < ActionController::Base
   end
 
   def jregion
-    render json: region.to_json(include: {venues: {include: :address}})
+    json = Jbuilder.encode do |json|
+      json.(region, :id, :name, :slug, :latitude, :longitude,
+                    :attractions_description, :cafes_description, :nightlife_description, :shopping_description,
+                    :getting_around, :description, :tagline
+           )
+      json.image region.image.url
+      json.venues (JSON.parse region.venues.to_json(include: :venue)) # seems kind of weird but ok
+    end
+    render json: json
+    #render json: region.to_json(includes: {venues: {include: :address}})
   end
 
   def enquire

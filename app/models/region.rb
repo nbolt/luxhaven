@@ -7,7 +7,10 @@ class Region < ActiveRecord::Base
   
   has_many :addresses
   has_many :districts
-  has_many :venues
 
   validates :name, uniqueness: true
+
+  def venues
+    addresses.is_venue
+  end
 end

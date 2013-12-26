@@ -22,15 +22,12 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
   $http.post('/auth').success (rsp) ->
     if rsp.success
       $scope.signedIn = true
-      $scope.user = JSON.parse rsp.user
+      $scope.user = JSON.parse rsp.user # double check if we need this (as_json vs to_json)
       $scope.auth.resolve()
       analytics.identify $scope.user.id,
         name: "#{$scope.user.firstname} #{$scope.user.lastname}"
         email: $scope.user.email
         stripe_recipient: $scope.user.stripe_recipient
-      Raven.setUser
-        email: $scope.user.email
-        id: $scope.user.id
     else
       $scope.signedIn = false
       $scope.auth.reject()
@@ -102,9 +99,6 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
         name: "#{$scope.user.firstname} #{$scope.user.lastname}"
         email: $scope.user.email
         stripe_recipient: $scope.user.stripe_recipient
-      Raven.setUser
-        email: $scope.user.email
-        id: $scope.user.id
     else
       auth_error = angular.element('#modal .auth-rsp')
       if auth_error.css('display') == 'none'
@@ -156,7 +150,7 @@ EnquiryCtrl = ($scope, $http) ->
       ),5000)
 
 
-SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
+SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
   $scope.minPrice = null
   $scope.maxPrice = null
   $scope.pages    = null
@@ -172,11 +166,14 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout) ->
   angular.element('footer').css('display', 'none')
 
   $http.get("/region/#{$scope.region.slug}").success (region) ->
+    region.abbr = _(region.name.split(' ')).map((w) -> w[0]).join('')
+    region.getting_around = $sce.trustAsHtml region.getting_around
+    region.highlights = _(region.venues).filter (v) -> v.venue.highlight
     $scope.region = region
     image = new Image()
-    image.src = region.image.url
+    image.src = region.image
     image.onload = ->
-      angular.element('#city').css('background', "url(#{region.image.url}) no-repeat center").css('opacity', '1')
+      angular.element('#city').css('background', "url(#{region.image}) no-repeat center").css('opacity', '1')
 
   $scope.enquiry = ->
     angular.element.scrollTo 1775, 400, { easing: 'swing' }
@@ -892,6 +889,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .directive('paymentTab', -> (scope, element, attrs) ->
     element.click -> scope.$apply -> scope.tab = attrs.paymentTab
   )
+  .directive('capRegion', ($timeout) -> (scope, element) ->
+    $timeout(-> element.html element.text().replace(scope.region.name, '<span>' + scope.region.name + '</span>'))
+  )
   .directive('viewRoom', -> (scope, element, attrs) ->
     scope.views = {}
     scope.listingQ.promise.then ->
@@ -1061,18 +1061,24 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     scope.tab = 'attractions'
 
     element.find('#tabs .tab').click ->
-      angular.element('#tabs .tab').removeClass 'active'
+      element.find('#tabs .tab').removeClass 'active'
       angular.element(this).addClass 'active'
+
+      if angular.element(this).attr('venue-type') == element.find('#tabs .tab:eq(0)').attr('venue-type')
+        element.find('#venue-details-container').css('border-top-left-radius', 0)
+      else
+        element.find('#venue-details-container').css('border-top-left-radius', 3)
+
       scope.map.removeMarkers()
       el = this 
       scope.$apply -> scope.tab = angular.element(el).attr 'venue-type'
 
-      filtered = _.filter(scope.region.venues, (v) -> v.venue_type == scope.tab) 
-      _(filtered).each (venue) ->
+      filtered = _.filter(scope.region.venues, (v) -> v.venue.venue_type == scope.tab) 
+      _(filtered).each (v) ->
         scope.map.addMarker
-          lat: venue.address.latitude
-          lng: venue.address.longitude
-          title: venue.title
+          lat: v.latitude
+          lng: v.longitude
+          title: v.venue.name
           icon: '/images/house-marker.png'  
 
 

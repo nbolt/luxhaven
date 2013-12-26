@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131219010144) do
+ActiveRecord::Schema.define(version: 20131226001233) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -173,6 +173,9 @@ ActiveRecord::Schema.define(version: 20131219010144) do
     t.text     "cafes_description"
     t.text     "nightlife_description"
     t.text     "shopping_description"
+    t.text     "getting_around"
+    t.text     "description"
+    t.text     "tagline"
   end
 
   add_index "regions", ["slug"], name: "index_regions_on_slug", unique: true, using: :btree
@@ -223,11 +226,11 @@ ActiveRecord::Schema.define(version: 20131219010144) do
 
   create_table "venues", force: true do |t|
     t.string   "name"
-    t.integer  "region_id"
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "venue_type"
+    t.boolean  "highlight"
   end
 
 end

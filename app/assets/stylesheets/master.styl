@@ -69,6 +69,9 @@ typcn()
   font-smoothing: antialiased
   text-rendering: optimizeLegibility
 
+.wf-loading *
+  font-size: 0
+
 a
   text-decoration: none
 
@@ -547,8 +550,12 @@ footer
       > input
         margin-bottom: 10px
         color: darker-grey
+      > select
+        visibility: hidden
       .inline .container
         display: inline-block
+        select
+          visibility: hidden
         &:first-child
           width: 90px
         &:last-child
@@ -573,52 +580,73 @@ footer
       .description
         #guide-map
           float: right
-      > .h1
-        font-size: 1.4em
-        width: 580px
-        margin-top: 30px
-        color: darker-grey
-        span
+        > .h1
+          font-size: 1.4em
+          width: 580px
+          margin-top: 30px
+          color: darker-grey
+          span
+            font-weight: 600
+        > .h2
+          font-size: 1.1em
           font-weight: 600
-      > .h2
-        font-size: 1.1em
-        font-weight: 600
-        margin-top: 50px
-        color: darker-grey
-      > .h3
-        width: 630px
-        margin-top: 20px
-        color: dark-grey
+          margin-top: 60px
+          color: darker-grey
+        > .h3
+          width: 630px
+          margin-top: 20px
+          color: dark-grey
       #venues
         border-radius: 3px
+        margin: 25px 0 50px
         #tabs
           margin-bottom: -1px
           .tab
             padding: 15px
             display: inline-block
             box-sizing: border-box
+            color: green
+            font-weight: 600
+            font-size: .8em
             .text
               font-size: 1.3em
               text-align: center
             &.active
-              border: 1px #222 solid
-              border-bottom: 1px #FFF solid 
-              border-radius: 3px  
+              border: 1px grey solid
+              border-bottom: 1px white solid 
+              border-radius: 3px
+              border-bottom-left-radius: 0
+              border-bottom-right-radius: 0
+              color: darker-grey
+            &:hover
+              cursor: pointer
+              color: darker-grey
         #venue-details-container
           padding: 15px
-          border: 1px #222 solid 
-          border-radius: 3px        
+          border: thin grey solid 
+          border-radius: 3px
+          border-top-left-radius: 0
           #venue-details
             position: relative
             display: inline-block
             vertical-align: top
             width: 275px
             margin-right: 40px
+            color: dark-grey
             .p
               font-size: 1em
             .h2
               font-size: 1em   
               font-weight: bold
+            .venue
+              .highlighted-venues
+                overflow: auto
+                margin-top: 10px
+                .highlighted-venue
+                  margin-top: 25px
+                  .name
+                    font-weight: 600
+                    margin-bottom: 5px
           #venue-map
             height: 470px
             width: 620px
