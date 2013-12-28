@@ -1033,24 +1033,24 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       angular.element('html').removeClass('dragging')
 
     addEventListener 'mousemove', (e) ->
+      e.x = e.clientX
       if scope.knobOne
-        if e.x >= 158 && e.x <= knobTwo.offset().left - 7
-          console.log e
-          knobOne.css 'left', e.x - 158 + 'px'
-        else if e.x < 158
+        if e.x >= element.offset().left && e.x <= knobTwo.offset().left - 14
+          knobOne.css 'left', e.x - element.offset().left + 'px'
+        else if e.x < element.offset().left
           knobOne.css 'left', 0
-        else if e.x > knobTwo.offset().left - 7
-          knobOne.css 'left', knobTwo.offset().left - 165
+        else if e.x > knobTwo.offset().left - 14
+          knobOne.css 'left', knobTwo.offset().left - 14 - element.offset().left
         newPrice = price(parseInt knobOne.css('left'))
         element.find('.knob-one').text('$' + newPrice)
         minPrice = newPrice
       else if scope.knobTwo
-        if e.x <= 394 && e.x >= knobOne.offset().left + 20
-          knobTwo.css 'right', 394 - e.x + 'px'
-        else if e.x > 394
+        if e.x <= element.offset().left + element.outerWidth() && e.x >= knobOne.offset().left + 28
+          knobTwo.css 'right', element.offset().left + element.outerWidth() - e.x + 'px'
+        else if e.x > element.offset().left + element.outerWidth()
           knobTwo.css 'right', 0
-        else if e.x < knobOne.offset().left + 20
-          knobTwo.css 'right', 374 - knobOne.offset().left
+        else if e.x < knobOne.offset().left + 28
+          knobTwo.css 'right', element.offset().left + element.outerWidth() - knobOne.offset().left - 28
         newPrice = price(250 - parseInt(knobTwo.css('right')))
         element.find('.knob-two').text('$' + newPrice)
         maxPrice = newPrice
