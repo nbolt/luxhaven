@@ -348,11 +348,14 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
     angular.element('#results .left').css('height', 'inherit').css('overflow', 'auto')
     angular.element('#results .left').css('margin-left', 'inherit')
     angular.element('#results').animate({'margin-top': '325'},400,'linear')
-    angular.element('#city').fadeIn(400, ->
-      $scope.$apply -> $scope.tab = to
-      angular.element('#results .right').css 'opacity', 1
-      angular.element('#city').css('position', 'relative')
-      angular.element('#results').css('margin', 'auto')
+    angular.element('#city').css('opacity', 1)
+    setTimeout(
+      (->
+        $scope.$apply -> $scope.tab = to
+        angular.element('#results .right').css 'opacity', 1
+        angular.element('#city').css('position', 'relative')
+        angular.element('#results').css('margin', 'auto')
+      ), 410
     )
 
   toMap = ->
@@ -363,8 +366,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
     angular.element('#results .left')
       .css('height', angular.element(window).height() - 80).css('overflow-y', 'scroll')
     angular.element('#city')
-      .css('position', 'absolute').css('right', '0').css('left', '0')
-      .fadeOut 400
+      .css('position', 'absolute').css('right', '0').css('left', '0').css('opacity', 0)
     angular.element('footer').css('display', 'none')
     angular.element.scrollTo 0, 400, { easing: 'swing' }
     $timeout(
