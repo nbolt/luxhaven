@@ -245,7 +245,7 @@ body
     float: left
 
 header
-  overflow: hidden
+  overflow: visible
   height: 80px
   background-color: white
   box-shadow: 0 -1px 8px black
@@ -265,7 +265,7 @@ header
           font: .9em proxima-nova
           color: hsl(0, 0%, 37%)
       &.left
-        margin-left: 35px
+        margin-left: 15px
         a
           margin-left: 25px
           font-weight: bold
@@ -274,16 +274,67 @@ header
             color: green
       &.right
         float: right
-        margin-top: 2px
+        margin-top: 7px
+        .menu
+          position: absolute
+          top: 48px
+          left: 0
+          width: 150px
+          background-color: white
+          border-bottom-left-radius: 3px
+          border-bottom-right-radius: 3px
+          display: none
+          .menu-item
+            padding: 10px
+            border-top: thin solid hsl(0, 0%, 37%)
+            .text
+              color: hsl(0, 0%, 37%)
+              font-family: proxima-nova
+            &:first-child
+              border-top: none
+            &:last-child
+              border-bottom-left-radius: 3px
+              border-bottom-right-radius: 3px
+            &:hover
+              cursor: pointer
+              background-color: green
+              .text
+                color: white
+        .typcn
+          display: inline-block
+          font-size: 1.6em
+          vertical-align: top
+          margin: -5px 0 0 20px
+          color: hsl(0, 0%, 37%)
+          position: relative
+          &:hover
+            cursor: pointer
+            &::after
+              position: absolute
+              right: 9px
+              bottom: -12px
+              margin-top: 20px
+              content: ''
+              width: 0
+              height: 0
+              border-left: 4px solid transparent
+              border-right: 4px solid transparent
+              border-top: 4px solid hsl(0, 0%, 37%)
         .links
           display: inline-block
+          vertical-align: top
+          .div
+            display: inline-block
+            margin: 1px 0 0 15px
+            vertical-align: top
+            color: hsl(0, 0%, 37%)
           a
             margin-left: 15px
             font-weight: 400
             &:hover
               border-bottom: thin solid green
         button
-          margin-left: 20px
+          margin: -5px 0 0 20px
 
 footer
   background: url(/images/tile.png)

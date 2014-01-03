@@ -124,22 +124,23 @@ html
               img src='/images/logo-small.png' width='25'
             .name Luxhaven
         nav.left
-          a Features
-          a href='/los-angeles'
-            | Properties
-          a List Your Property
+          a href='/los-angeles' Search
+          a href='/experience' Experience
+          a href='/become-a-host' List Your Home
         nav.right
           .links
-            a About
-            a FAQs
-            a Contact
-          a href='/listings/manage' ng:show='user && user.admin'
-            button.green Manage Listings
+            a How it works
+            .div |
+            a Contact us
+            .div |
+            a +1 424 242 8362
           ng:switch on='signedIn'
-            button.green ng:click='signInModal()' ng:switch-when='false'
-              | Log In
-            button.green ng:click='signOut()' ng:switch-when='true'
-              | Log Out
+            button.green ng:click='signInModal()' ng:switch-when='false' Log in
+            div ng:switch-when='true' cog-menu='' style='display:inline-block;position:relative'
+              .typcn.typcn-cog-outline
+              .menu
+                .menu-item ng:click='signOut()'
+                  .text Log out
     .body= yield
     - unless request.fullpath == '/' || request.fullpath == '/listings/manage'
       = render 'shared/footer'

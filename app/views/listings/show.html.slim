@@ -55,9 +55,9 @@
         a href="#{image.image.url}"
     .tabs
       nav#top-nav
-        a.active href='#summary' onclick='return false' tab=''
-          .tab Summary
-        a href='#description' onclick='return false' tab=''
+        /a.active href='#summary' onclick='return false' tab=''
+        /  .tab Summary
+        a.active href='#description' onclick='return false' tab=''
           .tab Description
         a href='#features' onclick='return false' tab=''
           .tab Features
@@ -70,8 +70,8 @@
         a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
           .tab Local Area
       .tab-content
-        .tab#summary.active
-        .tab#description
+        .tab#summary
+        .tab#description.active
           - listing.paragraphs.sort_by(&:order).each do |p|
             - if p.image
               .image style="#{p.image.version == 'full' && '' || p.image.align && 'float: ' + p.image.align + (p.image.align == 'left' && '; padding-right: 20px' || p.image.align == 'right' && '; padding-left: 20px')}"

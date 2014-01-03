@@ -885,6 +885,12 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       )
     )
   )
+  .directive('cogMenu', ($timeout) -> (scope, element) ->
+    element.children('.typcn').click ->
+      element.children('.menu').show()
+    element.children('.menu').mouseleave ->
+      $timeout((-> element.children('.menu').fadeOut()),200)
+  )
   .directive('view', -> (scope, element) ->
     new View element.find 'a.view'
   )
