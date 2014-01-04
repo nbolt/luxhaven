@@ -57,28 +57,28 @@
       nav#top-nav
         /a.active href='#summary' onclick='return false' tab=''
         /  .tab Summary
-        a.active href='#description' onclick='return false' tab=''
+        a href='#description' onclick='return false' tab='' ng:class="tabClass('description')"
           .tab Description
-        a href='#features' onclick='return false' tab=''
+        a href='#features' onclick='return false' tab='' ng:class="tabClass('features')"
           .tab Features
-        a href='#gallery' onclick='return false' tab=''
+        a href='#gallery' onclick='return false' tab='' ng:class="tabClass('gallery')"
           .tab Gallery
-        a href='#rooms' onclick='return false' tab=''
+        a href='#rooms' onclick='return false' tab='' ng:class="tabClass('rooms')"
           .tab Rooms
-        a href='#availability' onclick='return false' tab=''
+        a href='#availability' onclick='return false' tab='' ng:class="tabClass('availability')"
           .tab Availability
-        a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}"
+        a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}" ng:class="tabClass('local-area')"
           .tab Local Area
-      .tab-content
-        .tab#summary
-        .tab#description.active
+      .tab-content ng:switch='tab'
+        .tab#summary ng:switch-when='summary'
+        .tab#description ng:switch-when='description'
           - listing.paragraphs.sort_by(&:order).each do |p|
             - if p.image
               .image style="#{p.image.version == 'full' && '' || p.image.align && 'float: ' + p.image.align + (p.image.align == 'left' && '; padding-right: 20px' || p.image.align == 'right' && '; padding-left: 20px')}"
                 img src='#{p.image.image.send(p.image.version).url}'
                 .caption= p.image.caption
             p= p.content
-        .tab#features
+        .tab#features ng:switch-when='features'
           .general
             .title General features
             .rooms.landscape
@@ -109,11 +109,11 @@
                   .features
                     - features.each do |f|
                       .feature= f.name
-        .tab#gallery view=''
+        .tab#gallery view='' ng:switch-when='gallery'
           - listing.images.reverse.each do |i|
             a.view href='#{i.image.url}'
               img src='#{i.image.large_thumb}'
-        .tab#rooms
+        .tab#rooms ng:switch-when='rooms'
           - listing.rooms.each_with_index do |room, i|
             .room view-room="#{i}"
               .image ng:click="views[#{i}].view.open();views[#{i}].view.show(views[#{i}].images[0])"
@@ -124,7 +124,7 @@
                 .features
                   - room.features.each do |f|
                     .feature= f.name
-        .tab#availability
+        .tab#availability ng:switch-when='availability'
           ul.legend
             li
               .color.white
@@ -143,7 +143,7 @@
               span.month
             span.arrow.next >
           calendar
-        .tab#local-area local-area=''
+        .tab#local-area local-area='' ng:switch-when='local-area'
           .top
             .links
               span ng:click='toMap()' Map

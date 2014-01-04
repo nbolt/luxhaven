@@ -11,7 +11,6 @@ class ListingsController < ApplicationController
   before_filter :admin, only: [:manage, :update, :create]
 
   def search
-    redirect_to "/#{params[:city]}/search/list" if !params[:view]
   end
   
   def listings

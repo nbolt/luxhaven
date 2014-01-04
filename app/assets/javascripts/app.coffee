@@ -296,11 +296,11 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) -
     angular.element("#filters .tabs .tab[search-tab=#{to}]") .addClass 'active'
     switch to
       when 'map'
-        $location.path "/#{$scope.region.slug}/search/map"
+        $location.path "/map"
         $scope.tab = to
         toMap()
       when 'list'
-        $location.path "/#{$scope.region.slug}/search/list"
+        $location.path "/list"
         toList()
         switch $scope.tab
           when 'guide'
@@ -308,7 +308,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) -
           when 'map'
             fromMap(to)
       when 'guide'
-        $location.path "/#{$scope.region.slug}/search/guide"
+        $location.path "/guide"
         toGuide()
         switch $scope.tab
           #when 'list'
@@ -457,15 +457,19 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) -
       ), 500
     )
 
-  switch $.url().attr('directory').split('/')[3]
-    when 'map'
+  switch $.url().attr('fragment')
+    when '/map'
       toMap(0)
       $scope.tab = 'map'
       $scope.ptab = 'map'
-    when 'guide'
+      $location.path '/map'
+    when '/guide'
       toGuide(0)
       $scope.tab = 'guide'
       $scope.ptab = 'guide'
+      $location.path '/guide'
+    else
+      $location.path '/list'
 
 
 BookingCtrl = ($scope, $http, $timeout, $q) ->
@@ -605,6 +609,11 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
     $scope.dates.check_in  = moment(new Date(parseInt(dates.check_in) * 1000)).format 'MM/DD/YYYY'  if dates.check_in
     $scope.dates.check_out = moment(new Date(parseInt(dates.check_out) * 1000)).format 'MM/DD/YYYY' if dates.check_out
 
+  if $.url().attr('fragment') == ''
+    $scope.tab = 'description'
+  else
+    $scope.tab = $.url().attr('fragment')[1..-1]
+
   $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
 
   $http.get('').success (listing) ->
@@ -618,6 +627,8 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
           note: "#{$scope.region.slug}/#{listing.slug}"
     $scope.listing = listing
     $scope.listingQ.resolve()
+
+  $scope.tabClass = (tab) -> tab == $scope.tab && 'active' || ''
 
   bookModal = ->
     angular.element('#book-modal').bPopup bPopOpts
@@ -895,9 +906,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('manage',   ManageCtrl)
   .controller('account',  AccountCtrl)
   .controller('enquiry',  EnquiryCtrl)
-  .config ($httpProvider, $locationProvider) ->
+  .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr 'content'
-    $locationProvider.html5Mode true
   .factory('$cookieStore', ->
     get: -> (name) -> $.cookie name
     put: -> (name, value, options) -> $.cookie name, value, options
@@ -980,17 +990,16 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     scope.$watch 'page', scope.update_pagination
     scope.$watch 'size', scope.update_pagination
   )
-  .directive('tab', ($timeout) -> (scope, element, attrs) ->
+  .directive('tab', ($timeout, $location) -> (scope, element, attrs) ->
     element.click ->
-      element.parent().children('a').removeClass 'active'
-      element.addClass 'active'
-      tabContent = element.parent().parent().children('.tab-content')
-      tabContent.children('.tab').removeClass 'active'
-      tabContent.children(attrs.href).addClass 'active'
+      scope.$apply ->
+        scope.tab = attrs.href[1..-1]
+        $location.path scope.tab
       if attrs.href == '#local-area'
-        $timeout(-> angular.element(attrs.href).scope().toMap())
+        $timeout((-> angular.element(attrs.href).scope().toMap()),50)
   )
-  .directive('localArea', ($timeout) -> (scope, element, attrs) ->
+  .directive('localArea', ($timeout, $q) -> (scope, element, attrs) ->
+    scope.panoQ = $q.defer()
     scope.listingQ.promise.then ->
       address = scope.listing.address
       GMaps.geocode
@@ -1009,25 +1018,28 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           latlng = new google.maps.LatLng lat, lng
 
           webService = new google.maps.StreetViewService()
-          webService.getPanoramaByLocation latlng, 1000, (pano) -> scope.latLng = pano.location.latLng
+          webService.getPanoramaByLocation latlng, 1000, (pano) ->
+            scope.latLng = pano.location.latLng
+            scope.panoQ.resolve()
 
-      scope.toMap = (e) ->
-        angular.element('#local-area .links span').removeClass 'active'
-        angular.element('#local-area .links span:first').addClass 'active'
-        scope.mapType = 'map'
-        $timeout(->
-          map = new GMaps
-            div: 'map'
-            lat: scope.latLng.lat()
-            lng: scope.latLng.lng()
-            zoom: 15
-          map.drawCircle
-            center: scope.latLng
-            radius: 400
-            fillColor: 'hsl(159, 69%, 44%)'
-            strokeColor: 'hsl(159, 69%, 44%)'
-            strokeWeight: 1
-        )
+      scope.toMap = ->
+        scope.panoQ.promise.then ->
+          angular.element('#local-area .links span').removeClass 'active'
+          angular.element('#local-area .links span:first').addClass 'active'
+          scope.mapType = 'map'
+          $timeout(->
+            map = new GMaps
+              div: 'map'
+              lat: scope.latLng.lat()
+              lng: scope.latLng.lng()
+              zoom: 15
+            map.drawCircle
+              center: scope.latLng
+              radius: 400
+              fillColor: 'hsl(159, 69%, 44%)'
+              strokeColor: 'hsl(159, 69%, 44%)'
+              strokeWeight: 1
+          )
 
       scope.toStreet = ->
         angular.element('#local-area .links span').removeClass 'active'
