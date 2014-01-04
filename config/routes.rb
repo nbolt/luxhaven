@@ -27,7 +27,9 @@ Luxhaven::Application.routes.draw do
 
   match '/listing_management/:id/:action' => 'listing_management', via: [:get, :post, :patch]
 
-  get   '/:city' => 'listings#search'
+  get   '/:city/search' => 'listings#search'
+  get   '/:city/search/:view' => 'listings#search'
+  get   '/:city/listings' => 'listings#listings' 
   get   '/:city/:listing_slug' => 'listings#show'
   patch '/:city/:listing_slug' => 'listings#update'
   match '/:city/:listing_slug/:action' => 'listings', via: [:get, :post]

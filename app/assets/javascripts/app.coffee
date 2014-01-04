@@ -156,7 +156,7 @@ EnquiryCtrl = ($scope, $http) ->
       ),5000)
 
 
-SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
+SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) ->
   $scope.minPrice = null
   $scope.maxPrice = null
   $scope.pages    = null
@@ -180,6 +180,8 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
     image.src = region.image
     image.onload = ->
       angular.element('#city').css('background', "url(#{region.image}) no-repeat center").css('opacity', '1')
+
+  $scope.resultsTabClass = (tab) -> tab == $scope.tab && 'active' || ''
 
   $scope.enquiry = ->
     angular.element.scrollTo 1775, 400, { easing: 'swing' }
@@ -229,7 +231,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
   fetch_listings = (reset_page = true) ->
     $scope.page = 1 if reset_page
     angular.element('#results .right .overlay').css 'display', 'block'
-    $http.get("/#{$scope.region.slug}#{urlAttrs()}").success (rsp) ->
+    $http.get("/#{$scope.region.slug}/listings#{urlAttrs()}").success (rsp) ->
       angular.element('#results .right').css 'display', 'inline-block'
       angular.element('#results .right .overlay').css 'display', 'none'
       $scope.listings = rsp.listings
@@ -294,9 +296,11 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
     angular.element("#filters .tabs .tab[search-tab=#{to}]") .addClass 'active'
     switch to
       when 'map'
+        $location.path "/#{$scope.region.slug}/search/map"
         $scope.tab = to
         toMap()
       when 'list'
+        $location.path "/#{$scope.region.slug}/search/list"
         toList()
         switch $scope.tab
           when 'guide'
@@ -304,23 +308,32 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
           when 'map'
             fromMap(to)
       when 'guide'
-        toGuide(to)
+        $location.path "/#{$scope.region.slug}/search/guide"
+        toGuide()
         switch $scope.tab
           #when 'list'
           when 'map'
             fromMap(to)
     null
 
-  toGuide = (to) ->
-    angular.element('#results').css 'opacity', 0
-    angular.element('#results .right').css 'width', 976
-    $timeout(
-      (->
-        $scope.$apply -> $scope.tab = to
-        angular.element('#results .left').hide()
-        angular.element('#results').css 'opacity', 1
-      ), 600
-    )
+  toGuide = (animationTime = 400) ->
+    if animationTime is 0
+      angular.element('#results').addClass('no-transition')
+      angular.element('#results').css 'opacity', 1
+      angular.element('#results .left').hide()
+      angular.element('#results .right').css 'width', 976
+      $scope.tab = 'guide'
+      angular.element('#results').removeClass('no-transition')
+    else
+      angular.element('#results').css 'opacity', 0
+      angular.element('#results .right').css 'width', 976
+      $timeout(
+        (->
+          $scope.$apply -> $scope.tab = 'guide'
+          angular.element('#results .left').hide()
+          angular.element('#results').css 'opacity', 1
+        ), 600
+      )
 
   toList = ->
     interval = setInterval((->
@@ -364,19 +377,21 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
       ), 410
     )
 
-  toMap = ->
+  toMap = (animationTime = 400) ->
+    angular.element('#results').addClass('no-transition') if animationTime is 0
     angular.element('#results').css('width', '100%').css('background-color', 'white')
     angular.element('#results').css('margin-top', '245px')
-    angular.element('#results').animate({'margin-top': '80'},400,'linear')
-    angular.element('#results .left').animate({'margin-left': '25'},400,'linear')
+    angular.element('#results').animate({'margin-top': '80'},animationTime,'linear')
+    angular.element('#results .left').animate({'margin-left': '25'},animationTime,'linear')
     angular.element('#results .left')
       .css('height', angular.element(window).height() - 80).css('overflow-y', 'scroll')
     angular.element('#city')
       .css('position', 'absolute').css('right', '0').css('left', '0').css('opacity', 0)
     angular.element('footer').css('display', 'none')
-    angular.element.scrollTo 0, 400, { easing: 'swing' }
+    angular.element.scrollTo 0, animationTime, { easing: 'swing' }
     $timeout(
       (->
+        angular.element('#results').removeClass('no-transition')
         angular.element('#results .left').show()
         angular.element('#results').css 'opacity', 1
         $scope.map = new GMaps
@@ -441,6 +456,16 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
                 )
       ), 500
     )
+
+  switch $.url().attr('directory').split('/')[3]
+    when 'map'
+      toMap(0)
+      $scope.tab = 'map'
+      $scope.ptab = 'map'
+    when 'guide'
+      toGuide(0)
+      $scope.tab = 'guide'
+      $scope.ptab = 'guide'
 
 
 BookingCtrl = ($scope, $http, $timeout, $q) ->
@@ -870,8 +895,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('manage',   ManageCtrl)
   .controller('account',  AccountCtrl)
   .controller('enquiry',  EnquiryCtrl)
-  .config ($httpProvider) ->
+  .config ($httpProvider, $locationProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr 'content'
+    $locationProvider.html5Mode true
   .factory('$cookieStore', ->
     get: -> (name) -> $.cookie name
     put: -> (name, value, options) -> $.cookie name, value, options

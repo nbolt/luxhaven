@@ -9,9 +9,9 @@
       #filters.select2-bordered
         .title Explore Results
         .tabs
-          .tab.active search-tab='list' ng:click="transition('list')" List
-          .tab search-tab='map' style='margin-left:22px' ng:click="transition('map')" Map
-          .tab search-tab='guide' ng:click="transition('guide')" City Guide
+          .tab search-tab='list' ng:class="resultsTabClass('list')" ng:click="transition('list')" List
+          .tab search-tab='map' ng:class="resultsTabClass('map')" style='margin-left:22px' ng:click="transition('map')" Map
+          .tab search-tab='guide' ng:class="resultsTabClass('guide')" ng:click="transition('guide')" City Guide
         /= select_tag :district_id, options_for_select(region.districts.map{|r|[r.name, r.id]}.unshift ['All neighborhoods', 0]),
         /  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'district', select2bordered: '' }
         = select_tag :city_id, options_for_select(Region.all.map{|r|[r.name, r.slug]}),

@@ -9,38 +9,36 @@ class ListingsController < ApplicationController
   end
 
   before_filter :admin, only: [:manage, :update, :create]
-  
+
   def search
+    redirect_to "/#{params[:city]}/search/list" if !params[:view]
+  end
+  
+  def listings
     expires_in 1.hour, public: true
 
-    response.headers['Vary'] = 'Accept'
-    request.format = 'json' if env['HTTP_ACCEPT'].match /application\/json/ # no idea why we suddenly needed this
-    respond_to do |format|
-      format.html
-      format.json do
-        listings = region_listings.where 'user_id is not null'
-        listings = listings.where(property_type: params[:property_type].split(','))     if params[:property_type]
-        ['garden', 'balcony', 'smoking', 'pets', 'children', 'babies', 'toddlers', 'tv',
-         'temp_control', 'pool', 'jacuzzi', 'washer']
-          .each do |amenity|
-            listings = listings.where("#{amenity} is #{params[amenity]}") if params[amenity]
-          end
-        listings = listings.where('parking > 0') if params[:parking]
-        listings = listings.where('price_per_night >= ?', params[:minPrice].to_i * 100) if params[:minPrice]
-        listings = listings.where('price_per_night <= ?', params[:maxPrice].to_i * 100) if params[:maxPrice]
-        listings = listings.where('sleeps >= ?', params[:sleeps]) if params[:sleeps]
-        listings = listings.where('bedrooms >= ?', params[:beds]) if params[:beds]
-        listings = listings.where(district_id: params[:district]) unless params[:district] == '0'
-        listings = listings.send params[:sort]
-        listings = Listing.available params[:check_in], params[:check_out], listings if params[:check_in] && params[:check_out]
-        paginated_listings = Kaminari.paginate_array(listings).page(params[:page]).per 5
-        render json: {
-          size: listings.size,
-          listings: paginated_listings.as_json(include: [:bookings, :address, :paragraphs, :images]),
-          all_listings: listings.as_json(include: [:bookings, :address, :paragraphs, :images]) # how should this be refactored?
-        }
+    listings = region_listings.where 'user_id is not null'
+    listings = listings.where(property_type: params[:property_type].split(','))     if params[:property_type]
+    ['garden', 'balcony', 'smoking', 'pets', 'children', 'babies', 'toddlers', 'tv',
+     'temp_control', 'pool', 'jacuzzi', 'washer']
+      .each do |amenity|
+        listings = listings.where("#{amenity} is #{params[amenity]}") if params[amenity]
       end
-    end
+    listings = listings.where('parking > 0') if params[:parking]
+    listings = listings.where('price_per_night >= ?', params[:minPrice].to_i * 100) if params[:minPrice]
+    listings = listings.where('price_per_night <= ?', params[:maxPrice].to_i * 100) if params[:maxPrice]
+    listings = listings.where('sleeps >= ?', params[:sleeps]) if params[:sleeps]
+    listings = listings.where('bedrooms >= ?', params[:beds]) if params[:beds]
+    listings = listings.where(district_id: params[:district]) unless params[:district] == '0'
+    listings = listings.send params[:sort]
+    listings = Listing.available params[:check_in], params[:check_out], listings if params[:check_in] && params[:check_out]
+    paginated_listings = Kaminari.paginate_array(listings).page(params[:page]).per 5
+    
+    render json: {
+      size: listings.size,
+      listings: paginated_listings.as_json(include: [:bookings, :address, :paragraphs, :images]),
+      all_listings: listings.as_json(include: [:bookings, :address, :paragraphs, :images]) # how should this be refactored?
+    }
   end
 
   def show
