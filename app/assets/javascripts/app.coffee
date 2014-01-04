@@ -50,14 +50,17 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
   $scope.toSignup = ->
     angular.element('#modal').html $compile($scope.signupContent)($scope)
     angular.element('#modal').removeClass('sign-in').removeClass('forgot').addClass('sign-up')
+    null
 
   $scope.toSignin = ->
     angular.element('#modal').html $compile($scope.signinContent)($scope)
     angular.element('#modal').removeClass('sign-up').removeClass('forgot').addClass('sign-in')
+    null
 
   $scope.toForgot = ->
     angular.element('#modal').html $compile($scope.forgotContent)($scope)
     angular.element('#modal').removeClass('sign-in').removeClass('sign-up').addClass('forgot')
+    null
 
   $scope.logIn = ->
     angular.element('#modal button').addClass('disabled')
@@ -74,6 +77,7 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
           lastname: $scope.lastname
           password: $scope.password
           password_confirmation: $scope.password_confirmation
+          newsletter: $scope.newsletter
       }).success (rsp) -> auth_response rsp
 
   $scope.signOut = ->
@@ -90,11 +94,13 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
       angular.element('#modal').bPopup().close()
       $scope.signedIn = true
       $scope.user = rsp.user
+      # we should consolidate these models into a single user hash
       $scope.email = null
       $scope.firstname = null
       $scope.lastname = null
       $scope.password = null
       $scope.password_confirmation = null
+      $scope.newsletter = null
       analytics.identify $scope.user.id,
         name: "#{$scope.user.firstname} #{$scope.user.lastname}"
         email: $scope.user.email
@@ -890,6 +896,27 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       element.children('.menu').show()
     element.children('.menu').mouseleave ->
       $timeout((-> element.children('.menu').fadeOut()),200)
+  )
+  .directive('checkbox', ($timeout) ->
+    require: 'ngModel'
+    link: ($scope, element, $attrs, ngModel) ->
+      $timeout ->
+        value = undefined
+        value = $attrs['value']
+        $scope.$watch $attrs['ngModel'], (newValue) ->
+          $(element).iCheck 'update'
+
+        element.iCheck(
+          checkboxClass: 'icheckbox_square-green'
+          radioClass: 'iradio_square-gren'
+        ).on 'ifChanged', (event) ->
+          if element.attr('type') is 'checkbox' and $attrs['ngModel']
+            $scope.$apply ->
+              ngModel.$setViewValue event.target.checked
+
+          if element.attr('type') is 'radio' and $attrs['ngModel']
+            $scope.$apply ->
+              ngModel.$setViewValue value
   )
   .directive('view', -> (scope, element) ->
     new View element.find 'a.view'

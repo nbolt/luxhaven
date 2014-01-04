@@ -102,7 +102,7 @@ html
         .input= password_field_tag :password, nil, placeholder: 'Password', 'ng:model' => 'password'
         .input= password_field_tag :password_confirmation, nil, placeholder: 'Confirm Password', 'ng:model' => 'password_confirmation'
         .check
-          = check_box_tag :news, 0, nil
+          = check_box_tag :news, 0, nil, 'ng:model' => 'newsletter', checkbox: true
           label for='news' Keep me updated with news, special offers, discounts and promotions.
         .button
           button.green ng:click='signUp()' Sign Up

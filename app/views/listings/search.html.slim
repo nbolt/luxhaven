@@ -34,64 +34,65 @@
             .selection
           .knob.two
             .selection
-        .filter-category
-          .title Property Type
-          .filter
-            = check_box_tag :house, 0, nil, :'ng:model' => 'house'
-            label for='house' House
-          .filter
-            = check_box_tag :townhouse, 0, nil, :'ng:model' => 'townhouse'
-            label for='townhouse' Townhouse
-          .filter
-            = check_box_tag :apartment, 0, nil, :'ng:model' => 'apartment'
-            label for='apartment' Apartment
-        .filter-category
-          .title Property Features
-          .filter
-            = check_box_tag :garden, 0, nil, :'ng:model' => 'garden'
-            label for='garden' Garden
-          .filter
-            = check_box_tag :balcony, 0, nil, :'ng:model' => 'balcony'
-            label for='balcony' Balcony / Terrace
-          .filter
-            = check_box_tag :parking, 0, nil, :'ng:model' => 'parking'
-            label for='parking' Parking
-        .filter-category
-          .title Amenities
-          .filter
-            = check_box_tag :tv, 0, nil, :'ng:model' => 'tv'
-            label for='tv' Cable / Satellite TV
-          .filter
-            = check_box_tag :temp_control, 0, nil, :'ng:model' => 'temp_control'
-            label for='temp_control' Central AC / Heating
-          .filter
-            = check_box_tag :pool, 0, nil, :'ng:model' => 'pool'
-            label for='pool' Pool
-          .filter
-            = check_box_tag :jacuzzi, 0, nil, :'ng:model' => 'jacuzzi'
-            label for='jacuzzi' Jacuzzi
-          .filter
-            = check_box_tag :washer, 0, nil, :'ng:model' => 'washer'
-            label for='washer' Washer / Dryer
-        .filter-category
-          .title Accessibility
-          .filter
-            = check_box_tag :smoking, 0, nil, :'ng:model' => 'smoking'
-            label for='smoking' Smoking
-          .filter
-            = check_box_tag :pets, 0, nil, :'ng:model' => 'pets'
-            label for='pets' Pets
-        .filter-category
-          .title Family
-          .filter
-            = check_box_tag :babies, 0, nil, :'ng:model' => 'babies'
-            label for='babies' Babies (0 - 1)
-          .filter
-            = check_box_tag :toddlers, 0, nil, :'ng:model' => 'toddlers'
-            label for='toddlers' Toddlers (1 - 3)
-          .filter
-            = check_box_tag :children, 0, nil, :'ng:model' => 'children'
-            label for='children' Children (3 - 12)
+        .filter-categories checkboxes=''
+          .filter-category
+            .title Property Type
+            .filter
+              = check_box_tag :house, 0, nil, :'ng:model' => 'house', checkbox: true
+              label for='house' House
+            .filter
+              = check_box_tag :townhouse, 0, nil, :'ng:model' => 'townhouse', checkbox: true
+              label for='townhouse' Townhouse
+            .filter
+              = check_box_tag :apartment, 0, nil, :'ng:model' => 'apartment', checkbox: true
+              label for='apartment' Apartment
+          .filter-category
+            .title Property Features
+            .filter
+              = check_box_tag :garden, 0, nil, :'ng:model' => 'garden', checkbox: true
+              label for='garden' Garden
+            .filter
+              = check_box_tag :balcony, 0, nil, :'ng:model' => 'balcony', checkbox: true
+              label for='balcony' Balcony / Terrace
+            .filter
+              = check_box_tag :parking, 0, nil, :'ng:model' => 'parking', checkbox: true
+              label for='parking' Parking
+          .filter-category
+            .title Amenities
+            .filter
+              = check_box_tag :tv, 0, nil, :'ng:model' => 'tv', checkbox: true
+              label for='tv' Cable / Satellite TV
+            .filter
+              = check_box_tag :temp_control, 0, nil, :'ng:model' => 'temp_control', checkbox: true
+              label for='temp_control' Central AC / Heating
+            .filter
+              = check_box_tag :pool, 0, nil, :'ng:model' => 'pool', checkbox: true
+              label for='pool' Pool
+            .filter
+              = check_box_tag :jacuzzi, 0, nil, :'ng:model' => 'jacuzzi', checkbox: true
+              label for='jacuzzi' Jacuzzi
+            .filter
+              = check_box_tag :washer, 0, nil, :'ng:model' => 'washer', checkbox: true
+              label for='washer' Washer / Dryer
+          .filter-category
+            .title Accessibility
+            .filter
+              = check_box_tag :smoking, 0, nil, :'ng:model' => 'smoking', checkbox: true
+              label for='smoking' Smoking
+            .filter
+              = check_box_tag :pets, 0, nil, :'ng:model' => 'pets', checkbox: true
+              label for='pets' Pets
+          .filter-category
+            .title Family
+            .filter
+              = check_box_tag :babies, 0, nil, :'ng:model' => 'babies', checkbox: true
+              label for='babies' Babies (0 - 1)
+            .filter
+              = check_box_tag :toddlers, 0, nil, :'ng:model' => 'toddlers', checkbox: true
+              label for='toddlers' Toddlers (1 - 3)
+            .filter
+              = check_box_tag :children, 0, nil, :'ng:model' => 'children', checkbox: true
+              label for='children' Children (3 - 12)
     .right ng:switch='' on='tab'
       #map ng:switch-when='map'
       #city-guide ng:switch-when='guide'
