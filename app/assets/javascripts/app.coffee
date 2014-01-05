@@ -718,6 +718,15 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
     follow: [true, false]
 
 
+HiringCtrl = ($scope, $http) ->
+  $http.get('/jobs').success (rsp) -> $scope.jobs = rsp
+  
+  $scope.navTo = (job) ->
+    $scope.job = job
+    angular.element('#info-sidebar .job').removeClass 'active'
+    angular.element("#info-sidebar .job##{job.id}").addClass 'active'
+    null
+
 FaqCtrl = ($scope, $http) ->
   $http.get('/faqs').success (rsp) -> $scope.faq_sections = rsp
   
@@ -916,6 +925,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('account',  AccountCtrl)
   .controller('enquiry',  EnquiryCtrl)
   .controller('faqs',     FaqCtrl)
+  .controller('hiring',   HiringCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr 'content'
   .factory('$cookieStore', ->

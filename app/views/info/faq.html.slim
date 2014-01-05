@@ -7,7 +7,7 @@
 
   = render 'info/sidebar'
 
-  #faq ng:controller='faqs'
+  #faq.info-content ng:controller='faqs'
     #faq-nav
       .section ng:repeat='section in faq_sections'
         .title ng:bind='section.title'

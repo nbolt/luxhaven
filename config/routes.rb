@@ -8,8 +8,6 @@ Luxhaven::Application.routes.draw do
   get '/check_reset_token' => 'auth#check'
   get '/features' => 'application#features'
 
-  get '/hiring' => 'home#hiring'
-
   match '/listings/:action' => 'listings', via: [:get, :post]
 
   get '/region/:region' => 'application#jregion'
@@ -22,6 +20,8 @@ Luxhaven::Application.routes.draw do
   get '/account' => 'account#index'
   match '/account/:action' => 'account', via: [:get, :post]
 
+  get '/hiring' => 'hiring#index'
+  get '/jobs' => 'hiring#jobs'
   get '/faq'  => 'faq#index'
   get '/faqs' => 'faq#faqs'
 

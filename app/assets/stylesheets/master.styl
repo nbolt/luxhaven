@@ -2057,10 +2057,12 @@ footer
       .title
         color: darker-grey
 
-#faq
+.info-content
   display: inline-block
   vertical-align: top
   margin: 30px 0 0 30px
+
+#faq
   #faq-nav
     background-color: lighter-grey
     border-radius: 3px
@@ -2107,3 +2109,36 @@ footer
         .answer
           color: darker-grey
           margin-top: 15px
+
+#hiring
+  #info-sidebar
+    color: darkest-grey
+    .join
+      color: green
+      font-weight: 600
+      &:hover
+        color: darkest-grey
+        cursor: pointer
+    .open
+      text-transform: uppercase
+      margin-top: 40px
+      font-size: .75em
+      font-weight: 600
+    .jobs
+      margin-top: 20px
+      .job
+        margin-bottom: 15px
+        .title
+          color: green
+          text-transform: none
+          display: inline-block
+          font-size: .95em
+          font-weight: 600
+          &:hover, &.active
+            cursor: pointer
+            color: darkest-grey
+        .city
+          color: grey
+          font-size: .75em
+          text-transform: uppercase
+          margin-top: 2px

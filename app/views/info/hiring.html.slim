@@ -1,0 +1,21 @@
+#info.head-image style='background-image: url(/images/home.jpg);opacity:1'
+  .overlay-container
+    .overlay
+      .title Join the Luxhaven team
+
+#info-wrap
+  #hiring ng:controller='hiring'
+
+    nav#info-sidebar
+      .join ng:click='navTo(null)' Join the Luxhaven team
+      .open Open positions
+      .jobs
+        .job ng:repeat='job in jobs'
+          .title ng:bind='job.title' ng:click='navTo(job)'
+          .city ng:bind='job.city'
+
+    .info-content ng:switch='!!job'
+      div ng:switch-when='false'
+        .title Join the Luxhaven team
+      div ng:switch-when='true'
+        .title ng:bind='job.title'
