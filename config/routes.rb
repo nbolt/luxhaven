@@ -22,6 +22,9 @@ Luxhaven::Application.routes.draw do
   get '/account' => 'account#index'
   match '/account/:action' => 'account', via: [:get, :post]
 
+  get '/faq'  => 'faq#index'
+  get '/faqs' => 'faq#faqs'
+
   get '/booking/:booking' => 'booking#index'
   match '/booking/:booking/:action' => 'booking', via: [:get, :post]
 

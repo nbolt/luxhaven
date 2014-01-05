@@ -18,15 +18,16 @@
   100%
     transform:scale(1)
 
-grey         = hsl(0, 0%, 70%)
-light-grey   = hsl(0, 0%, 85%)
-lighter-grey = hsl(0, 0%, 95%)
-dark-grey    = hsl(0, 0%, 40%)
-darker-grey  = hsl(0, 0%, 30%)
-red          = hsl(8, 76%, 54%)
-green        = hsl(159, 69%, 44%)
-dark-green   = hsl(159, 81%, 25%)
-yellow       = hsl(47, 89%, 58%)
+grey          = hsl(0, 0%, 70%)
+light-grey    = hsl(0, 0%, 85%)
+lighter-grey  = hsl(0, 0%, 95%)
+dark-grey     = hsl(0, 0%, 40%)
+darker-grey   = hsl(0, 0%, 30%)
+darkest-grey  = hsl(0, 0%, 20%)
+red           = hsl(8, 76%, 54%)
+green         = hsl(159, 69%, 44%)
+dark-green    = hsl(159, 81%, 25%)
+yellow        = hsl(47, 89%, 58%)
 //red        = hsl(360, 90%, 45%)
 //green      = hsl(159, 64%, 47%)
 
@@ -107,6 +108,7 @@ html
 body
   margin: 0
   height: 100%
+  font-family: proxima-nova
   .body
     overflow: auto
   &.noscroll
@@ -529,7 +531,7 @@ footer
               font-size: .9em
               text-transform: uppercase
 
-#city
+#city, #info
   height: 325px
   overflow: auto
   opacity: 0
@@ -2019,3 +2021,89 @@ footer
       &.features
         .select2-container
           width: 500px !important
+
+#info-wrap
+  width: 980px
+  margin: auto
+
+  #info-sidebar
+    border-right: thin solid light-grey
+    padding: 30px 0
+    width: 300px
+    display: inline-block
+    vertical-align: top
+    .title
+      color: dark-grey
+      font-size: .8em
+      font-weight: 800
+      text-transform: uppercase
+    .links
+      margin-top: 15px
+      .link
+        margin: 5px 0
+        a
+          color: green
+          text-decoration: none
+          &:hover, &.active
+            color: darker-grey
+            font-weight: 600
+    .section
+      margin-bottom: 40px
+    #legal
+      background-color: lighter-grey
+      border-radius: 3px
+      padding: 18px 20px
+      width: 215px
+      .title
+        color: darker-grey
+
+#faq
+  display: inline-block
+  vertical-align: top
+  margin: 30px 0 0 30px
+  #faq-nav
+    background-color: lighter-grey
+    border-radius: 3px
+    padding: 18px 20px
+    width: 175px
+    display: inline-block
+    vertical-align: top
+    .title
+      color: darker-grey
+      font-size: .9em
+      font-weight: 800
+      text-transform: uppercase
+    .section
+      margin-bottom: 25px
+      .links
+        margin-top: 10px
+        .link
+          margin: 5px 0
+          color: green
+          text-decoration: none
+          display: inline-block
+          &:hover, &.active
+            color: darker-grey
+            font-weight: 600
+            cursor: pointer
+  #faq-topic
+    display: inline-block
+    vertical-align: top
+    margin-left: 50px
+    .title
+      color: darkest-grey
+      font-size: 1.5em
+      font-weight: 800
+      text-transform: uppercase
+    #faqs
+      margin-top: 40px
+      .faq
+        margin-bottom: 30px
+        width: 380px
+        .question
+          font-weight: 600
+          font-size: 1.2em
+          color: darkest-grey
+        .answer
+          color: darker-grey
+          margin-top: 15px

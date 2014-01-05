@@ -209,8 +209,6 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) -
       check_out = new Date(check_in.setDate check_in.getDate() + 2)
       $scope.dates.check_out = moment(check_out).format 'MM/DD/YYYY'
 
-  $scope.nav = -> console.log 'sup'
-
   urlAttrs = ->
     str = '?'
     if $scope.dates.check_out
@@ -640,7 +638,6 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
   $scope.bookModal = -> bookModal() if $scope.dates.check_out
 
   $scope.checkInDate = (date) ->
-    angular.element('span.ui-state')
     if $scope.listing && date
       valid = (date) ->
         (_($scope.listing.bookings).every (booking) ->
@@ -720,10 +717,22 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
     opacity: 0.65
     follow: [true, false]
 
+
+FaqCtrl = ($scope, $http) ->
+  $http.get('/faqs').success (rsp) -> $scope.faq_sections = rsp
+  
+  $scope.navTo = (topic) ->
+    $scope.topic = topic
+    angular.element('#faq-nav .link').removeClass 'active'
+    angular.element("#topic#{topic.id}").addClass 'active'
+    null
+
+
 AccountCtrl = ($scope, $http, $timeout) ->
 
   $scope.update = ->
     $http.post('/account/update', { ssn: $scope.ssn, routing: $scope.routing, account: $scope.account })
+
 
 ManageCtrl = ($scope, $http, $timeout) ->
   $scope.listing_updates = {}
@@ -906,12 +915,13 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('manage',   ManageCtrl)
   .controller('account',  AccountCtrl)
   .controller('enquiry',  EnquiryCtrl)
+  .controller('faqs',     FaqCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr 'content'
   .factory('$cookieStore', ->
-    get: -> (name) -> $.cookie name
-    put: -> (name, value, options) -> $.cookie name, value, options
-    remove: -> (name) -> $.removeCookie name
+    get: (name) -> $.cookie name
+    put: (name, value, options) -> $.cookie name, value, options
+    remove: (name) -> $.removeCookie name
   )
   .directive('date', -> (scope, element, attrs) ->
     scope.$watch (-> scope.dates[attrs.date]), (n, o) ->

@@ -1,0 +1,23 @@
+#info.head-image style='background-image: url(/images/home.jpg);opacity:1'
+  .overlay-container
+    .overlay
+      .title FAQs
+
+#info-wrap
+
+  = render 'info/sidebar'
+
+  #faq ng:controller='faqs'
+    #faq-nav
+      .section ng:repeat='section in faq_sections'
+        .title ng:bind='section.title'
+        .links
+          .link id='topic{{topic.id}}' ng:bind='topic.title' ng:repeat='topic in section.faq_topics' ng:click='navTo(topic)'
+
+    #faq-topic
+      .title ng:bind='topic.title'
+      #faqs
+        .faq ng:repeat='faq in topic.faqs'
+          .question
+            | {{$index+1}}. {{faq.question}}
+          .answer ng:bind='faq.answer'
