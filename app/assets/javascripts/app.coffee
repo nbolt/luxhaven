@@ -156,7 +156,7 @@ EnquiryCtrl = ($scope, $http) ->
       ),5000)
 
 
-SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) ->
+SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
   $scope.minPrice = null
   $scope.maxPrice = null
   $scope.pages    = null
@@ -327,11 +327,11 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) -
     angular.element("#filters .tabs .tab[search-tab=#{to}]") .addClass 'active'
     switch to
       when 'map'
-        $location.path "/map"
+        $window.location.hash = 'map'
         $scope.tab = to
         toMap()
       when 'list'
-        $location.path "/list"
+        $window.location.hash = 'list'
         toList()
         switch $scope.tab
           when 'guide'
@@ -339,7 +339,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) -
           when 'map'
             fromMap(to)
       when 'guide'
-        $location.path "/guide"
+        $window.location.hash = 'guide'
         toGuide()
         switch $scope.tab
           #when 'list'
@@ -489,18 +489,18 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) -
     )
 
   switch $.url().attr('fragment')
-    when '/map'
+    when 'map'
       toMap(0)
       $scope.tab = 'map'
       $scope.ptab = 'map'
-      $location.path '/map'
-    when '/guide'
+      $window.location.hash = 'map'
+    when 'guide'
       toGuide(0)
       $scope.tab = 'guide'
       $scope.ptab = 'guide'
-      $location.path '/guide'
+      $window.location.hash = 'guide'
     else
-      $location.path '/list'
+      $window.location.hash = 'list'
 
 
 BookingCtrl = ($scope, $http, $timeout, $q) ->
@@ -643,7 +643,8 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
   if $.url().attr('fragment') == ''
     $scope.tab = 'description'
   else
-    $scope.tab = $.url().attr('fragment')[1..-1]
+    $scope.tab = $.url().attr('fragment')
+    $timeout((->angular.element('#local-area-tab').scope().toMap())) if $.url().attr('fragment') == 'local-area'
 
   $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
 
@@ -751,14 +752,21 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
     follow: [true, false]
 
 
-HiringCtrl = ($scope, $http) ->
-  $http.get('/jobs').success (rsp) -> $scope.jobs = rsp
+HiringCtrl = ($scope, $http, $window, $timeout) ->
+  $http.get('/jobs').success (rsp) ->
+    $scope.jobs = rsp
+    jobID = $.url().attr('fragment').split('/')[1]
+    $scope.job = _($scope.jobs).find (job) -> job.id == parseInt(jobID) unless jobID == ''
   
   $scope.navTo = (job) ->
     $scope.job = job
-    angular.element('#info-sidebar .job').removeClass 'active'
-    angular.element("#info-sidebar .job##{job.id}").addClass 'active'
+    if job
+      $window.location.hash = "/#{job.id}/#{job.title.toLowerCase().replace(' ', '-')}"
+    else
+      $window.location.hash = ''
     null
+
+  $scope.jobClass = (job) -> if $scope.job then job.id == $scope.job.id && 'active' || '' else ''
 
 FaqCtrl = ($scope, $http) ->
   $http.get('/faqs').success (rsp) -> $scope.faq_sections = rsp
@@ -957,7 +965,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('manage',   ManageCtrl)
   .controller('account',  AccountCtrl)
   .controller('enquiry',  EnquiryCtrl)
-  .controller('faqs',     FaqCtrl)
+  .controller('faq',      FaqCtrl)
   .controller('hiring',   HiringCtrl)
   .config ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr 'content'
@@ -1043,13 +1051,13 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     scope.$watch 'page', scope.update_pagination
     scope.$watch 'size', scope.update_pagination
   )
-  .directive('tab', ($timeout, $location) -> (scope, element, attrs) ->
+  .directive('tab', ($timeout, $window) -> (scope, element, attrs) ->
     element.click ->
       scope.$apply ->
         scope.tab = attrs.href[1..-1]
-        $location.path scope.tab
+        $window.location.hash = scope.tab
       if attrs.href == '#local-area'
-        $timeout((-> angular.element(attrs.href).scope().toMap()),50)
+        $timeout((-> angular.element('#local-area-tab').scope().toMap()),50)
   )
   .directive('localArea', ($timeout, $q) -> (scope, element, attrs) ->
     scope.panoQ = $q.defer()
@@ -1077,8 +1085,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
 
       scope.toMap = ->
         scope.panoQ.promise.then ->
-          angular.element('#local-area .links span').removeClass 'active'
-          angular.element('#local-area .links span:first').addClass 'active'
+          angular.element('#local-area-tab .links span').removeClass 'active'
+          angular.element('#local-area-tab .links span:first').addClass 'active'
           scope.mapType = 'map'
           $timeout(->
             map = new GMaps
@@ -1095,8 +1103,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           )
 
       scope.toStreet = ->
-        angular.element('#local-area .links span').removeClass 'active'
-        angular.element('#local-area .links span:last').addClass 'active'
+        angular.element('#local-area-tab .links span').removeClass 'active'
+        angular.element('#local-area-tab .links span:last').addClass 'active'
         scope.mapType = 'pano'
         $timeout(->
           GMaps.createPanorama
@@ -1231,7 +1239,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       booked = []
       
       gen_cal = (cal, month, year) ->
-        calendar = $('#availability table').eq(cal)
+        calendar = $('#availability-tab table').eq(cal)
         calendar.find('thead th.month').attr('month', month)
         calendar.find('thead th.month').attr('year', year)
         first_day = new Date(year, month, 1).getDay()
@@ -1289,7 +1297,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         else
           scope.month = moment().month()
           scope.year = moment().year()
-        angular.element('#availability .title .month:first').text "#{months[scope.month]} #{scope.year}"
+        angular.element('#availability-tab .title .month:first').text "#{months[scope.month]} #{scope.year}"
         gen_cal(0, scope.month, scope.year)
         next_month = scope.month < 11 && scope.month+1 || 0
         next_year = next_month == 0 && scope.year+1 || scope.year
@@ -1300,7 +1308,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         next_month = next_month < 11 && next_month+1 || 0
         next_year = next_month == 0 && next_year+1 || next_year
         gen_cal(3, next_month, next_year)
-        angular.element('#availability .title .month:last').text "#{months[next_month]} #{next_year}"
+        angular.element('#availability-tab .title .month:last').text "#{months[next_month]} #{next_year}"
         element.find('td.day').bind 'click.selecting', selecting
         
       selecting = ->

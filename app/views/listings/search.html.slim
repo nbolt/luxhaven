@@ -96,7 +96,7 @@
               = check_box_tag :children, 0, nil, :'ng:model' => 'children', checkbox: true
               label for='children' Children (3 - 12)
     .right ng:switch='' on='tab'
-      #map ng:switch-when='map'
+      #map-view ng:switch-when='map'
       #city-guide ng:switch-when='guide'
         button.green.tab search-tab='list' ng:click="transition('list')"
           span.typcn.typcn-arrow-left-thick
@@ -137,7 +137,7 @@
                 .venue#shopping ng:switch-when='shopping'
                   .p ng:bind='region.shopping_description'   
               #venue-map   
-      #list ng:switch-when='list'
+      #list-view ng:switch-when='list'
         .overlay
           .loader
             i

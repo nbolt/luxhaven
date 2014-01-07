@@ -486,55 +486,53 @@ footer
   background: url(/images/home.jpg) no-repeat
   opacity: 0
   transition: opacity .4s
-  &.head-image
-    background-size: cover !important
-    z-index: 0
+  background-size: cover !important
+  z-index: 0
+  position: absolute
+  bottom: 0
+  top: 0
+  width: 100%
+  .overlay-container
     position: absolute
-    bottom: 0
-    top: 0
+    bottom: 75px
+    color: white
+    font-family: proxima-nova
     width: 100%
-    .overlay-container
-      position: absolute
-      bottom: 75px
-      color: white
-      font-family: proxima-nova
-      width: 100%
-      .overlay
-        width: 965px
-        margin: auto
-        position: relative
-        .left
-          .title
-            width: 450px
-            font: 2.5em adelle
-            font-weight: bold
-            text-shadow: 1px 1px 2px black
-          button
-            margin-top: 25px
-            font-size: 1em
+    .overlay
+      width: 965px
+      margin: auto
+      position: relative
+      .left
+        .title
+          width: 450px
+          font: 2.5em adelle
+          font-weight: bold
+          text-shadow: 1px 1px 2px black
+        button
+          margin-top: 25px
+          font-size: 1em
+          text-transform: uppercase
+          padding: 10px 18px
+      .right
+        position: absolute
+        bottom: 0
+        right: 0
+        .house-info
+          text-align: right
+          border-right: 4px solid white
+          padding-right: 15px
+          line-height: 23px
+          .name
+            font-weight: 600
+          .location
+            color: hsl(360, 0.5%, 85%)
+            font-weight: 300
+            font-size: .9em
             text-transform: uppercase
-            padding: 10px 18px
-        .right
-          position: absolute
-          bottom: 0
-          right: 0
-          .house-info
-            text-align: right
-            border-right: 4px solid white
-            padding-right: 15px
-            line-height: 23px
-            .name
-              font-weight: 600
-            .location
-              color: hsl(360, 0.5%, 85%)
-              font-weight: 300
-              font-size: .9em
-              text-transform: uppercase
 
-#city, #info
+.head-image
   height: 325px
   overflow: auto
-  opacity: 0
   transition: opacity .4s
   .overlay-container
     margin-top: 175px
@@ -548,6 +546,11 @@ footer
         color: white
         margin: auto
         border-radius: 3px
+
+  &#city
+    opacity: 0
+  &#hiring
+    background-image: url(/images/home.jpg)
 
 #results
   width: 976px
@@ -717,7 +720,7 @@ footer
             position: relative
             display: inline-block
             vertical-align: top
-    #list
+    #list-view
       position: relative
       .overlay
         position: absolute
@@ -753,7 +756,7 @@ footer
           float: right
           border-radius: 1px
           padding: 15px
-    #map
+    #map-view
       position: absolute
       top: 0
       bottom: 0
@@ -1675,7 +1678,7 @@ footer
         overflow: auto
         &.active
           display: block
-        &#availability
+        &#availability-tab
           ul.legend
             float: right
             padding: 0
@@ -1761,7 +1764,7 @@ footer
                       &:hover, &.booking
                         background-color: green
                         cursor: pointer
-        &#description
+        &#description-tab
           p
             color: darker-grey
             margin: 0 0 30px 2px
@@ -1773,7 +1776,7 @@ footer
               font-size: .9em
               font-style: italic
               padding: 8px
-        &#features
+        &#features-tab
           .general
             padding: 15px
             background-color: lighter-grey
@@ -1815,7 +1818,7 @@ footer
             border-radius: 3px
             color: white
             font-size: .9em
-        &#rooms
+        &#rooms-tab
           .room
             min-height: 165px
             .image
@@ -1851,14 +1854,14 @@ footer
               .features
                 .feature
                   display: inline-block
-        &#gallery
+        &#gallery-tab
           a.view
             margin-right: 8px
             &:nth-child(4n)
               margin-right: 0
             img
               margin-bottom: 4px
-        &#local-area
+        &#local-area-tab
           .top
             height: 25px
             margin-top: 8px
@@ -2022,12 +2025,14 @@ footer
         .select2-container
           width: 500px !important
 
+#faq-container #info-sidebar
+  border-right: thin solid light-grey
+
 #info-wrap
   width: 980px
   margin: auto
 
   #info-sidebar
-    border-right: thin solid light-grey
     padding: 30px 0
     width: 300px
     display: inline-block
@@ -2058,80 +2063,107 @@ footer
         color: darker-grey
 
   .info-content
-    border-left: thin solid light-grey
-    width: 646px
+    width: 649px
     display: inline-block
     vertical-align: top
-    padding: 30px 0 0 30px
-    .title 
-      font-size: 1.3em
-      font-weight: 600
-      color: darker-grey
-      margin-bottom: 30px
-    .h1
-      text-transform: none
-      font-weight: 600
-      color: darker-grey
-      margin-top: 30px
-    .p
-      margin-top: 5px
-      color: dark-grey
-      font-weight: 400
-    #benefits
-      box-sizing: border-box
-      margin-top: 30px
-      background-color: lighter-grey
-      width: 646px
-      padding: 30px 20px 35px 20px
-      .title
-        padding-left: 65px
-        text-transform: uppercase
+    padding: 30px 0 40px 30px
+    #luxhaven
+      > .title 
+        font-size: 1.3em
         font-weight: 600
-      .block
+        color: darker-grey
+        margin-bottom: 20px
+      .h1
+        text-transform: none
+        font-weight: 600
+        color: darker-grey
         margin-top: 30px
-        display: block
-        img
-          height: 65px
-          width: 65px
-        .textblock
-          vertical-align: top
-          display: inline-block
-          .h1
-            margin-top: 0
-          .p
-            color: dark-grey
-            font-weight: 400
-    #jobs
-      .text
+        &.first
+          margin-top: 40px
+      p
         color: dark-grey
-        font-weight: 400px
-      .textblock
-        display: block
-        margin-top: 30px  
-        img
-          vertical-align: middle
+      #benefits
+        margin-top: 30px
+        background-color: lighter-grey
+        padding: 30px 20px 35px
+        border-radius: 2px
+        > .title
+          margin-left: 50px
+          text-transform: uppercase
+          font-weight: 800
+          font-size: 1.1em
+          color: darkest-grey
+        .benefit
+          margin-top: 35px
+          display: block
+          .icon
+            width: 32px
+            height: 32px
+            display: inline-block
+            img
+              height: 32px
+              width: 32px
+          .content
+            vertical-align: top
+            display: inline-block
+            width: 550px
+            margin-left: 18px
+            .title
+              font-weight: 600
+              color: darker-grey
+            .text
+              color: dark-grey
+              margin-top: 8px
+    #jobs
+      .position
+        .title
+          font-size: 1.25em
+          color: darkest-grey
+        .city
+          text-transform: uppercase
+          color: grey
+          font-size: .9em
+          margin-top: 2px
+      .description
+        color: darker-grey
+        margin-top: 25px
+      .qualifications
+        margin-top: 50px
+        .icon
+          width: 36px
+          height: 36px
           display: inline-block
-          height: 35px
-          width: 35px
-        .h1
+          vertical-align: top
+          img
+            width: 36px
+            height: 36px
+        .title
           display: inline-block
           text-transform: uppercase
           font-weight: 600
-          color: darker-grey  
-      ul
-        margin-top: 15px
-        li
-          color: dark-grey
-          font-weight: 400px
-          margin-top: 10px
+          color: darker-grey
+          vertical-align: top
+          margin: 12px 0 0 10px
+          font-size: .9em
+        ul
+          margin-top: 15px
+          padding-left: 30px
+          li
+            color: dark-grey
+            font-weight: 400px
+            margin-top: 10px
 
     #apply_now
       font-weight: 600
-      margin-top: 30px
+      margin-top: 40px
       background-color: green
       display: inline-block
       padding: 10px 14px
       color: white
+      border-radius: 2px
+      &:hover
+        cursor: pointer
+        hover-lighten(2.5)
 
 #faq
   #faq-nav
@@ -2182,6 +2214,8 @@ footer
           margin-top: 15px
 
 #hiring
+  .info-content
+    border-left: thin solid light-grey
   #info-sidebar
     color: darkest-grey
     .join
@@ -2208,6 +2242,8 @@ footer
           &:hover, &.active
             cursor: pointer
             color: darkest-grey
+        &.active .title
+          color: darkest-grey
         .city
           color: grey
           font-size: .75em
