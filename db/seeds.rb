@@ -58,7 +58,7 @@ l2 = Listing.new(
 	accomodates_from: 1,
 	accomodates_to: 4,
 	bedrooms: 1,
-	baths: 1,
+	baths: 1, 
 	washer: true,
 	search_description: "really nice place"
 )
@@ -82,3 +82,36 @@ i2.save
 
 l2.update_attribute :remote_search_image_url, "http://www.viahouse.com/wp-content/uploads/2010/10/Simple-and-Minimalist-Apartment-Plans-in-Tokyo.jpg"
 
+job1 = Job.create(
+	city: "Los Angeles",
+	active: true,
+	title: "Software Engineer",
+	description: 'Luxhaven is looking for a junior product manager who loves turning data - both qualitive anq quantitative - into actionable ways to drive growth. The ideal candidate is an engineer who is looking to transition from an engineering role into a product role with a marketing/business focus.'
+)
+
+job2 = Job.create(
+	city: "Los Angeles",
+	active: true,
+	title: "Graphic Designer",
+	description: "Working on graphical stuff"
+)
+
+qual1 = JobQualification.create(
+	text: "Are really good software engineers"
+)
+job1.about_qualifications.push qual1
+
+qual2 = JobQualification.create(
+	text: "Get really excited about tough challenges"
+)
+job1.about_qualifications.push qual2
+
+qual3 = JobQualification.create(
+	text: "2+ years of engineering experience"
+)
+job1.skill_qualifications.push qual2
+
+qual4 = JobQualification.create(
+	text: "Develop and execute product strategy for business arm"
+)
+job1.responsibility_qualifications.push qual3

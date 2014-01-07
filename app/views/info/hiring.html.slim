@@ -17,5 +17,91 @@
     .info-content ng:switch='!!job'
       div ng:switch-when='false'
         .title Join the Luxhaven team
-      div ng:switch-when='true'
-        .title ng:bind='job.title'
+        .p Luxhaven has created a revolutionary luxury travel experience. Interested in helping us
+        .p change the way people travel? We need a dynamic team of sales, programming, and 
+        .p hospitality experts eager to share our vision with the world.
+        .h1 About Us
+        .p Our guests think luxury hotels are pass&eacute;, and they're looking for an immersive vacation
+        .p experience that let's them travel like a local, without sacrificing the comfort and service of
+        .p a five-star stay. That's why we need a five-star staff to help us succeed. Luxhaven launched
+        .p in 2013 from our home base of Los Angeles, California, so our current openings are in the
+        .p LA area only. However, homeowners are signing on fast, and we plan to bring Luxhaven 
+        .p to new cities in the near future. 
+        .h1 Why Join Us
+        .p As a fast-paced startup, Luxhaven needs people with the passion and the skills to help us
+        .p change the travel world. We're looking for motivated tech, sales and hospitality experts 
+        .p willing to take on big responsibilities, and earn even bigger rewards. Got great ideas for
+        .p improving user experience on the website, or a better way to recruit new hosts? We
+        .p encourage creative thinking in a collaborative environment. Luxhaven also offers great
+        .p pay, comprehensive health insurance, and sweet benefits like stock options and paid
+        .p time off.
+        #benefits
+          .title Benefits and Perks
+          .block
+            img src=''
+            .textblock
+              .h1 Join a talented and friendly team
+              .p Luxhaven has a collaborative, dynamic environment where your voice will be
+              .p heard and your ideas appreciated.
+          .block
+            img src=''
+            .textblock
+              .h1 Paid time off
+              .p We are a travel company after all. Get out there and enjoy the world.
+          .block
+            img src=''
+            .textblock
+              .h1 Competitive Salary
+              .p We won't lie, the work will be demanding. But the pay and the perks will be
+              .p worth it.
+          .block
+            img src=''
+            .textblock
+              .h1 Stock Options
+              .p Enjoy a stake in the company's success.
+          .block
+            img src=''
+            .textblock
+              .h1 Medical, dental and vision insurance
+              .p A healthy company is a happy company, so all our employees get great
+              .p insurance.
+          .block
+            img src=''
+            .textblock
+              .h1 Flexible working hours
+              .p Early bird or night owl? Flexible working hours let you decide when you're 
+              .p more productive.
+          .block
+            img src=''
+            .textblock
+              .h1 Snacks are always on us
+              .p Coffee, tea, soda and chips, whenever you want.
+          .block
+            img src=''
+            .textblock
+              .h1 Travel abroad
+              .p As Luxhaven expands, so will your oppurtunities to help us explore new 
+              .p and exciting cities.
+      #jobs ng:switch-when='true' 
+        .text ng:bind='job.description'
+        .textblock
+          img
+          .h1 About You/Personal Qualities/Ideal Candidates
+        ul
+          li ng:repeat='quals in job.about_qualifications' ng:bind='quals.text'
+          li ng:bind='job.about_qualifications[0].text'
+        .textblock
+          img
+          .h1 Skills &#38; Requirements
+        ul   
+          li ng:repeat='quals in job.skill_qualifications' ng:bind='quals.text'
+        .textblock
+          img
+          .h1 Responsibilities
+        ul
+          li ng:repeat='quals in job.responsibility_qualifications' ng:bind='quals.text' 
+        #apply_now Apply now
+
+
+
+
