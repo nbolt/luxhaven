@@ -327,11 +327,11 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
     angular.element("#filters .tabs .tab[search-tab=#{to}]") .addClass 'active'
     switch to
       when 'map'
-        $window.location.hash = 'map'
+        $window.location.replace $window.location.href.replace($window.location.hash,'') + '#map'
         $scope.tab = to
         toMap()
       when 'list'
-        $window.location.hash = 'list'
+        $window.location.replace $window.location.href.replace($window.location.hash,'') + '#list'
         toList()
         switch $scope.tab
           when 'guide'
@@ -339,7 +339,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
           when 'map'
             fromMap(to)
       when 'guide'
-        $window.location.hash = 'guide'
+        $window.location.replace $window.location.href.replace($window.location.hash,'') + '#guide'
         toGuide()
         switch $scope.tab
           #when 'list'
@@ -426,7 +426,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
         angular.element('#results .left').show()
         angular.element('#results').css 'opacity', 1
         $scope.map = new GMaps
-          div: 'map'
+          div: 'map-view'
           lat: $scope.region.latitude
           lng: $scope.region.longitude
           zoom: 12
@@ -493,14 +493,14 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
       toMap(0)
       $scope.tab = 'map'
       $scope.ptab = 'map'
-      $window.location.hash = 'map'
+      $window.location.replace $window.location.href.replace($window.location.hash,'') + '#map'
     when 'guide'
       toGuide(0)
       $scope.tab = 'guide'
       $scope.ptab = 'guide'
-      $window.location.hash = 'guide'
+      $window.location.replace $window.location.href.replace($window.location.hash,'') + '#guide'
     else
-      $window.location.hash = 'list'
+      $window.location.replace $window.location.href.replace($window.location.hash,'') + '#list'
 
 
 BookingCtrl = ($scope, $http, $timeout, $q) ->
@@ -752,30 +752,41 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
     follow: [true, false]
 
 
-HiringCtrl = ($scope, $http, $window, $timeout) ->
+HiringCtrl = ($scope, $http, $window) ->
   $http.get('/jobs').success (rsp) ->
     $scope.jobs = rsp
     jobID = $.url().attr('fragment').split('/')[1]
-    $scope.job = _($scope.jobs).find (job) -> job.id == parseInt(jobID) unless jobID == ''
+    $scope.job = _($scope.jobs).find (job) -> job.id == parseInt(jobID) if jobID
   
   $scope.navTo = (job) ->
     $scope.job = job
     if job
-      $window.location.hash = "/#{job.id}/#{job.title.toLowerCase().replace(' ', '-')}"
+      $window.location.replace(
+        $window.location.href.replace($window.location.hash,'') + "#/#{job.id}/#{job.title.toLowerCase().replace(' ', '-')}"
+      )
     else
-      $window.location.hash = ''
-    null
+      $window.location.replace $window.location.href.replace($window.location.hash,'') + '#/'
 
   $scope.jobClass = (job) -> if $scope.job then job.id == $scope.job.id && 'active' || '' else ''
 
-FaqCtrl = ($scope, $http) ->
-  $http.get('/faqs').success (rsp) -> $scope.faq_sections = rsp
+FaqCtrl = ($scope, $http, $window) ->
+  $http.get('/faqs').success (rsp) ->
+    $scope.faq_sections = rsp
+    topicSectionID = $.url().attr('fragment').split('/')[1]
+    topicID = $.url().attr('fragment').split('/')[2]
+    if topicID
+      section = _($scope.faq_sections).find (section) -> section.id == parseInt(topicSectionID)
+      console.log section
+      $scope.topic = _(section.faq_topics).find (topic) -> topic.id == parseInt(topicID) if section
+      console.log $scope.topic
   
   $scope.navTo = (topic) ->
     $scope.topic = topic
-    angular.element('#faq-nav .link').removeClass 'active'
-    angular.element("#topic#{topic.id}").addClass 'active'
-    null
+    $window.location.replace(
+      $window.location.href.replace($window.location.hash,'') + "#/#{topic.faq_section_id}/#{topic.id}"
+    )
+
+  $scope.topicClass = (topic) -> if $scope.topic then topic.id == $scope.topic.id && 'active' || '' else ''
 
 
 AccountCtrl = ($scope, $http, $timeout) ->
@@ -1055,7 +1066,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     element.click ->
       scope.$apply ->
         scope.tab = attrs.href[1..-1]
-        $window.location.hash = scope.tab
+        $window.location.replace $window.location.href.replace($window.location.hash,'') + "##{scope.tab}"
       if attrs.href == '#local-area'
         $timeout((-> angular.element('#local-area-tab').scope().toMap()),50)
   )

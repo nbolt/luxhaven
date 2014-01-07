@@ -129,11 +129,11 @@ html
           a href='/become-a-host' List Your Home
         nav.right
           .links
-            a How it works
+            a href='/how-it-works' How it works
             .div |
-            a Contact us
+            a href='/contact' Contact us
             .div |
-            a +1 424 242 8362
+            span +1 424 242 8362
           ng:switch on='signedIn'
             button.green ng:click='signInModal()' ng:switch-when='false' Log in
             div ng:switch-when='true' cog-menu='' style='display:inline-block;position:relative'

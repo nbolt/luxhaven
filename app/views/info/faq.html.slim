@@ -1,4 +1,4 @@
-#info.head-image style='background-image: url(/images/home.jpg);opacity:1'
+#faq.head-image
   .overlay-container
     .overlay
       .title FAQs
@@ -13,7 +13,7 @@
         .section ng:repeat='section in faq_sections'
           .title ng:bind='section.title'
           .links
-            .link id='topic{{topic.id}}' ng:bind='topic.title' ng:repeat='topic in section.faq_topics' ng:click='navTo(topic)'
+            .link id='topic{{topic.id}}' ng:class='topicClass(topic)' ng:bind='topic.title' ng:repeat='topic in section.faq_topics' ng:click='navTo(topic)'
 
       #faq-topic
         .title ng:bind='topic.title'
