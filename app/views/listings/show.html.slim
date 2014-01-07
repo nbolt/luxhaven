@@ -70,15 +70,15 @@
         a href='#local-area' onclick='return false' tab='' lat="#{listing.address.latitude}" lng="#{listing.address.longitude}" ng:class="tabClass('local-area')"
           .tab Local Area
       .tab-content ng:switch='tab'
-        .tab#summary ng:switch-when='summary'
-        .tab#description ng:switch-when='description'
+        .tab#summary-tab ng:switch-when='summary'
+        .tab#description-tab ng:switch-when='description'
           - listing.paragraphs.sort_by(&:order).each do |p|
             - if p.image
               .image style="#{p.image.version == 'full' && '' || p.image.align && 'float: ' + p.image.align + (p.image.align == 'left' && '; padding-right: 20px' || p.image.align == 'right' && '; padding-left: 20px')}"
                 img src='#{p.image.image.send(p.image.version).url}'
                 .caption= p.image.caption
             p= p.content
-        .tab#features ng:switch-when='features'
+        .tab#features-tab ng:switch-when='features'
           .general
             .title General features
             .rooms.landscape
@@ -109,11 +109,11 @@
                   .features
                     - features.each do |f|
                       .feature= f.name
-        .tab#gallery view='' ng:switch-when='gallery'
+        .tab#gallery-tab view='' ng:switch-when='gallery'
           - listing.images.reverse.each do |i|
             a.view href='#{i.image.url}'
               img src='#{i.image.large_thumb}'
-        .tab#rooms ng:switch-when='rooms'
+        .tab#rooms-tab ng:switch-when='rooms'
           - listing.rooms.each_with_index do |room, i|
             .room view-room="#{i}"
               .image ng:click="views[#{i}].view.open();views[#{i}].view.show(views[#{i}].images[0])"
@@ -124,7 +124,7 @@
                 .features
                   - room.features.each do |f|
                     .feature= f.name
-        .tab#availability ng:switch-when='availability'
+        .tab#availability-tab ng:switch-when='availability'
           ul.legend
             li
               .color.white
@@ -143,7 +143,7 @@
               span.month
             span.arrow.next >
           calendar
-        .tab#local-area local-area='' ng:switch-when='local-area'
+        .tab#local-area-tab local-area='' ng:switch-when='local-area'
           .top
             .links
               span ng:click='toMap()' Map
