@@ -272,7 +272,7 @@ header
     nav
       display: inline-block
       &.right, &.left
-        a
+        a, span
           font: .9em proxima-nova
           color: hsl(0, 0%, 37%)
       &.left
@@ -344,6 +344,8 @@ header
             font-weight: 400
             &:hover
               border-bottom: thin solid green
+          span
+            margin-left: 15px
         button
           margin: -5px 0 0 20px
 
@@ -549,7 +551,7 @@ footer
 
   &#city
     opacity: 0
-  &#hiring
+  &#hiring, &#faq
     background-image: url(/images/home.jpg)
 
 #results
@@ -2129,6 +2131,8 @@ footer
         margin-top: 25px
       .qualifications
         margin-top: 50px
+        &.first
+          margin-top: 40px
         .icon
           width: 36px
           height: 36px
