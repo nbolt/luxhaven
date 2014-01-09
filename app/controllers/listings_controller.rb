@@ -26,7 +26,7 @@ class ListingsController < ApplicationController
     listings = listings.where('parking > 0') if params[:parking]
     listings = listings.where('price_per_night >= ?', params[:minPrice].to_i * 100) if params[:minPrice]
     listings = listings.where('price_per_night <= ?', params[:maxPrice].to_i * 100) if params[:maxPrice]
-    listings = listings.where('sleeps >= ?', params[:sleeps]) if params[:sleeps]
+    listings = listings.where('accomodates_to >= ?', params[:sleeps]) if params[:sleeps]
     listings = listings.where('bedrooms >= ?', params[:beds]) if params[:beds]
     listings = listings.where(district_id: params[:district]) unless params[:district] == '0'
     listings = listings.send params[:sort]
