@@ -26,9 +26,11 @@
         #price.slider slider=''
           .title Price per night
           .selection
-            .knob-one $0
+            .knob-one
+              | ${{minPrice}}
             |  - 
-            .knob-two $5000
+            .knob-two 
+              | ${{maxPrice}}
           .bar
           .knob.one
             .selection

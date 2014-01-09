@@ -281,6 +281,39 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
     $scope.dates.check_in  = moment(new Date(parseInt(dates.check_in) * 1000)).format 'MM/DD/YYYY'  if dates.check_in
     $scope.dates.check_out = moment(new Date(parseInt(dates.check_out) * 1000)).format 'MM/DD/YYYY' if dates.check_out
 
+  _(_([SINGLE_VALUE_ATTRS, MULTIPLE_VALUE_ATTRS.property_type]).flatten()).each (attr) ->
+    storedAttr = $cookieStore.get (attr + 'Cookie')
+    $scope[attr] = storedAttr if storedAttr
+    if attr == 'minPrice' || attr == 'maxPrice'
+      if attr == 'minPrice'
+        knob = angular.element('#price .knob.one')
+        switch $scope[attr]
+          when 150 then knob.css 'left', 25
+          when 300 then knob.css 'left', 50
+          when 500 then knob.css 'left', 75
+          when 800 then knob.css 'left', 100
+          when 1200 then knob.css 'left', 125
+          when 1600 then knob.css 'left', 150
+          when 2000 then knob.css 'left', 175
+          when 3500 then knob.css 'left', 200
+          when 5000 then knob.css 'left', 225
+      else
+        knob = angular.element('#price .knob.two')
+        switch $scope[attr]
+          when 150 then knob.css 'right', 200
+          when 300 then knob.css 'right', 175
+          when 500 then knob.css 'right', 150
+          when 800 then knob.css 'right', 125
+          when 1200 then knob.css 'right', 100
+          when 1600 then knob.css 'right', 75
+          when 2000 then knob.css 'right', 50
+          when 3500 then knob.css 'right', 25
+          when 5000 then knob.css 'right', 0
+    
+
+    $scope.$watch attr, (n, o) ->
+      $cookieStore.put (attr + 'Cookie'), n
+   
   fetch_listings()
 
   bPopOpts =
