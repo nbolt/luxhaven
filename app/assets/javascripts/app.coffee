@@ -156,9 +156,9 @@ EnquiryCtrl = ($scope, $http) ->
       ),5000)
 
 
-SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
-  $scope.minPrice = null
-  $scope.maxPrice = null
+SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) ->
+  $scope.minPrice = 0
+  $scope.maxPrice = 5000
   $scope.pages    = null
   $scope.listings = []
   $scope.dates    = {}
@@ -171,15 +171,16 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
 
   angular.element('footer').css('display', 'none')
 
-  $http.get("/region/#{$scope.region.slug}").success (region) ->
-    region.abbr = _(region.name.split(' ')).map((w) -> w[0]).join('')
-    region.getting_around = $sce.trustAsHtml region.getting_around
-    region.highlights = _(region.venues).filter (v) -> v.venue.highlight
-    $scope.region = region
-    image = new Image()
-    image.src = region.image
-    image.onload = ->
-      angular.element('#city').css('background', "url(#{region.image}) no-repeat center").css('opacity', '1')
+  getRegionInfo = ->
+    $http.get("/region/#{$scope.region.slug}").success (region) ->
+      region.abbr = _(region.name.split(' ')).map((w) -> w[0]).join('')
+      region.getting_around = $sce.trustAsHtml region.getting_around
+      region.highlights = _(region.venues).filter (v) -> v.venue.highlight
+      $scope.region = region
+      image = new Image()
+      image.src = region.image
+      image.onload = ->
+        angular.element('#city').css('background', "url(#{region.image}) no-repeat center").css('opacity', '1')
 
   $scope.resultsTabClass = (tab) -> tab == $scope.tab && 'active' || ''
 
@@ -271,7 +272,12 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
       left.css('height', right.height()) if right.height() > height
     )
 
-  $scope.$watch 'region.slug', (n, o) -> window.location.href = "/#{$scope.region.slug}" unless o == n
+  $scope.$watch 'region.slug', (n, o) ->
+      $window.history.replaceState null, n, $window.location.href.replace(o, n)
+      fetch_listings()
+      getRegionInfo()
+      if $scope.tab == 'map'
+        toMap(0)
 
   watch SINGLE_VALUE_ATTRS
   _(MULTIPLE_VALUE_ATTRS).each (attrs) -> watch attrs
@@ -315,6 +321,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
       $cookieStore.put (attr + 'Cookie'), n
    
   fetch_listings()
+  getRegionInfo()
 
   bPopOpts =
     modalColor: 'white'
