@@ -156,7 +156,7 @@ EnquiryCtrl = ($scope, $http) ->
       ),5000)
 
 
-SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) ->
+SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
   $scope.minPrice = 0
   $scope.maxPrice = 5000
   $scope.pages    = null
@@ -273,6 +273,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce, $location) -
     )
 
   $scope.$watch 'region.slug', (n, o) ->
+    unless o == n
       $window.history.replaceState null, n, $window.location.href.replace(o, n)
       fetch_listings()
       getRegionInfo()
