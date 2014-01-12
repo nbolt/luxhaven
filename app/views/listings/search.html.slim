@@ -41,49 +41,50 @@
             .title Property Type
             .filter
               = check_box_tag :house, 0, nil, :'ng:model' => 'house', checkbox: true
-              label for='house' House
+              label for='house' House ({{houseNum}})
             .filter
               = check_box_tag :townhouse, 0, nil, :'ng:model' => 'townhouse', checkbox: true
-              label for='townhouse' Townhouse
+              label for='townhouse' Townhouse ({{townhouseNum}})
+
             .filter
               = check_box_tag :apartment, 0, nil, :'ng:model' => 'apartment', checkbox: true
-              label for='apartment' Apartment
+              label for='apartment' Apartment ({{apartmentNum}})
           .filter-category
             .title Property Features
             .filter
               = check_box_tag :garden, 0, nil, :'ng:model' => 'garden', checkbox: true
-              label for='garden' Garden
+              label for='garden' Garden ({{gardenNum}})
             .filter
               = check_box_tag :balcony, 0, nil, :'ng:model' => 'balcony', checkbox: true
-              label for='balcony' Balcony / Terrace
+              label for='balcony' Balcony / Terrace ({{balconyNum}})
             .filter
               = check_box_tag :parking, 0, nil, :'ng:model' => 'parking', checkbox: true
-              label for='parking' Parking
+              label for='parking' Parking ({{parkingNum}})
           .filter-category
             .title Amenities
             .filter
               = check_box_tag :tv, 0, nil, :'ng:model' => 'tv', checkbox: true
-              label for='tv' Cable / Satellite TV
+              label for='tv' Cable / Satellite TV ({{tvNum}})
             .filter
               = check_box_tag :temp_control, 0, nil, :'ng:model' => 'temp_control', checkbox: true
-              label for='temp_control' Central AC / Heating
+              label for='temp_control' Central AC / Heating ({{tempNum}})
             .filter
               = check_box_tag :pool, 0, nil, :'ng:model' => 'pool', checkbox: true
-              label for='pool' Pool
+              label for='pool' Pool ({{poolNum}})
             .filter
               = check_box_tag :jacuzzi, 0, nil, :'ng:model' => 'jacuzzi', checkbox: true
-              label for='jacuzzi' Jacuzzi
+              label for='jacuzzi' Jacuzzi ({{jacuzziNum}})
             .filter
               = check_box_tag :washer, 0, nil, :'ng:model' => 'washer', checkbox: true
-              label for='washer' Washer / Dryer
+              label for='washer' Washer / Dryer ({{washerNum}})
           .filter-category
             .title Accessibility
             .filter
               = check_box_tag :smoking, 0, nil, :'ng:model' => 'smoking', checkbox: true
-              label for='smoking' Smoking
+              label for='smoking' Smoking ({{smokingNum}})
             .filter
               = check_box_tag :pets, 0, nil, :'ng:model' => 'pets', checkbox: true
-              label for='pets' Pets
+              label for='pets' Pets ({{petsNum}})
           .filter-category
             .title Family
             .filter
