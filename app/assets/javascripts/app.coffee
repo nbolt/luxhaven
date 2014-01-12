@@ -227,6 +227,8 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
         str += '&'
     str
 
+  filter = (attr) -> _($scope.all_listings).filter((listing) -> listing[attr]).length
+
   fetch_listings = (reset_page = true) ->
     $scope.page = 1 if reset_page
     angular.element('#results .right .overlay').css 'display', 'block'
@@ -238,53 +240,11 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
       $scope.all_listings = rsp.all_listings
       angular.element('footer').css 'display', 'block'
 
-      $scope.houseNum = 0
-      $scope.townhouseNum = 0
-      $scope.apartmentNum = 0
+      $scope.houseNum = _($scope.all_listings).filter((listing) -> listing.property_type == 'house').length
+      $scope.townhouseNum = _($scope.all_listings).filter((listing) -> listing.property_type == 'townhouse').length
+      $scope.apartmentNum = _($scope.all_listings).filter((listing) -> listing.property_type == 'apartment').length
 
-      $scope.gardenNum = 0
-      $scope.balconyNum = 0
-      $scope.parkingNum = 0
-
-      $scope.tvNum = 0
-      $scope.tempNum = 0
-      $scope.poolNum = 0
-      $scope.jacuzziNum = 0
-      $scope.washerNum = 0
-
-      $scope.smokingNum = 0
-      $scope.petsNum = 0
-
-      _($scope.all_listings).each (listing) ->
-        if listing.property_type == 'house'
-          $scope.houseNum += 1
-        else if listing.property_type == 'townhouse'
-          $scope.townhouseNum +=1
-        else if listing.property_type == 'apartment'
-          $scope.apartmentNum +=1
-
-        if listing.garden == true
-          $scope.gardenNum +=1
-        else if listing.balcony == true
-          $scope.balconyNum +=1
-        else if listing.parking == true
-          $scope.parkingNum +=1
-
-        if listing.tv == true
-          $scope.tvNum +=1
-        else if listing.temp_control == true
-          $scope.tempNum +=1
-        else if listing.pool == true
-          $scope.poolNum +=1
-        else if listing.jacuzzi == true
-          $scope.jacuzziNum +=1
-        else if listing.washer == true
-          $scope.washerNum +=1
-
-        if listing.pets == true
-          $scope.petsNum +=1
-        else if listing.temp_control == true
-          $scope.smokingNum +=1
+      _(SINGLE_VALUE_ATTRS).each (attr) -> $scope[attr + 'Num'] = filter attr
 
 
   $scope.nav = (n) ->
