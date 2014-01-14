@@ -184,7 +184,13 @@
                   .p ng:bind='region.nightlife_description'  
                 .venue#shopping ng:switch-when='shopping'
                   .p ng:bind='region.shopping_description'   
-              #venue-map   
+              #venue-map
+          #gallery
+            .title Gallery
+            .fotorama-container
+              .fotorama data-width='948' data-nav='false' data-height='455' data-keyboard='true' data-swipe='false' data-fit='cover' fotorama=''
+                - region.images.each do |image|
+                  a href="#{image.image.url}"
       #list-view ng:switch-when='list'
         .overlay
           .loader

@@ -7,6 +7,7 @@ class Region < ActiveRecord::Base
   
   has_many :addresses
   has_many :districts
+  has_many :images
 
   validates :name, uniqueness: true
 

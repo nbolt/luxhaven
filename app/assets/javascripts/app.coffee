@@ -1004,6 +1004,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     put: (name, value, options) -> $.cookie name, value, options
     remove: (name) -> $.removeCookie name
   )
+  .directive('fotorama', -> (scope, element) ->
+    element.fotorama()
+  )
   .directive('date', -> (scope, element, attrs) ->
     scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
       element.text moment(n).format('ddd, Do MMM YYYY')
@@ -1221,7 +1224,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
 
   )
 
-  .directive('venues', -> (scope, element) ->
+  .directive('venues', ($timeout) -> (scope, element) ->
     scope.tab = 'attractions'
 
     element.find('#tabs .tab').click ->
@@ -1246,11 +1249,15 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           icon: '/images/house-marker.png'  
 
 
-    scope.map = new GMaps
-      div: 'venue-map'
-      lat: scope.region.latitude
-      lng: scope.region.longitude
-      zoom: 12
+    $timeout(
+      (->
+        scope.map = new GMaps
+          div: 'venue-map'
+          lat: scope.region.latitude
+          lng: scope.region.longitude
+          zoom: 12
+      )
+    )
  
     filtered = _.filter(scope.region.venues, (v) -> v.venue_type == scope.tab) 
     _(filtered).each (venue) ->
