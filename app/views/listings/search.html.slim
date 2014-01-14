@@ -232,7 +232,7 @@
                         | {{ listing.baths }} baths
                 .title ng:bind="listing.title"
                 .neighborhood
-                  span ng:bind="listing.address.neighborhood + ', ' + listing.address.city"
+                  span ng:bind="listing.address.neighborhood.name + ', ' + listing.address.city"
                 .description ng:bind='listing.search_description'
         .pagination
           .next.typcn.typcn-chevron-right ng:click='next()' ng:class='nextShow()'

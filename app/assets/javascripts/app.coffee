@@ -470,7 +470,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
                           <div class='name-price'>
                             <div class='name'>
                               <div class='title'>#{listing.title}</div>
-                              <div class='neighborhood'>#{listing.address.neighborhood}, #{listing.address.city}</div>
+                              <div class='neighborhood'>#{listing.address.neighborhood.name}, #{listing.address.city}</div>
                             </div>
                             <div class='price'>
                               <div class='from'>From</div>
@@ -665,7 +665,8 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
 
   $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
 
-  $http.get('').success (listing) ->
+  $http.get('').success (rsp) ->
+    listing = JSON.parse rsp.listing
     listing.bookings = _(listing.bookings).reject (booking) ->
       booking.check_in  = moment booking.check_in
       booking.check_out = moment booking.check_out
@@ -674,6 +675,7 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
       if $scope.user
         analytics.track 'listing:viewed',
           note: "#{$scope.region.slug}/#{listing.slug}"
+    listing.address.neighborhood.venues = rsp.venues
     $scope.listing = listing
     $scope.listingQ.resolve()
 

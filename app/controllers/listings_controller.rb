@@ -35,8 +35,19 @@ class ListingsController < ApplicationController
     
     render json: {
       size: listings.size,
-      listings: paginated_listings.as_json(include: [:bookings, :address, :paragraphs, :images]),
-      all_listings: listings.as_json(include: [:bookings, :address, :paragraphs, :images]) # how should this be refactored?
+      listings: paginated_listings.as_json(include: {
+        bookings: nil,
+        paragraphs: nil,
+        images: nil,
+        address: {include: :neighborhood}
+      }),
+      all_listings: listings.as_json(include: {
+        bookings: nil,
+        paragraphs: nil,
+        images: nil,
+        address: {include: :neighborhood}
+      })
+      # how should this be refactored?
     }
   end
 
@@ -46,16 +57,20 @@ class ListingsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        render json: listing.to_json(
-          include: {
-            images: nil,
-            bookings: nil,
-            features: nil,
-            address: { include: :region },
-            paragraphs: { include: :image },
-            rooms: { include: [:features, :images] }
-          }
-        )
+        json = Jbuilder.encode do |json|
+          json.listing listing.to_json(
+            include: {
+              images: nil,
+              bookings: nil,
+              features: nil,
+              address: { include: [:region, :neighborhood] },
+              paragraphs: { include: :image },
+              rooms: { include: [:features, :images] }
+            }
+          )
+          json.venues (JSON.parse listing.address.neighborhood.venues.to_json(include: :venue))
+        end
+        render json: json
       end
     end
   end

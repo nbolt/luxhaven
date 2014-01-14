@@ -1549,7 +1549,7 @@ footer
   margin: 130px auto 0
   position: relative
   font-family: proxima-nova
-  .right
+  > .right
     float: right
     width: 250px
     .price-container
@@ -1644,7 +1644,7 @@ footer
             color: green
             font-weight: 600
     
-  .left
+  > .left
     width: 675px
     border-right: thin solid light-grey
     padding-right: 25px
@@ -1678,8 +1678,8 @@ footer
     margin-top: 40px
     .tab-content
       width: 675px
-      padding: 12px 25px 40px 0
-      min-height: 540px
+      padding: 12px 25px 100px 0
+      min-height: 480px
       .tab
         margin: 5px 5px
         overflow: auto
@@ -1877,6 +1877,20 @@ footer
               color: green
               &:hover
                 text-decoration: underline
+          .description
+            margin: 20px 0 35px
+            font-weight: 300
+            color: dark-grey
+          .travel-times
+            margin-top: 15px
+            color: dark-grey
+            font-weight: 300
+            span.em
+              font-weight: 600
+            .left
+              float: left
+            .right
+              float: right
           #map, #pano
             height: 400px
             width: 100%
