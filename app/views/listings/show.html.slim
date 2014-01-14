@@ -50,7 +50,7 @@
       .title ng:bind='listing.title'
       .neighborhood ng:show='listing'
         span ng:bind="listing.address.neighborhood.name + ', ' + listing.address.city"
-    #header-gallery.fotorama data-width='675' data-height='455' data-keyboard='true' data-swipe='false' data-arrows='false'
+    #header-gallery.fotorama data-width='675' data-height='455' data-keyboard='true' data-swipe='false'
       - listing.images.each do |image|
         a href="#{image.image.url}"
     .tabs

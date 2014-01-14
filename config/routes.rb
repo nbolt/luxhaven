@@ -20,6 +20,8 @@ Luxhaven::Application.routes.draw do
   get '/account' => 'account#index'
   match '/account/:action' => 'account', via: [:get, :post]
 
+  get '/become-a-host' => 'home#host'
+  get '/experience' => 'home#experience'
   get '/hiring' => 'hiring#index'
   get '/jobs' => 'hiring#jobs'
   get '/faq'  => 'faq#index'

@@ -484,6 +484,137 @@ footer
       span
         font-weight: 600
 
+#become-a-host
+  background: url(/images/venice.jpg) no-repeat
+  background-size: cover
+  height: 500px
+  overflow: auto
+  position: relative
+
+#host-content
+  section
+    position: relative
+    overflow: auto
+    margin: 150px 0
+    &.half
+      width: 45%
+      display: inline-block
+      vertical-align: top
+      margin: 0
+      &.left
+        margin-right: 10%
+        .container
+          float: right
+      &.right
+        .container
+          float: left
+      .container
+        width: 70%
+        margin: auto
+      .content
+        text-align: center
+      .icon
+        width: 102px
+        margin: 0 auto 30px
+    .container
+      width: 976px
+      margin: auto
+      color: darker-grey
+    .content
+      .title
+        font-weight: 600
+        font-size: 1.1em
+        text-transform: uppercase
+        &.center
+          text-align: center
+      p
+        font-weight: 300
+        line-height: 1.6em
+        &.center
+          text-align: center
+    .icons
+      width: 400px
+      margin: 0 auto 60px
+      .icon
+        display: inline-block
+        vertical-align: top
+        margin-right: 45px
+        &:last-child
+          margin: 0
+  #host-top
+    margin-top: 80px
+    .container
+      width: 860px
+    .content
+      line-height: 1.6em
+      font-size: 1.4em
+      text-align: center
+    .button
+      margin: 40px auto 0
+      width: 150px
+      button
+        font-size: 1em
+        padding: 10px 16px
+  #share-your-world
+    .left, .right
+      display: inline-block
+      vertical-align: top
+    .right
+      margin-left: 36px
+    .left
+      width: 330px
+  #let-us-work
+    background: url(/images/venice.jpg)
+    background-size: cover
+    .overlay
+      background-color: rgba(0,0,0,0.35)
+      absolute: top left bottom right
+    .container
+      margin: 100px auto
+    .content
+      color: white
+      margin-left: 55%
+      position: relative
+  #questionnaire
+    .container
+      text-align: center
+      padding: 40px
+      background-color: light-grey
+      border-radius: 3px
+    .text
+      color: dark-grey
+      font-size: 1.6em
+      font-weight: 300
+      width: 700px
+      margin: 0 auto 30px
+    .button
+      margin: auto
+      width: 150px
+      button
+        font-size: 1em
+        padding: 15px 20px
+
+#experience
+  background: url(/images/venice.jpg) no-repeat
+  background-size: cover
+  height: 885px
+  overflow: auto
+  position: relative
+  .overlay
+    absolute: top left bottom right
+    background-color: rgba(0,0,0,0.5)
+  .text
+    width: 600px
+    margin: 325px auto 0
+    color: white
+    position: relative
+    .title
+      font-size: 1.5em
+      text-transform: uppercase
+    p
+      font-weight: 300
+      font-size: 1.1em
+
 #home
   background: url(/images/home.jpg) no-repeat
   opacity: 0
@@ -1684,17 +1815,24 @@ footer
       width: 675px
       height: 455px
       .fotorama__arr
-        background-color: hsla(0,0%,0%,0.6)
-      .fotorama__arrs
-        .fotorama__arr__arr
-          height: 35px
-          width: 35px
-          background-color: hsla(0,0%,0%,0.6)
-          border-radius: 35px
-        &.fotorama__arr--prev .fotorama__arr__arr
-          background-position: 0 1px
-        &.fotorama__arr--next .fotorama__arr__arr
-          background-position: -29px 1px
+        background: none
+        &.fotorama__arr--prev
+          margin-left: 8px
+          &::after
+            content: '\e044'
+            color: white
+            font-size: 2.7em !important
+            typcn()
+        &.fotorama__arr--next
+          margin-right: 18px
+          &::after
+            content: '\e046'
+            color: white
+            font-size: 2.7em !important
+            margin-left: 2px
+            typcn()
+        &.fotorama__arr--disabled
+          opacity: 0.5 !important
     .title-container
       height: 65px
       margin-bottom: 25px
