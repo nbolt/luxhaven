@@ -148,7 +148,7 @@ EnquiryCtrl = ($scope, $http) ->
   $scope.enquire = ->
     angular.element('#enquiry button').addClass 'disabled'
     $http.post('/enquire', { enquiry: $scope.enquiry }).success ->
-      angular.element('#enquiry .auth-rsp').text "You're enquiry has been sent! You'll hear from a representative shortly."
+      angular.element('#enquiry .auth-rsp').text "Your enquiry has been sent! You'll hear from a representative shortly."
       angular.element('#enquiry .auth-rsp').fadeIn()
       setTimeout((->
         angular.element('#enquiry').bPopup().close()
@@ -524,10 +524,27 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
   $scope.tab = 'debit'
   $scope.booking =
     guests: '1'
+    hasChildren: false
+    babies: false
+    toddlers: false
+    children: false
     arrival: { hour: '0', minute: '00' }
     departure: { hour: '0', minute: '00' }
     purpose: 'Leisure'
     where: 'Search engine'
+
+  $scope.$watch 'booking.hasChildren', (n, o) ->
+    if n == true
+      angular.element('.field.children').css 'display', 'inline-block'
+      angular.element('.content.select2-bordered').css 'height', '800px'
+      angular.element('#book-modal .left').css 'height', '800px'
+      angular.element('#book-modal .right').css 'height', '800px'
+    else
+      angular.element('.field.children').css 'display', 'none'
+      angular.element('.content.select2-bordered').css 'height', '700px'
+      angular.element('#book-modal .left').css 'height', '700px'
+      angular.element('#book-modal .right').css 'height', '700px'
+
 
   $scope.existing_cards = -> $scope.user && !!$scope.user.cards[0]
 
@@ -538,8 +555,19 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
   $scope.tab_active = (tab) -> $scope.tab == tab && 'active' || ''
 
   $scope.step = (step) ->
-    angular.element('#book-modal .step').removeClass 'active'
-    angular.element("#book-modal .step#{step}").addClass 'active'
+    if step == 2
+      if $scope.booking.babies == true && $scope.listing.babies != true
+        angular.element('.guest-error').css 'display', 'block'
+      else if $scope.booking.toddlers == true && $scope.listing.toddlers != true
+        angular.element('.guest-error').css 'display', 'block'
+      else if $scope.booking.children == true && $scope.listing.children != true
+        angular.element('.guest-error').css 'display', 'block'
+      else
+        angular.element('#book-modal .step').removeClass 'active'
+        angular.element("#book-modal .step#{step}").addClass 'active'
+    else
+      angular.element('#book-modal .step').removeClass 'active'
+      angular.element("#book-modal .step#{step}").addClass 'active'
     null
 
   $scope.close = ->
