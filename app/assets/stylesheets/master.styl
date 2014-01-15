@@ -1361,6 +1361,15 @@ footer
         &.active
           display: block
         &.step1
+          .guest-error
+            color: white
+            background-color: red
+            transition: opacity .4s
+            display: none
+            width: 400px
+            margin: 22px auto
+            padding: 14px
+            border-radius: 3px
           .section
             margin: 30px 30px 0
             border-bottom: thin solid light-grey
@@ -1387,6 +1396,15 @@ footer
                   width: 285px !important
                 .label
                   margin-top: -1px
+              &.children
+                margin-top: -15px
+                display: none
+                position: relative
+                left: 320px
+                .label
+                  margin-bottom: 5px
+                .control-container
+                  margin-bottom: 5px
               &.additional
                 .control
                   width: 95%
@@ -1402,6 +1420,19 @@ footer
                 &:last-child
                   margin-left: 24px
               .select2-container
+                width: 60px !important
+            &.guest
+              .field
+                display: inline-block
+                vertical-align: top
+                &.have
+                  position: relative
+                  left: 95px   
+              .control
+                position: relative
+                top: 8px
+              .select2-container
+                top: -6px
                 width: 60px !important
           button
             margin: 28px 0 0 186px
