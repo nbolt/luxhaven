@@ -19,7 +19,6 @@ class ApplicationController < ActionController::Base
       json.venues (JSON.parse region.venues.to_json(include: :venue)) # seems kind of weird but ok
     end
     render json: json
-    #render json: region.to_json(includes: {venues: {include: :address}})
   end
 
   def enquire

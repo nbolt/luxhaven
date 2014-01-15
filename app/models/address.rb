@@ -2,6 +2,7 @@ class Address < ActiveRecord::Base
   belongs_to :region
   belongs_to :listing
   belongs_to :venue
+  belongs_to :neighborhood
 
   geocoded_by :full_address
   after_validation :geocode

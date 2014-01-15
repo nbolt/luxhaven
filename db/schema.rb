@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140106011702) do
+ActiveRecord::Schema.define(version: 20140114014824) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,7 +22,6 @@ ActiveRecord::Schema.define(version: 20140106011702) do
     t.string   "city"
     t.string   "state"
     t.string   "zip"
-    t.string   "neighborhood"
     t.string   "county"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -31,6 +30,7 @@ ActiveRecord::Schema.define(version: 20140106011702) do
     t.float    "latitude"
     t.float    "longitude"
     t.integer  "venue_id"
+    t.integer  "neighborhood_id"
   end
 
   create_table "bookings", force: true do |t|
@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(version: 20140106011702) do
     t.integer  "listing_id"
     t.integer  "room_id"
     t.string   "caption"
+    t.integer  "region_id"
   end
 
   create_table "job_qualifications", force: true do |t|
@@ -180,6 +181,15 @@ ActiveRecord::Schema.define(version: 20140106011702) do
 
   add_index "listings", ["region_id"], name: "index_listings_on_region_id", using: :btree
   add_index "listings", ["slug"], name: "index_listings_on_slug", unique: true, using: :btree
+
+  create_table "neighborhoods", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "description"
+    t.boolean  "public_transport"
+    t.boolean  "driving"
+  end
 
   create_table "paragraph_images", force: true do |t|
     t.integer  "paragraph_id"
@@ -271,6 +281,9 @@ ActiveRecord::Schema.define(version: 20140106011702) do
     t.datetime "updated_at"
     t.string   "venue_type"
     t.boolean  "highlight"
+    t.integer  "time"
+    t.boolean  "public_transit"
+    t.boolean  "traffic"
   end
 
 end

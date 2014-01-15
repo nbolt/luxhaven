@@ -470,7 +470,7 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
                           <div class='name-price'>
                             <div class='name'>
                               <div class='title'>#{listing.title}</div>
-                              <div class='neighborhood'>#{listing.address.neighborhood}, #{listing.address.city}</div>
+                              <div class='neighborhood'>#{listing.address.neighborhood.name}, #{listing.address.city}</div>
                             </div>
                             <div class='price'>
                               <div class='from'>From</div>
@@ -665,7 +665,8 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
 
   $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
 
-  $http.get('').success (listing) ->
+  $http.get('').success (rsp) ->
+    listing = JSON.parse rsp.listing
     listing.bookings = _(listing.bookings).reject (booking) ->
       booking.check_in  = moment booking.check_in
       booking.check_out = moment booking.check_out
@@ -674,6 +675,7 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
       if $scope.user
         analytics.track 'listing:viewed',
           note: "#{$scope.region.slug}/#{listing.slug}"
+    listing.address.neighborhood.venues = rsp.venues
     $scope.listing = listing
     $scope.listingQ.resolve()
 
@@ -1002,6 +1004,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     put: (name, value, options) -> $.cookie name, value, options
     remove: (name) -> $.removeCookie name
   )
+  .directive('fotorama', -> (scope, element) ->
+    element.fotorama()
+  )
   .directive('date', -> (scope, element, attrs) ->
     scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
       element.text moment(n).format('ddd, Do MMM YYYY')
@@ -1219,7 +1224,7 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
 
   )
 
-  .directive('venues', -> (scope, element) ->
+  .directive('venues', ($timeout) -> (scope, element) ->
     scope.tab = 'attractions'
 
     element.find('#tabs .tab').click ->
@@ -1244,11 +1249,15 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           icon: '/images/house-marker.png'  
 
 
-    scope.map = new GMaps
-      div: 'venue-map'
-      lat: scope.region.latitude
-      lng: scope.region.longitude
-      zoom: 12
+    $timeout(
+      (->
+        scope.map = new GMaps
+          div: 'venue-map'
+          lat: scope.region.latitude
+          lng: scope.region.longitude
+          zoom: 12
+      )
+    )
  
     filtered = _.filter(scope.region.venues, (v) -> v.venue_type == scope.tab) 
     _(filtered).each (venue) ->
