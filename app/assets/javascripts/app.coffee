@@ -534,14 +534,18 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
     where: 'Search engine'
 
   $scope.$watch 'booking.hasChildren', (n, o) ->
-    if n == true
-      angular.element('.field.children').css 'display', 'inline-block'
-      angular.element('.content.select2-bordered').css 'height', '800px'
+    if n
+      angular.element('#book-modal #children').css 'display', 'inline-block'
+      angular.element('#book-modal .right > .content.select2-bordered').css 'height', '800px'
       angular.element('#book-modal .left').css 'height', '800px'
       angular.element('#book-modal .right').css 'height', '800px'
     else
-      angular.element('.field.children').css 'display', 'none'
-      angular.element('.content.select2-bordered').css 'height', '700px'
+      $scope.booking.babies = false
+      $scope.booking.toddlers = false
+      $scope.booking.children = false
+      angular.element('#book-modal .guest-error').css 'opacity', '0'
+      angular.element('#book-modal #children').css 'display', 'none'
+      angular.element('#book-modal .right > .content.select2-bordered').css 'height', '700px'
       angular.element('#book-modal .left').css 'height', '700px'
       angular.element('#book-modal .right').css 'height', '700px'
 
@@ -556,13 +560,20 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
 
   $scope.step = (step) ->
     if step == 2
-      if $scope.booking.babies == true && $scope.listing.babies != true
-        angular.element('.guest-error').css 'display', 'block'
-      else if $scope.booking.toddlers == true && $scope.listing.toddlers != true
-        angular.element('.guest-error').css 'display', 'block'
-      else if $scope.booking.children == true && $scope.listing.children != true
-        angular.element('.guest-error').css 'display', 'block'
+      angular.element('#book-modal .guest-error').css 'opacity', '1'
+      if $scope.booking.babies && !$scope.listing.babies
+        angular.element('#book-modal .guest-error .text').text 'Property does not allow babies.'
+      else if $scope.booking.toddlers && !$scope.listing.toddlers
+        angular.element('#book-modal .guest-error .text').text 'Property does not allow toddlers.'
+      else if $scope.booking.children && !$scope.listing.children
+        angular.element('#book-modal .guest-error .text').text 'Property does not allow children.'
+      else if $scope.booking.hasChildren && !$scope.booking.babies && !$scope.booking.toddlers && !$scope.booking.children
+        angular.element('#book-modal .guest-error .text').text "Please specify what children you're bringing."
       else
+        angular.element('#book-modal .guest-error').css 'opacity', '0'
+        angular.element('#book-modal .right > .content.select2-bordered').css 'height', '700px'
+        angular.element('#book-modal .left').css 'height', '700px'
+        angular.element('#book-modal .right').css 'height', '700px'
         angular.element('#book-modal .step').removeClass 'active'
         angular.element("#book-modal .step#{step}").addClass 'active'
     else

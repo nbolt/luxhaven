@@ -232,7 +232,7 @@
             .text Confirmation
       .content.select2-bordered
         .step.step1.active
-          .section.guest
+          .section.guests
             .field
               .label No. of guests
               .control-container
@@ -242,16 +242,19 @@
               .label Have Children?
               .control-container
                 .control= check_box_tag :guests, 0, nil, :'ng:model' => 'booking.hasChildren', checkbox: true
-            .field.children
-              .label Babies
-              .control-container
-                .control= check_box_tag :guests, 0, nil, :'ng:model' => 'booking.babies', checkbox: true
-              .label Toddlers
-              .control-container
-                .control= check_box_tag :guests, 0, nil, :'ng:model' => 'booking.toddlers', checkbox: true
-              .label Children
-              .control-container
-                .control= check_box_tag :guests, 0, nil, :'ng:model' => 'booking.children', checkbox: true
+            #children
+              .field.children
+                .label Babies
+                .control-container
+                  .control= check_box_tag :guests, 0, nil, :'ng:model' => 'booking.babies', checkbox: true
+              .field.children
+                .label Toddlers
+                .control-container
+                  .control= check_box_tag :guests, 0, nil, :'ng:model' => 'booking.toddlers', checkbox: true
+              .field.children
+                .label Children
+                .control-container
+                  .control= check_box_tag :guests, 0, nil, :'ng:model' => 'booking.children', checkbox: true
           .section.times
             .field
               .label Arrival Time
@@ -281,11 +284,11 @@
               .label Where did you hear about Luxhaven?
               .control-container
                 .control= select_tag :guests, options_for_select(['Search engine', 'Social media (facebook, twitter, etc.)', 'Word of mouth', "I've stayed with Luxhaven before", "None of the above / I can't remember"]),
-                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.where', select2bordered: '' }    
+                  { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.where', select2bordered: '' }
           button.green ng:click='step(2)'
             | Continue
           .guest-error
-            .text Children options do not match listing.
+            .text
         .step.step2
           .sign-in ng:show='user'
             form autocomplete='off'

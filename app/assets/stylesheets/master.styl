@@ -1533,14 +1533,21 @@ footer
             color: white
             background-color: red
             transition: opacity .4s
-            display: none
-            width: 400px
+            opacity: 0
+            width: 300px
             margin: 22px auto
             padding: 14px
             border-radius: 3px
+            font-size: 0.95em
+            .text
+              text-align: center
           .section
             margin: 30px 30px 0
             border-bottom: thin solid light-grey
+            #children
+              width: 50%
+              margin-left: 50%
+              margin-top: -15px
             .field
               margin-bottom: 15px
               .label
@@ -1553,9 +1560,6 @@ footer
                 .control
                   width: 70px
                   display: inline-block
-              &.guests
-                .select2-container
-                  width: 48px !important
               &.purpose
                 .select2-container
                   width: 100px !important
@@ -1565,14 +1569,9 @@ footer
                 .label
                   margin-top: -1px
               &.children
-                margin-top: -15px
-                display: none
-                position: relative
-                left: 320px
-                .label
-                  margin-bottom: 5px
-                .control-container
-                  margin-bottom: 5px
+                margin-bottom: 5px
+                &:last-child
+                  margin-bottom: 15px
               &.additional
                 .control
                   width: 95%
@@ -1589,19 +1588,19 @@ footer
                   margin-left: 24px
               .select2-container
                 width: 60px !important
-            &.guest
+            &.guests
               .field
                 display: inline-block
                 vertical-align: top
                 &.have
                   position: relative
-                  left: 95px   
+                  left: 15%
               .control
                 position: relative
                 top: 8px
               .select2-container
                 top: -6px
-                width: 60px !important
+                width: 48px !important
           button
             margin: 28px 0 0 186px
         &.step2
