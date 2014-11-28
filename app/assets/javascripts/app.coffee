@@ -1046,8 +1046,9 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .controller('enquiry',  EnquiryCtrl)
   .controller('faq',      FaqCtrl)
   .controller('hiring',   HiringCtrl)
-  .config ($httpProvider) ->
+  .config(['$httpProvider', ($httpProvider) ->
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = angular.element('meta[name=csrf-token]').attr 'content'
+  ])
   .factory('$cookieStore', ->
     get: (name) -> $.cookie name
     put: (name, value, options) -> $.cookie name, value, options
@@ -1497,5 +1498,5 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
       </div>
     "
   ]
-  
+
 angular.element(document).on 'ready page:load', -> angular.bootstrap('body', ['luxhaven'])
