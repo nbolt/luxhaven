@@ -1053,14 +1053,14 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
     put: (name, value, options) -> $.cookie name, value, options
     remove: (name) -> $.removeCookie name
   )
-  .directive('fotorama', -> (scope, element) ->
+  .directive('fotorama', -> [(scope, element) ->
     element.fotorama()
-  )
-  .directive('date', -> (scope, element, attrs) ->
+  ])
+  .directive('date', -> [(scope, element, attrs) ->
     scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
       element.text moment(n).format('ddd, Do MMM YYYY')
-  )
-  .directive('bgImage', ($timeout) -> (scope, element, attrs) ->
+  ])
+  .directive('bgImage', ['$timeout', ($timeout) -> (scope, element, attrs) ->
     $timeout(
       (->
         image = new Image()
@@ -1069,14 +1069,14 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           element.css('background-image', "url(#{attrs.bgImage})").css('opacity', '1')
       )
     )
-  )
-  .directive('cogMenu', ($timeout) -> (scope, element) ->
+  ])
+  .directive('cogMenu', ['$timeout', ($timeout) -> (scope, element) ->
     element.children('.typcn').click ->
       element.children('.menu').show()
     element.children('.menu').mouseleave ->
       $timeout((-> element.children('.menu').fadeOut()),200)
-  )
-  .directive('checkbox', ($timeout) ->
+  ])
+  .directive('checkbox', ['$timeout', ($timeout) ->
     require: 'ngModel'
     link: ($scope, element, $attrs, ngModel) ->
       $timeout ->
@@ -1096,17 +1096,17 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
           if element.attr('type') is 'radio' and $attrs['ngModel']
             $scope.$apply ->
               ngModel.$setViewValue value
-  )
-  .directive('view', -> (scope, element) ->
+  ])
+  .directive('view', -> [(scope, element) ->
     new View element.find 'a.view'
-  )
-  .directive('paymentTab', -> (scope, element, attrs) ->
+  ])
+  .directive('paymentTab', -> [(scope, element, attrs) ->
     element.click -> scope.$apply -> scope.tab = attrs.paymentTab
-  )
-  .directive('capRegion', ($timeout) -> (scope, element) ->
+  ])
+  .directive('capRegion', ['$timeout', ($timeout) -> (scope, element) ->
     $timeout(-> element.html element.text().replace(scope.region.name, '<span>' + scope.region.name + '</span>'))
-  )
-  .directive('viewRoom', -> (scope, element, attrs) ->
+  ])
+  .directive('viewRoom', -> [(scope, element, attrs) ->
     scope.views = {}
     scope.listingQ.promise.then ->
       images = scope.listing.rooms[parseInt attrs.viewRoom].images
@@ -1115,8 +1115,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         scope.views[attrs.viewRoom] =
           images: images
           view: new View images
-  )
-  .directive('paginate', ($compile) -> (scope, element) ->
+  ])
+  .directive('paginate', ['$compile', ($compile) -> (scope, element) ->
     scope.update_pagination = (n, o) ->
       unless o == n
         element.html ''
@@ -1132,16 +1132,16 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
 
     scope.$watch 'page', scope.update_pagination
     scope.$watch 'size', scope.update_pagination
-  )
-  .directive('tab', ($timeout, $window) -> (scope, element, attrs) ->
+  ])
+  .directive('tab', ['$timeout', '$window', ($timeout, $window) -> (scope, element, attrs) ->
     element.click ->
       scope.$apply ->
         scope.tab = attrs.href[1..-1]
         $window.location.replace $window.location.href.replace($window.location.hash,'') + "##{scope.tab}"
       if attrs.href == '#local-area'
         $timeout((-> angular.element('#local-area-tab').scope().toMap()),50)
-  )
-  .directive('localArea', ($timeout, $q) -> (scope, element, attrs) ->
+  ])
+  .directive('localArea', ['$timeout', '$q', ($timeout, $q) -> (scope, element, attrs) ->
     scope.panoQ = $q.defer()
     scope.listingQ.promise.then ->
       address = scope.listing.address
@@ -1194,22 +1194,22 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
             lat: scope.latLng.lat()
             lng: scope.latLng.lng()
         )
-  )
-  .directive('select2continuous', -> (scope, element) ->
+  ])
+  .directive('select2continuous', -> [(scope, element) ->
     element.on 'select2-opening', ->
       angular.element('.select2-drop').addClass 'continuous'
-  )
-  .directive('select2bordered', -> (scope, element) ->
+  ])
+  .directive('select2bordered', -> [(scope, element) ->
     element.on 'select2-opening', ->
       angular.element('.select2-drop').removeClass 'continuous'
-  )
-  .directive('select2FeatureTags', ($timeout) -> (scope, element) ->
+  ])
+  .directive('select2FeatureTags', ['$timeout', ($timeout) -> (scope, element) ->
     $timeout ->
       element.select2
         tags: _(scope.features).map (f) -> f.name
         initSelection: (e,c) -> c _(e.val().split(',')).map (f) -> { text: f, id: f }
-  )
-  .directive('slider', -> (scope, element, attrs) ->
+  ])
+  .directive('slider', -> [(scope, element, attrs) ->
     minPrice = scope.minPrice
     maxPrice = scope.maxPrice
 
@@ -1271,9 +1271,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         element.find('.knob-two').text('$' + newPrice)
         maxPrice = newPrice
 
-  )
-
-  .directive('venues', ($timeout) -> (scope, element) ->
+  ])
+  .directive('venues', ['$timout', ($timeout) -> (scope, element) ->
     scope.tab = 'attractions'
 
     element.find('#tabs .tab').click ->
@@ -1315,9 +1314,8 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         lng: venue.address.longitude
         title: venue.title
         icon: '/images/house-marker.png' 
-  )
-
-  .directive 'calendar', ->
+  ])
+  .directive 'calendar', [->
     link: (scope, element) ->
       days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
       months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -1498,5 +1496,6 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
         </table>
       </div>
     "
-
+  ]
+  
 angular.element(document).on 'ready page:load', -> angular.bootstrap('body', ['luxhaven'])
