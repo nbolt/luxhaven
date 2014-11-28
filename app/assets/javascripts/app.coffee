@@ -142,8 +142,9 @@ HomeCtrl = ['$scope', '$http', '$window', ($scope, $http, $window) ->
   image.src = '/images/home.jpg'
   image.onload = ->
     angular.element('#home').css('opacity', '1')
+]
 
-EnquiryCtrl = ($scope, $http) ->
+EnquiryCtrl = ['$scope', '$http', ($scope, $http) ->
   $scope.enquiry  = { type: 'booking', check_in: '10/19/1990', currency: 'usd', with_children: false }
 
   $scope.enquire = ->
