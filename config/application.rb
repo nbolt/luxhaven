@@ -18,7 +18,7 @@ module Luxhaven
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
-    # config.middleware.use Rack::SSL if Rails.env == 'production'
+    config.middleware.use Rack::SSL if Rails.env == 'production'
     config.action_mailer.delivery_method   = :postmark
     config.action_mailer.postmark_settings = { api_key: '36ce3dca-315b-4369-8bfe-17b66285b0bc' }
     Stylus.setup Sprockets, config.assets rescue nil
