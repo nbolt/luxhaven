@@ -139,7 +139,7 @@ class ListingsController < ApplicationController
     listing.address = Address.create
     listing.address.region = Region.first
     listing.save
-    render json: { url: "#{request.protocol}#{request.subdomain}#{request.domain}:#{request.port}/#{listing.slugs}" }
+    render json: { url: "#{request.protocol}#{request.subdomain}.#{request.domain}:#{request.port}/#{listing.slugs}" }
   end
 
   def admin
