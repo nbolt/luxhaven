@@ -15,6 +15,8 @@ Luxhaven::Application.configure do
 
   config.stripe.publishable_key = 'pk_test_8RTCDG9oe65V4VpMm5vC0mCO'
 
+  config.assets.precompile += %w( css_imports.css fotorama.css fotorama.js )
+
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 

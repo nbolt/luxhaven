@@ -13,7 +13,7 @@ String.prototype.hash = ->
     0
   )
 
-AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
+AppCtrl = ['$scope', '$http', '$q', '$compile', '$timeout', ($scope, $http, $q, $compile, $timeout) ->
   $scope.signinContent = angular.element('#sign-in').html()
   $scope.signupContent = angular.element('#sign-up').html()
   $scope.forgotContent = angular.element('#forgot').html()
@@ -130,9 +130,10 @@ AppCtrl = ($scope, $http, $q, $compile, $timeout) ->
             position: ['auto', -1]
             transition: 'slideDown')
         ,600)
+]
 
 
-HomeCtrl = ($scope, $http, $window) ->
+HomeCtrl = ['$scope', '$http', '$window', ($scope, $http, $window) ->
   angular.element('#content-below-container')
     .css('margin-top', angular.element($window).height())
     .css('display', 'block')
@@ -154,9 +155,10 @@ EnquiryCtrl = ($scope, $http) ->
         angular.element('#enquiry').bPopup().close()
         angular.element('#enquiry button').removeClass 'disabled'
       ),5000)
+]
 
 
-SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
+SearchCtrl = ['$scope', '$http', '$cookieStore', '$window', '$timeout', '$sce', ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
   $scope.minPrice = 0
   $scope.maxPrice = 5000
   $scope.pages    = null
@@ -518,9 +520,10 @@ SearchCtrl = ($scope, $http, $cookieStore, $window, $timeout, $sce) ->
       $window.location.replace $window.location.href.replace($window.location.hash,'') + '#guide'
     else
       $window.location.replace $window.location.href.replace($window.location.hash,'') + '#list'
+]
 
 
-BookingCtrl = ($scope, $http, $timeout, $q) ->
+BookingCtrl = ['$scope', '$http', '$timeout', '$q', ($scope, $http, $timeout, $q) ->
   $scope.tab = 'debit'
   $scope.booking =
     guests: '1'
@@ -686,8 +689,9 @@ BookingCtrl = ($scope, $http, $timeout, $q) ->
           error rsp.error.message
         else
           post rsp.id
+]
 
-ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
+ListingCtrl = ['$scope', '$http', '$cookieStore', '$timeout', '$q', ($scope, $http, $cookieStore, $timeout, $q) ->
   $scope.region   = { slug: $.url().attr('directory').split('/')[1] }
   $scope.dates    = {}
   $scope.listingQ = $q.defer()
@@ -808,9 +812,10 @@ ListingCtrl = ($scope, $http, $cookieStore, $timeout, $q) ->
     modalColor: 'white'
     opacity: 0.65
     follow: [true, false]
+]
 
 
-HiringCtrl = ($scope, $http, $window) ->
+HiringCtrl = ['$scope', '$http', '$window', ($scope, $http, $window) ->
   $http.get('/jobs').success (rsp) ->
     $scope.jobs = rsp
     jobID = $.url().attr('fragment').split('/')[1]
@@ -826,8 +831,9 @@ HiringCtrl = ($scope, $http, $window) ->
       $window.location.replace $window.location.href.replace($window.location.hash,'') + '#/'
 
   $scope.jobClass = (job) -> if $scope.job then job.id == $scope.job.id && 'active' || '' else ''
+]
 
-FaqCtrl = ($scope, $http, $window) ->
+FaqCtrl = ['$scope', '$http', '$window', ($scope, $http, $window) ->
   $http.get('/faqs').success (rsp) ->
     $scope.faq_sections = rsp
     topicSectionID = $.url().attr('fragment').split('/')[1]
@@ -845,15 +851,17 @@ FaqCtrl = ($scope, $http, $window) ->
     )
 
   $scope.topicClass = (topic) -> if $scope.topic then topic.id == $scope.topic.id && 'active' || '' else ''
+]
 
 
-AccountCtrl = ($scope, $http, $timeout) ->
+AccountCtrl = ['$scope', '$http', '$timeout', ($scope, $http, $timeout) ->
 
   $scope.update = ->
     $http.post('/account/update', { ssn: $scope.ssn, routing: $scope.routing, account: $scope.account })
+]
 
 
-ManageCtrl = ($scope, $http, $timeout) ->
+ManageCtrl = ['$scope', '$http', '$timeout', ($scope, $http, $timeout) ->
   $scope.listing_updates = {}
 
   $http.get('/features').success (features) -> $scope.features = features
@@ -1023,6 +1031,7 @@ ManageCtrl = ($scope, $http, $timeout) ->
 
   update_version = (paragraph) ->
     $http.post "/listing_management/#{paragraph.id}/update_version", { version: paragraph.image.version }
+]
 
 
 app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask'])
