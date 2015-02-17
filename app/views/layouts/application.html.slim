@@ -127,13 +127,13 @@ html
           a href='/los-angeles/search' Search
           a href='/experience' Experience
           a href='/become-a-host' List Your Home
-        nav.right
-          .links
-            a href='/how-it-works' How it works
-            .div |
-            a href='/contact' Contact us
-            .div |
-            span +1 424 242 8362
+        /nav.right
+        /  .links
+        /    a href='/how-it-works' How it works
+        /    .div |
+        /    a href='/contact' Contact us
+        /    .div |
+        /    span +1 424 242 8362
           ng:switch on='signedIn'
             button.green ng:click='signInModal()' ng:switch-when='false' Log in
             div ng:switch-when='true' cog-menu='' style='display:inline-block;position:relative'
