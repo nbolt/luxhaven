@@ -1,13 +1,13 @@
 #hiring.head-image
   .overlay-container
     .overlay
-      .title Join the Luxhaven team
+      .title Join the SmplyTrvl team
 
 #info-wrap
   #hiring ng:controller='hiring'
 
     nav#info-sidebar
-      .join ng:click='navTo(null)' Join the Luxhaven team
+      .join ng:click='navTo(null)' Join the SmplyTrvl team
       .open Open positions
       .jobs
         .job ng:repeat='job in jobs' ng:class='jobClass(job)' id="job{{job.id}}"
@@ -16,26 +16,26 @@
 
     .info-content ng:switch='!!job'
       #luxhaven ng:switch-when='false'
-        .title Join the Luxhaven team
+        .title Join the SmplyTrvl team
         p
-          | Luxhaven has created a revolutionary luxury travel experience. Interested in helping us 
+          | SmplyTrvl has created a revolutionary luxury travel experience. Interested in helping us 
           | change the way people travel? We need a dynamic team of sales, programming, and 
           | hospitality experts eager to share our vision with the world.
         .h1.first About Us
         p
           | Our guests think luxury hotels are pass&eacute;, and they're looking for an immersive vacation 
           | experience that let's them travel like a local, without sacrificing the comfort and service of 
-          | a five-star stay. That's why we need a five-star staff to help us succeed. Luxhaven launched 
+          | a five-star stay. That's why we need a five-star staff to help us succeed. SmplyTrvl launched 
           | in 2013 from our home base of Los Angeles, California, so our current openings are in the 
-          | LA area only. However, homeowners are signing on fast, and we plan to bring Luxhaven 
+          | LA area only. However, homeowners are signing on fast, and we plan to bring SmplyTrvl 
           | to new cities in the near future.
         .h1 Why Join Us
         p
-          | As a fast-paced startup, Luxhaven needs people with the passion and the skills to help us 
+          | As a fast-paced startup, SmplyTrvl needs people with the passion and the skills to help us 
           | change the travel world. We're looking for motivated tech, sales and hospitality experts 
           | willing to take on big responsibilities, and earn even bigger rewards. Got great ideas for 
           | improving user experience on the website, or a better way to recruit new hosts? We 
-          | encourage creative thinking in a collaborative environment. Luxhaven also offers great 
+          | encourage creative thinking in a collaborative environment. SmplyTrvl also offers great 
           | pay, comprehensive health insurance, and sweet benefits like stock options and paid 
           | time off.
         #benefits
@@ -46,7 +46,7 @@
             .content
               .title Join a talented and friendly team
               .text
-                | Luxhaven has a collaborative, dynamic environment where your voice will be heard and your ideas appreciated.
+                | SmplyTrvl has a collaborative, dynamic environment where your voice will be heard and your ideas appreciated.
           .benefit
             .icon
               img src='/images/calendar.png'
@@ -88,7 +88,7 @@
               img src='/images/plane.png'
             .content
               .title Travel abroad
-              .text As Luxhaven expands, so will your oppurtunities to help us explore new and exciting cities.
+              .text As SmplyTrvl expands, so will your oppurtunities to help us explore new and exciting cities.
       #jobs ng:switch-when='true' 
         .position
           .title ng:bind='job.title'

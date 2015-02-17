@@ -281,9 +281,9 @@
                 .control= select_tag :purpose, options_for_select(['Leisure', 'Business', 'Mixture']),
                   { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.purpose', select2bordered: '' }
             .field.where
-              .label Where did you hear about Luxhaven?
+              .label Where did you hear about SmplyTrvl?
               .control-container
-                .control= select_tag :guests, options_for_select(['Search engine', 'Social media (facebook, twitter, etc.)', 'Word of mouth', "I've stayed with Luxhaven before", "None of the above / I can't remember"]),
+                .control= select_tag :guests, options_for_select(['Search engine', 'Social media (facebook, twitter, etc.)', 'Word of mouth', "I've stayed with SmplyTrvl before", "None of the above / I can't remember"]),
                   { :'ui:select2' => '{minimumResultsForSearch:10}', :'ng:model' => 'booking.where', select2bordered: '' }
           button.green ng:click='step(2)'
             | Continue
