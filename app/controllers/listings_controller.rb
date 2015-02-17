@@ -58,7 +58,7 @@ class ListingsController < ApplicationController
       format.html
       format.json do
         json = Jbuilder.encode do |json|
-          json.listing listing.to_json(
+          json.listing listing.as_json(
             include: {
               images: nil,
               bookings: nil,
@@ -68,9 +68,9 @@ class ListingsController < ApplicationController
               rooms: { include: [:features, :images] }
             }
           )
-          json.venues (JSON.parse listing.address.neighborhood.venues.to_json(include: :venue))
+          json.venues (JSON.parse listing.address.neighborhood.venues.to_json(include: :venue)) if listing.address.neighborhood
         end
-        render json: json
+        render json: json.to_json
       end
     end
   end
@@ -139,7 +139,12 @@ class ListingsController < ApplicationController
     listing.address = Address.create
     listing.address.region = Region.first
     listing.save
-    render json: { url: "#{request.protocol}#{request.subdomain}.#{request.domain}:#{request.port}/#{listing.slugs}" }
+    listing.regen_slug
+    if request.subdomain != ''
+      render json: { url: "#{request.protocol}#{request.subdomain}.#{request.domain}:#{request.port}/#{listing.slugs}" }
+    else
+      render json: { url: "#{request.protocol}#{request.domain}:#{request.port}/#{listing.slugs}" }
+    end
   end
 
   def admin

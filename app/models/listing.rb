@@ -1,12 +1,12 @@
 class Listing < ActiveRecord::Base
   extend FriendlyId
-  friendly_id :slug_candidates, use: :scoped, scope: :region_id
+  friendly_id :slug_candidates, use: :slugged
 
   serialize :unlisted_dates
 
   validates :slug, presence: true
 
-  before_save { self.region_id = address.region.id }
+  before_save { self.region_id = address.region.id if address && address.region }
 
   mount_uploader :search_image, SearchImageUploader
   mount_uploader :header_image, HeaderImageUploader
@@ -63,5 +63,14 @@ class Listing < ActiveRecord::Base
         date >= Date.today.to_time.to_i && date <= (Date.today + 180.days).to_time.to_i
       }.count) / 180.0)
     end
+  end
+
+  def regen_slug
+    self.slug = nil
+    save
+  end
+
+  def should_generate_new_friendly_id?
+    true
   end
 end

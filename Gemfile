@@ -12,6 +12,7 @@ group :assets do
   gem 'uglifier'
   gem 'angularjs-rails'
   gem 'jquery-rails'
+  gem 'jquery-ui-rails'
   gem 'axis-rails'
   gem 'fotoramajs'
 end
@@ -35,7 +36,7 @@ gem 'coveralls', require: false, group: :test
 gem 'rspec-rails', group: [:development, :test]
 
 gem 'sorcery',       github: 'NoamB/sorcery', branch: 'master'
-gem 'rmagick',       github: 'rmagick/rmagick', branch: 'master'
+gem 'rmagick'
 
 gem 'stylus', '~> 1.0.0beta'
 

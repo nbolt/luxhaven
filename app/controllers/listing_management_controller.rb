@@ -49,22 +49,22 @@ class ListingManagementController < ApplicationController
   end
 
   def new_image
-    listing.images.push Image.create(image: request.body)
+    listing.images.push Image.create(image: params[:image])
     render nothing: true
   end
 
   def new_paragraph_image
-    paragraph.image = ParagraphImage.create(image: request.body)
+    paragraph.image = ParagraphImage.create(image: params[:image])
     render nothing: true
   end
 
   def new_header_image
-    listing.update_attribute :header_image, request.body
+    listing.update_attribute :header_image, params[:image]
     render nothing: true
   end
 
   def new_search_image
-    listing.update_attribute :search_image, request.body
+    listing.update_attribute :search_image, params[:image]
     render nothing: true
   end
 

@@ -710,7 +710,8 @@ ListingCtrl = ['$scope', '$http', '$cookieStore', '$timeout', '$q', ($scope, $ht
   $http.get("/region/#{$scope.region.slug}").success (region) -> $scope.region = region
 
   $http.get('').success (rsp) ->
-    listing = JSON.parse rsp.listing
+    rsp = JSON.parse rsp
+    listing = rsp.listing
     listing.bookings = _(listing.bookings).reject (booking) ->
       booking.check_in  = moment booking.check_in
       booking.check_out = moment booking.check_out
@@ -719,7 +720,7 @@ ListingCtrl = ['$scope', '$http', '$cookieStore', '$timeout', '$q', ($scope, $ht
       if $scope.user
         analytics.track 'listing:viewed',
           note: "#{$scope.region.slug}/#{listing.slug}"
-    listing.address.neighborhood.venues = rsp.venues
+    listing.address.neighborhood.venues = rsp.venues if listing.address.neighborhood
     $scope.listing = listing
     $scope.listingQ.resolve()
 
@@ -880,7 +881,9 @@ ManageCtrl = ['$scope', '$http', '$timeout', ($scope, $http, $timeout) ->
 
   $scope.$watch 'url', (n, o) ->
     if o != n && $scope.url
-      $http.get($scope.url).success (listing) ->
+      $http.get($scope.url).success (rsp) ->
+        rsp = JSON.parse rsp
+        listing = rsp.listing
         angular.element('.section.search textarea').val listing.search_description
         for attr, value of listing
           if typeof(value) == 'object'
@@ -944,63 +947,58 @@ ManageCtrl = ['$scope', '$http', '$timeout', ($scope, $http, $timeout) ->
       .success -> update_listing()
 
   $scope.new_image = (el, scope) ->
+    formData = new FormData()
+    formData.append('image', el.files[0])
+
     xhr = new XMLHttpRequest()
     xhr.overrideMimeType 'text/plain; charset=x-user-defined-binary'
     xhr.open 'POST', "/listing_management/#{scope.listing.id}/new_image"
-
-    reader = new FileReader()
-    reader.onload = (e) -> xhr.sendAsBinary e.target.result
+    xhr.send(formData)
 
     xhr.upload.addEventListener 'load', (->
       $timeout((-> update_listing()),2000)
       angular.element('.images input').val('')
     ), false
 
-    reader.readAsBinaryString el.files[0]
-
   $scope.new_header_image = (el, scope) ->
+    formData = new FormData()
+    formData.append('image', el.files[0])
+
     xhr = new XMLHttpRequest()
     xhr.overrideMimeType 'text/plain; charset=x-user-defined-binary'
     xhr.open 'POST', "/listing_management/#{scope.listing.id}/new_header_image"
-
-    reader = new FileReader()
-    reader.onload = (e) -> xhr.sendAsBinary e.target.result
+    xhr.send(formData)
 
     xhr.upload.addEventListener 'load', (-> update_listing()), false
 
-    reader.readAsBinaryString el.files[0]
-
   $scope.new_search_image = (el, scope) ->
+    formData = new FormData()
+    formData.append('image', el.files[0])
+
     xhr = new XMLHttpRequest()
     xhr.overrideMimeType 'text/plain; charset=x-user-defined-binary'
     xhr.open 'POST', "/listing_management/#{scope.listing.id}/new_search_image"
-
-    reader = new FileReader()
-    reader.onload = (e) -> xhr.sendAsBinary e.target.result
+    xhr.send(formData)
 
     xhr.upload.addEventListener 'load', (-> update_listing()), false
 
-    reader.readAsBinaryString el.files[0]
-
   $scope.new_paragraph_image = (el, scope) ->
+    formData = new FormData()
+    formData.append('image', el.files[0])
+
     xhr = new XMLHttpRequest()
     xhr.overrideMimeType 'text/plain; charset=x-user-defined-binary'
     xhr.open 'POST', "/listing_management/#{scope.paragraph.id}/new_paragraph_image"
 
-    reader = new FileReader()
-    reader.onload = (e) -> xhr.sendAsBinary e.target.result
-
     xhr.upload.addEventListener 'load', (-> update_listing()), false
-
-    reader.readAsBinaryString el.files[0]
 
   update_listing = (listing) ->
     if listing
       $scope.listing = listing
       post_listing_update()
     else
-      $http.get($scope.url).success (listing) ->
-        $scope.listing = listing
+      $http.get($scope.url).success (rsp) ->
+        $scope.listing = rsp.listing
         post_listing_update()
 
   post_listing_update = ->
@@ -1009,23 +1007,26 @@ ManageCtrl = ['$scope', '$http', '$timeout', ($scope, $http, $timeout) ->
     bind_paragraph_images()
 
   set_feature_list = ->
-    feature_list = _($scope.listing.features).map((f) -> f.name).join ','
-    angular.element('.section.features input').val(feature_list).trigger 'change'
+    if $scope.listing && $scope.listing.features
+      feature_list = _($scope.listing.features).map((f) -> f.name).join ','
+      angular.element('.section.features input').val(feature_list).trigger 'change'
 
   set_new_room_attrs = ->
-    _($scope.listing.rooms).each (room) ->
-      room.new_features = _(room.features).map((f) -> f.name).join ','
-      room.new_images = _(_(_($scope.listing.images).sortBy((i) -> i.created_at)).map(
-        (img, index) -> if _(room.images).any((i) -> img.id is i.id) then index+1
-      )).compact().join ' '
+    if $scope.listing && $scope.listing.rooms
+      _($scope.listing.rooms).each (room) ->
+        room.new_features = _(room.features).map((f) -> f.name).join ','
+        room.new_images = _(_(_($scope.listing.images).sortBy((i) -> i.created_at)).map(
+          (img, index) -> if _(room.images).any((i) -> img.id is i.id) then index+1
+        )).compact().join ' '
 
   bind_paragraph_images = (paragraphs) ->
-    _($scope.listing.paragraphs).each (paragraph) ->
-      if paragraph.image
-        paragraph.unbind_align =
-          $scope.$watch (->paragraph.image.align), (n, o) -> update_alignment(paragraph) unless o == n
-        paragraph.unbind_version =
-          $scope.$watch (->paragraph.image.version), (n, o) -> update_version(paragraph) unless o == n
+    if $scope.listing && $scope.listing.paragraphs
+      _($scope.listing.paragraphs).each (paragraph) ->
+        if paragraph.image
+          paragraph.unbind_align =
+            $scope.$watch (->paragraph.image.align), (n, o) -> update_alignment(paragraph) unless o == n
+          paragraph.unbind_version =
+            $scope.$watch (->paragraph.image.version), (n, o) -> update_version(paragraph) unless o == n
 
   update_alignment = (paragraph) ->
     $http.post "/listing_management/#{paragraph.id}/update_alignment", { alignment: paragraph.image.align }
@@ -1057,9 +1058,10 @@ app = angular.module('luxhaven', ['ngCookies', 'ui.select2', 'ui.date', 'ui.mask
   .directive('fotorama', -> [(scope, element) ->
     element.fotorama()
   ])
-  .directive('date', -> [(scope, element, attrs) ->
-    scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
-      element.text moment(n).format('ddd, Do MMM YYYY')
+  .directive('date', [->
+    link: (scope, element, attrs) ->
+      scope.$watch (-> scope.dates[attrs.date]), (n, o) ->
+        element.text moment(n).format('ddd, Do MMM YYYY')
   ])
   .directive('bgImage', ['$timeout', ($timeout) -> (scope, element, attrs) ->
     $timeout(
